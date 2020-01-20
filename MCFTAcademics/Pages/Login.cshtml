@@ -1,0 +1,16 @@
+﻿@page
+@model MCFTAcademics.LoginModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    ViewData["Title"] = "Login";
+}
+
+<p>Login using form below:</p>
+<form method="post">
+    <div asp-validation-summary="All" class="text-danger"></div>
+    Username: <input asp-for="loginData.Username" value="username" /><br /><br />
+    Password: <input asp-for="loginData.Password" value="password" /><br /><br />
+    Remember me: <input asp-for="loginData.RememberMe" type="checkbox" /><br /><br />
+    <input type="submit" value="Login" />
+    @Html.AntiForgeryToken()
+</form>
