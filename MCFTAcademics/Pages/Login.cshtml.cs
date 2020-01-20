@@ -55,11 +55,11 @@ namespace MCFTAcademics
             public bool Login()
             {
                 bool loggedIn;
-                string sql = "select username, password from [mcftacademics].[dbo].[Users] where username = @username AND password = @password";
                 SqlConnection conn = DbConn.GetConnection();
-                SqlCommand selectCommand = new SqlCommand(sql, conn);
-                selectCommand.Parameters.AddWithValue("@username", this.Username);
-                selectCommand.Parameters.AddWithValue("@password", this.Password);
+                SqlCommand selectCommand = new SqlCommand("[mcftacademics].dbo.Login_Validation", conn);
+                selectCommand.CommandType = System.Data.CommandType.StoredProcedure;
+                selectCommand.Parameters.AddWithValue("@uname", this.Username);
+                selectCommand.Parameters.AddWithValue("@pass", this.Password);
                 try
                 {
                     conn.Open();
