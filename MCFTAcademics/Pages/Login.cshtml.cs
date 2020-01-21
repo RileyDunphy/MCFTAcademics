@@ -56,17 +56,25 @@ namespace MCFTAcademics
             {
                 bool loggedIn;
                 SqlConnection conn = DbConn.GetConnection();
+                //Getting the stored procedure from the datbaase and adding the username paramater
                 SqlCommand selectCommand = new SqlCommand("[mcftacademics].dbo.Login_Validation", conn);
                 selectCommand.CommandType = System.Data.CommandType.StoredProcedure;
                 selectCommand.Parameters.AddWithValue("@uname", this.Username);
-                selectCommand.Parameters.AddWithValue("@pass", this.Password);
                 try
                 {
                     conn.Open();
                     SqlDataReader reader = selectCommand.ExecuteReader();
-                    if (reader.Read())
+                    if (reader.Read()) //If it finds a username
                     {
-                        loggedIn= true;
+                        if (Hashing.ValidatePassword(this.Password, reader["Password"].ToString())) //If the password entered matches 
+                            //the hashed password in the database
+                        {
+                            loggedIn = true;
+                        }
+                        else
+                        {
+                            loggedIn = false;
+                        }
                     }
                     else
                     {
