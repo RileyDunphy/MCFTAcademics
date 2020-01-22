@@ -83,7 +83,6 @@ namespace MCFTAcademics
                 }
                 catch (Exception ex)
                 {
-                    throw ex;
                     loggedIn= false;
                 }
                 finally
