@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - MCFTAcademics</title>
+    <title>@ViewData["Title"] - MCFT Academics</title>
 
     <environment include="Development">
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
@@ -26,7 +26,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a asp-page="/Index" class="navbar-brand">MCFTAcademics</a>
+                <a asp-page="/Index" class="navbar-brand">MCFT Academics</a>
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
@@ -34,6 +34,17 @@
                     <li><a asp-page="/About">About</a></li>
                     <li><a asp-page="/Contact">Contact</a></li>
                     <li><a asp-page="/Login">Login</a></li>
+                </ul>
+                <!-- XXX: Add user checks here (Do we throw it in a ViewBag or something?) -->
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="nav-item dropdown">
+                        <a class="dropdown-toggle" href="#" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                            Gareth <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#">Logout</a></li>
+                        </ul>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -45,7 +56,7 @@
         @RenderBody()
         <hr />
         <footer>
-            <p>&copy; 2020 - MCFTAcademics</p>
+            <p>&copy; 2020 - Maritime College of Forestry Technology</p>
         </footer>
     </div>
 
