@@ -10,6 +10,7 @@ using MCFTAcademics.DAL;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace MCFTAcademics
 {
@@ -31,9 +32,14 @@ namespace MCFTAcademics
                     return Page();
                 }
                 var identity = new ClaimsIdentity(CookieAuthenticationDefaults.AuthenticationScheme, ClaimTypes.Name, ClaimTypes.Role);
-                identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, loginData.Username));
+                identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, loginData.Id.ToString(), ClaimValueTypes.Integer));
                 identity.AddClaim(new Claim(ClaimTypes.Name, loginData.Username));
-                identity.AddClaim(new Claim(ClaimTypes.Role, "Admin")); // XXX testing
+                var roles = loginData.GetRolesFromDatabase();
+                if (roles != null)
+                {
+                    identity.AddClaims(roles.Select(x => new Claim(ClaimTypes.Role, x)));
+                }
+
                 var principal = new ClaimsPrincipal(identity);
                 await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, new AuthenticationProperties { IsPersistent = loginData.RememberMe });
                 return RedirectToPage("Index");
@@ -55,6 +61,50 @@ namespace MCFTAcademics
 
             public bool RememberMe { get; set; }
 
+            public int Id { get; protected set; }
+
+            // XXX: Should be moved to proper user handling
+            int GetUserId()
+            {
+                var connection = DbConn.GetConnection();
+                // XXX: use a UDF
+                var command = new SqlCommand("select userId from users where username = @userName");
+                command.Parameters.AddWithValue("@userName", Username);
+                try
+                {
+                    return (int)command.ExecuteScalar();
+                }
+                catch (SqlException)
+                {
+                    // XXX: log exception
+                    return -1;
+                }
+            }
+
+            // really simplistic too
+            internal IEnumerable<string> GetRolesFromDatabase()
+            {
+                var connection = DbConn.GetConnection();
+                // XXX: use a UDF
+                var command = new SqlCommand("select roleName from roles where userId = @userId");
+                var roles = new List<string>();
+                command.Parameters.AddWithValue("@userId", Id);
+                try
+                {
+                    var reader = command.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        roles.Add(reader["roleName"].ToString());
+                    }
+                }
+                catch (SqlException)
+                {
+                    // XXX: log exception
+                    
+                }
+                return roles;
+            }
+
             public bool Login()
             {
                 bool loggedIn;
@@ -72,7 +122,17 @@ namespace MCFTAcademics
                         if (Hashing.ValidatePassword(this.Password, reader["Password"].ToString())) //If the password entered matches 
                             //the hashed password in the database
                         {
-                            loggedIn = true;
+                            // a bit of an ugly place to do it, but get the user's ID
+                            int id = GetUserId();
+                            if (id != -1)
+                            {
+                                Id = id;
+                                loggedIn = true;
+                            }
+                            else
+                            {
+                                loggedIn = false;
+                            }
                         }
                         else
                         {
