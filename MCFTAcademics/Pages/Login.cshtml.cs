@@ -67,16 +67,20 @@ namespace MCFTAcademics
             int GetUserId()
             {
                 var connection = DbConn.GetConnection();
+                connection.Open();
                 // XXX: use a UDF
-                var command = new SqlCommand("select userId from users where username = @userName");
+                var command = new SqlCommand("select userId from mcftacademics.dbo.users where username = @userName", connection);
                 command.Parameters.AddWithValue("@userName", Username);
                 try
                 {
-                    return (int)command.ExecuteScalar();
+                    var res = (int)command.ExecuteScalar();
+                    connection.Close();
+                    return res;
                 }
-                catch (SqlException)
+                catch (SqlException e)
                 {
                     // XXX: log exception
+                    connection.Close();
                     return -1;
                 }
             }
@@ -85,8 +89,9 @@ namespace MCFTAcademics
             internal IEnumerable<string> GetRolesFromDatabase()
             {
                 var connection = DbConn.GetConnection();
+                connection.Open();
                 // XXX: use a UDF
-                var command = new SqlCommand("select roleName from roles where userId = @userId");
+                var command = new SqlCommand("select roleName from mcftacademics.dbo.roles where userId = @userId", connection);
                 var roles = new List<string>();
                 command.Parameters.AddWithValue("@userId", Id);
                 try
@@ -102,6 +107,7 @@ namespace MCFTAcademics
                     // XXX: log exception
                     
                 }
+                connection.Close();
                 return roles;
             }
 
