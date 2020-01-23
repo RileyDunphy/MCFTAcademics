@@ -19,18 +19,18 @@ namespace MCFTAcademics.BL
 
         public Grade(decimal gradeAssigned, DateTime given, bool locked, decimal hoursAttended, bool supplemental)
         {
-            this.GradeAssigned = gradeAssigned;
-            this.Given = given;
-            this.Locked = locked;
-            this.HoursAttended = hoursAttended;
-            this.Supplemental = supplemental;
+            this.gradeAssigned = gradeAssigned;
+            this.given = given;
+            this.locked = locked;
+            this.hoursAttended = hoursAttended;
+            this.supplemental = supplemental;
         }
 
-        public decimal GradeAssigned { get => gradeAssigned; set => gradeAssigned = value; }
-        public DateTime Given { get => given; set => given = value; }
-        public bool Locked { get => locked; set => locked = value; }
-        public decimal HoursAttended { get => hoursAttended; set => hoursAttended = value; }
-        public bool Supplemental { get => supplemental; set => supplemental = value; }
+        public decimal GradeAssigned { get => gradeAssigned;  }
+        public DateTime Given { get => given;  }
+        public bool Locked { get => locked;  }
+        public decimal HoursAttended { get => hoursAttended;  }
+        public bool Supplemental { get => supplemental; }
 
         public bool isPassing()
         {

@@ -17,13 +17,13 @@ namespace MCFTAcademics.BL
 
         public Staff(DateTime from, DateTime to, string tempName)
         {
-            this.From = from;
-            this.To = to;
-            this.TempName = tempName;
+            this.from = from;
+            this.to = to;
+            this.tempName = tempName;
         }
 
-        public DateTime From { get => from; set => from = value; }
-        public DateTime To { get => to; set => to = value; }
-        public string TempName { get => tempName; set => tempName = value; }
+        public DateTime From { get => from;  }
+        public DateTime To { get => to;  }
+        public string TempName { get => tempName;  }
     }
 }

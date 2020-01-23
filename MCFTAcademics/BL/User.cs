@@ -17,13 +17,13 @@ namespace MCFTAcademics.BL
 
         public User(string name, string username, string password)
         {
-            this.Name = name;
-            this.Username = username;
-            this.Password = password;
+            this.name = name;
+            this.username = username;
+            this.password = password;
         }
 
-        public string Name { get => name; set => name = value; }
-        public string Username { get => username; set => username = value; }
-        public string Password { get => password; set => password = value; }
+        public string Name { get => name;}
+        public string Username { get => username; }
+        public string Password { get => password;  }
     }
 }

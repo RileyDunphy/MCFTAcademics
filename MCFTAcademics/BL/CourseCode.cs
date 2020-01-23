@@ -17,13 +17,13 @@ namespace MCFTAcademics.BL
 
         public CourseCode(string code, DateTime from, DateTime to)
         {
-            this.Code = code;
-            this.From = from;
-            this.To = to;
+            this.code = code;
+            this.from = from;
+            this.to = to;
         }
 
-        public string Code { get => code; set => code = value; }
-        public DateTime From { get => from; set => from = value; }
-        public DateTime To { get => to; set => to = value; }
+        public string Code { get => code; }
+        public DateTime From { get => from;}
+        public DateTime To { get => to; }
     }
 }

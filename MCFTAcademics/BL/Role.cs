@@ -15,9 +15,9 @@ namespace MCFTAcademics.BL
 
         public Role(string name)
         {
-            this.Name = name;
+            this.name = name;
         }
 
-        public string Name { get => name; set => name = value; }
+        public string Name { get => name; }
     }
 }

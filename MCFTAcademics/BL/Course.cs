@@ -18,16 +18,16 @@ namespace MCFTAcademics.BL
 
         public Course(string name, decimal credit, DateTime from, DateTime to)
         {
-            this.Name = name;
-            this.Credit = credit;
-            this.From = from;
-            this.To = to;
+            this.name = name;
+            this.credit = credit;
+            this.from = from;
+            this.to = to;
         }
 
-        public string Name { get => name; set => name = value; }
-        public decimal Credit { get => credit; set => credit = value; }
-        public DateTime From { get => from; set => from = value; }
-        public DateTime To { get => to; set => to = value; }
+        public string Name { get => name; }
+        public decimal Credit { get => credit;  }
+        public DateTime From { get => from;  }
+        public DateTime To { get => to; }
 
         public bool isEligible(User u)
         {
