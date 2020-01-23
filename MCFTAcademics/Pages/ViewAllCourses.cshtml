@@ -1,0 +1,33 @@
+﻿@page
+@model MCFTAcademics.ViewAllCoursesModel
+@{
+    ViewData["Title"] = "ViewAllCourses";
+}
+@{
+
+    ArrayList<Course> courses = Course.getAllCourses();
+}
+
+<h2>MCFT Courses</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Code</th>
+            <th scope="col">Name</th>
+            <th scope="col">Semester</th>
+            <th scope="col">Length</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (Course c in courses)
+        {
+        <tr>
+            <th scope="row">@c.Code</th>
+            <td>@c.Name</td>
+            <td>@c.Semester</td>
+            <td>@c.Length</td>
+        </tr>
+        }
+    </tbody>
+</table>
