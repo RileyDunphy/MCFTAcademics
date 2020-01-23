@@ -34,6 +34,8 @@ namespace MCFTAcademics
                 var identity = new ClaimsIdentity(CookieAuthenticationDefaults.AuthenticationScheme, ClaimTypes.Name, ClaimTypes.Role);
                 identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, loginData.Id.ToString(), ClaimValueTypes.Integer));
                 identity.AddClaim(new Claim(ClaimTypes.Name, loginData.Username));
+                if (!string.IsNullOrWhiteSpace(loginData.RealName))
+                    identity.AddClaim(new Claim(ClaimTypes.GivenName, loginData.RealName));
                 var roles = loginData.GetRolesFromDatabase();
                 if (roles != null)
                 {
@@ -63,6 +65,8 @@ namespace MCFTAcademics
 
             public int Id { get; protected set; }
 
+            public string RealName { get; protected set; }
+
             // XXX: Should be moved to proper user handling
             int GetUserId()
             {
@@ -82,6 +86,27 @@ namespace MCFTAcademics
                     // XXX: log exception
                     connection.Close();
                     return -1;
+                }
+            }
+
+            string GetUserRealName()
+            {
+                var connection = DbConn.GetConnection();
+                connection.Open();
+                // XXX: use a UDF
+                var command = new SqlCommand("select realName from mcftacademics.dbo.users where username = @userName", connection);
+                command.Parameters.AddWithValue("@userName", Username);
+                try
+                {
+                    var res = command.ExecuteScalar().ToString();
+                    connection.Close();
+                    return res;
+                }
+                catch (SqlException e)
+                {
+                    // XXX: log exception
+                    connection.Close();
+                    return null;
                 }
             }
 
@@ -139,6 +164,8 @@ namespace MCFTAcademics
                             {
                                 loggedIn = false;
                             }
+                            var realName = GetUserRealName();
+                            RealName = realName;
                         }
                         else
                         {
