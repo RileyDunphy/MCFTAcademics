@@ -73,8 +73,9 @@ namespace MCFTAcademics
                 var connection = DbConn.GetConnection();
                 connection.Open();
                 // XXX: use a UDF
-                var command = new SqlCommand("select userId from mcftacademics.dbo.users where username = @userName", connection);
-                command.Parameters.AddWithValue("@userName", Username);
+                var command = new SqlCommand("[mcftacademics].dbo.Get_UserId", connection);
+                command.CommandType = System.Data.CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@username", Username);
                 try
                 {
                     var res = (int)command.ExecuteScalar();
@@ -94,8 +95,9 @@ namespace MCFTAcademics
                 var connection = DbConn.GetConnection();
                 connection.Open();
                 // XXX: use a UDF
-                var command = new SqlCommand("select realName from mcftacademics.dbo.users where username = @userName", connection);
-                command.Parameters.AddWithValue("@userName", Username);
+                var command = new SqlCommand("[mcftacademics].dbo.Get_RealName", connection);
+                command.CommandType = System.Data.CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@userIdentity", Id);
                 try
                 {
                     var res = command.ExecuteScalar().ToString();
@@ -116,9 +118,10 @@ namespace MCFTAcademics
                 var connection = DbConn.GetConnection();
                 connection.Open();
                 // XXX: use a UDF
-                var command = new SqlCommand("select roleName from mcftacademics.dbo.roles where userId = @userId", connection);
+                var command = new SqlCommand("[mcftacademics].dbo.Get_UserRoles", connection);
+                command.CommandType = System.Data.CommandType.StoredProcedure;
                 var roles = new List<string>();
-                command.Parameters.AddWithValue("@userId", Id);
+                command.Parameters.AddWithValue("@userIdentity", Id);
                 try
                 {
                     var reader = command.ExecuteReader();
@@ -158,14 +161,14 @@ namespace MCFTAcademics
                             if (id != -1)
                             {
                                 Id = id;
+                                var realName = GetUserRealName();
+                                RealName = realName;
                                 loggedIn = true;
                             }
                             else
                             {
                                 loggedIn = false;
                             }
-                            var realName = GetUserRealName();
-                            RealName = realName;
                         }
                         else
                         {
