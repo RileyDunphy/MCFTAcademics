@@ -12,7 +12,7 @@ namespace MCFTAcademics.DAL
         public static SqlConnection GetConnection()
         {
             //get the connection string
-            String connString = "Data Source=ec2-54-172-213-145.compute-1.amazonaws.com;Persist Security Info=True;User ID=dev;Password=MarcuVision2020";
+            String connString = "Data Source=mcft-academics.cnh1gfldtky9.us-east-1.rds.amazonaws.com;Initial Catalog=mcftacademics;User ID=admin;Password=JoshVision2020";
             SqlConnection conn = new SqlConnection(connString);
             return conn;
         }

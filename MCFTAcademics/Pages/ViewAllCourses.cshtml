@@ -1,11 +1,13 @@
 ﻿@page
 @model MCFTAcademics.ViewAllCoursesModel
+@using System.Collections;
+@using BL;
 @{
     ViewData["Title"] = "ViewAllCourses";
 }
 @{
 
-    ArrayList<Course> courses = Course.getAllCourses();
+    List<Course> courses = Course.getAllCourses();
 }
 
 <h2>MCFT Courses</h2>
@@ -13,21 +15,21 @@
 <table class="table">
     <thead>
         <tr>
-            <th scope="col">Code</th>
             <th scope="col">Name</th>
-            <th scope="col">Semester</th>
-            <th scope="col">Length</th>
+            <th scope="col">Credit</th>
+            <th scope="col">From</th>
+            <th scope="col">To</th>
         </tr>
     </thead>
     <tbody>
         @foreach (Course c in courses)
         {
-        <tr>
-            <th scope="row">@c.Code</th>
-            <td>@c.Name</td>
-            <td>@c.Semester</td>
-            <td>@c.Length</td>
-        </tr>
+            <tr>
+                <th scope="row">@c.Name</th>
+                <td>@c.Credit</td>
+                <td>@c.From.ToShortDateString()</td>
+                <td>@c.To.Date.ToShortDateString()</td>
+            </tr>
         }
     </tbody>
 </table>
