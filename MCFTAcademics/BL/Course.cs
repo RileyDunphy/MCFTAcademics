@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MCFTAcademics.DAL;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -32,6 +33,11 @@ namespace MCFTAcademics.BL
         public bool isEligible(User u)
         {
             return false;
+        }
+
+        public List<Course> getCoursesByInstructor(string username)
+        {
+            return CourseDAL.getCoursesByInstructor(username);
         }
     }
 }
