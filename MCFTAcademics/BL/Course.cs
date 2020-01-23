@@ -35,9 +35,9 @@ namespace MCFTAcademics.BL
             return false;
         }
 
-        public List<Course> getCoursesByInstructor(string username)
+        public static List<Course> getCoursesByInstructor(int userid)
         {
-            return CourseDAL.getCoursesByInstructor(username);
+            return CourseDAL.getCoursesByInstructor(userid);
         }
     }
 }
