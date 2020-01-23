@@ -11,11 +11,10 @@ namespace MCFTAcademics.DAL
     {
         public static List<Course> getAllCourses()
         {
-            //create a select statement
-            string sql = "select * from courses, coursecodes where courses.courseid = coursecodes.courseid";
             SqlConnection conn = DbConn.GetConnection();
             conn.Open(); //open the connection
-            SqlCommand selectCommand = new SqlCommand(sql, conn);
+            SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.Get_AllCoursesANDCourseCodes", conn);
+            selectCommand.CommandType = System.Data.CommandType.StoredProcedure;
             //execute the sql statement
             SqlDataReader reader = selectCommand.ExecuteReader();
             List<Course> courses = new List<Course>();
