@@ -9,7 +9,7 @@
 
 @{
 
-    List<Course> courses = Course.getCoursesByInstructor(HttpContext.User.Identity.Name);
+    List<Course> courses = Course.getCoursesByInstructor(Convert.ToInt32(HttpContext.User.FindFirst(x => x.Type == System.Security.Claims.ClaimTypes.NameIdentifier).Value));
 }
 
 <h2>Courses you are Instructing</h2>
