@@ -4,12 +4,6 @@
     ViewData["Title"] = "Home page";
 }
 
-@{
-
-    // Dummy auth/perms checks for now (not the real mechanism)
-    var permissionLevel = 100;
-}
-
 <!-- These links will do nothing for now -->
 <div class="row">
     <div class="col-md-6">
@@ -25,17 +19,17 @@
             <dt><a href="#">Manage all courses</a></dt>
             <dd>Manage all courses</dd>
         </dl>
-        @if (permissionLevel > 200) //dummy check
+        @if (User.IsInRole("Admin")) //dummy check
         {
-        <h2>Student grades</h2>
-        <dl>
-            <dt><a href="#">View grades</a></dt>
-            <dd>Show grades of students you're instructing</dd>
-            <dt><a href="#">View all grades</a></dt>
-            <dd>Shows the grades of all students</dd>
-            <dt><a href="#">Manage grades</a></dt>
-            <dd>Submit student pages</dd>
-        </dl>
+            <h2>Student grades</h2>
+            <dl>
+                <dt><a href="#">View grades</a></dt>
+                <dd>Show grades of students you're instructing</dd>
+                <dt><a href="#">View all grades</a></dt>
+                <dd>Shows the grades of all students</dd>
+                <dt><a href="#">Manage grades</a></dt>
+                <dd>Submit student pages</dd>
+            </dl>
         }
     </div>
     <div class="col-md-6">

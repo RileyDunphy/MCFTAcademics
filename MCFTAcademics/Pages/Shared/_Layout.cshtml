@@ -33,18 +33,28 @@
                     <li><a asp-page="/Index">Home</a></li>
                     <li><a asp-page="/About">About</a></li>
                     <li><a asp-page="/Contact">Contact</a></li>
-                    <li><a asp-page="/Login">Login</a></li>
                 </ul>
                 <!-- XXX: Add user checks here (Do we throw it in a ViewBag or something?) -->
                 <ul class="nav navbar-nav navbar-right">
-                    <li class="nav-item dropdown">
-                        <a class="dropdown-toggle" href="#" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                            Gareth <span class="caret"></span>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a href="#">Logout</a></li>
-                        </ul>
-                    </li>
+                    @if (User?.Identity?.IsAuthenticated ?? false)
+                    {
+                        <li class="nav-item dropdown">
+                            <a class="dropdown-toggle" href="#" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                <!-- easily changed to real name -->
+                                @(User.FindFirst(x => x.Type == System.Security.Claims.ClaimTypes.GivenName)?.Value
+                                    ?? User.FindFirst(x => x.Type == System.Security.Claims.ClaimTypes.Name)?.Value
+                                    ?? "<null>")
+                                <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a asp-page="/Logout">Logout</a></li>
+                            </ul>
+                        </li>
+                    }
+                    else
+                    {
+                        <li><a asp-page="/Login">Login</a></li>
+                    }
                 </ul>
             </div>
         </div>
