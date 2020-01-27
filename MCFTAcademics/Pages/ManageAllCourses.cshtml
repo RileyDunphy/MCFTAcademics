@@ -1,0 +1,137 @@
+﻿@page
+@model MCFTAcademics.ManageAllCoursesModel
+@{
+    ViewData["Title"] = "ManageAllCourses";
+}
+
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <h2>Manage Courses</h2>
+            </div>
+        </div>
+        <form>
+            <div class="row">
+                <div class="col-lg-1">
+                    <span class="label label-default">Course Code</span>
+                </div>
+                <div class="col-lg-2">
+                    <input class="form-control" type="text">
+                </div>
+                <div class="col-md-4 col-md-offset-4">
+                    <div class="dropdown">
+                        <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                            Please select a course to change
+                            <span class="caret"> </span>
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                            <li> <a href="#"> Action</a> </li>
+                            <li> <a href="#"> Another action</a> </li>
+                            <li> <a href="#"> Something else here</a> </li>
+                            <li role="separator" class="divider"> </li>
+                            <li> <a href="#"> Separated link</a> </li>
+                        </ul>
+                    </div>
+                </div>
+            </div> <br />
+            <div class="row">
+                <div class="col-lg-1">
+                    <span class="label label-default">Course Title</span>
+                </div>
+                <div class="col-lg-2">
+                    <input class="form-control" type="text">
+                </div>
+            </div> <br />
+            <div class="row">
+                <div class="col-lg-1">
+                    <span class="label label-default descrip">Course Description</span>
+                </div>
+                <div class="col-lg-8">
+                    <textarea class="form-control" rows="3"></textarea>
+                </div>
+            </div> <br />
+            <div class="row">
+                <div class="col-lg-1">
+                    <span class="label label-default">Credit</span>
+                </div>
+                <div class="col-lg-2">
+                    <input class="form-control" type="text">
+                </div>
+            </div><br />
+            <div class="row">
+                <div class="col-lg-1">
+                    <span class="label label-default"> Lecture Hours</span>
+                </div>
+                <div class="col-lg-2">
+                    <input class="form-control" type="text">
+                </div>
+            </div><br />
+            <div class="row">
+                <div class="col-lg-1">
+                    <span class="label label-default"> Lab Hours</span>
+                </div>
+                <div class="col-lg-2">
+                    <input class="form-control" type="text">
+                </div>
+                <div class="col-lg-1">
+                    <span class="label label-default"> Total Course Hours: </span>
+                </div>
+            </div><br />
+            <div class="row">
+                <div class="col-lg-1">
+                    <span class="label label-default"> Exam Hours</span>
+                </div>
+                <div class="col-lg-2">
+                    <input class="form-control" type="text">
+                </div>
+            </div><br />
+            <div class="row">
+                <div class="col-lg-1">
+                    <span class="label label-default"> Revision Number</span>
+                </div>
+                <div class="col-lg-2">
+                    <input class="form-control" type="text">
+                </div>
+            </div><br />
+            <div class="row">
+                <div class="col-lg-1">
+                    <span class="label label-default"> Prerequisites</span>
+                </div>
+                <div class="col-lg-4">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Req.</th>
+                                <th scope="col">Coreq.</th>
+                                <th scope="col">CourseCode</th>
+                                <th scope="col"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><input class="form-check-input" type="radio" name="reqRadio1" value="req"></td>
+                                <td><input class="form-check-input" type="radio" name="reqRadio1" value="coreq"></td>
+                                <td>FT2001</td>
+                                <td><button type="button" class="btn btn-primary">Remove</button></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">2</th>
+                                <td>Jacob</td>
+                                <td>Thornton</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">3</th>
+                                <td>Larry</td>
+                                <td>the Bird</td>
+                                <td>Remove</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-md-3 col-md-offset-3">
+                    <button type="submit" class="btn btn-danger">Submit Changes</button>
+                </div>
+            </div>
+        </form>
+    </div>
