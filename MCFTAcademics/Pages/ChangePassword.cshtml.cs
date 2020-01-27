@@ -22,6 +22,12 @@ namespace MCFTAcademics
 
         public IActionResult OnPost()
         {
+            bool error = false;
+            if (!ModelState.IsValid)
+            {
+                ModelState.AddModelError("", "One of the values is blank.");
+                error = true;
+            }
             int userId;
             if (!int.TryParse(User.FindFirst(x => x.Type == ClaimTypes.NameIdentifier).Value, out userId))
             {
@@ -29,7 +35,6 @@ namespace MCFTAcademics
                 // this one is really fatal
                 return Page();
             }
-            bool error = false;
             try
             {
                 if (!PasswordMatches(userId, OldPassword))
@@ -43,11 +48,6 @@ namespace MCFTAcademics
                 ModelState.AddModelError("",
                     "There was an exception from the system checking the password;" +
                     "report this to an administrator: " + e.Message);
-                error = true;
-            }
-            if (!ModelState.IsValid)
-            {
-                ModelState.AddModelError("", "One of the values is blank.");
                 error = true;
             }
             if (OldPassword == NewPassword)
@@ -98,19 +98,26 @@ namespace MCFTAcademics
             {
                 connection = DAL.DbConn.GetConnection();
                 connection.Open();
-                // XXX: UDF
-                var sql = "select password from mcftacademics.dbo.users where userId = @userId";
+                var sql = "[mcftacademics].dbo.Login_Validation_ById";
                 var query = connection.CreateCommand();
+                query.CommandType = CommandType.StoredProcedure;
                 query.CommandText = sql;
-                query.Parameters.AddWithValue("@userId", userId);
-                var dbPassword = query.ExecuteScalar().ToString();
-                return BCrypt.Net.BCrypt.Verify(currentPassword, dbPassword);
+                query.Parameters.AddWithValue("@userIdentity", userId);
+                using (var reader = query.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        var dbPassword = reader["password"].ToString();
+                        return BCrypt.Net.BCrypt.Verify(currentPassword, dbPassword);
+                    }
+                }
             }
             finally
             {
                 if (connection != null)
                     connection.Close();
             }
+            return false;
         }
 
         bool ChangePassword(int userId, string newPassword)
@@ -120,12 +127,13 @@ namespace MCFTAcademics
             {
                 connection = DAL.DbConn.GetConnection();
                 connection.Open();
-                // XXX: UDF
-                var sql = "update mcftacademics.dbo.users set password = @newPassword where userId = @userId";
+                var sql = "[mcftacademics].dbo.Update_Password";
                 var query = connection.CreateCommand();
+                query.CommandType = CommandType.StoredProcedure;
                 query.CommandText = sql;
-                query.Parameters.AddWithValue("@userId", userId);
-                query.Parameters.AddWithValue("@newPassword", newPassword);
+                query.Parameters.AddWithValue("@userIdentity", userId);
+                query.Parameters.AddWithValue("@userPassword", newPassword);
+                // depends on set nocount off being in the procedure
                 return query.ExecuteNonQuery() > 0;
             }
             finally
