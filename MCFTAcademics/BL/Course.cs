@@ -1,7 +1,6 @@
-﻿using System;
+﻿using MCFTAcademics.DAL;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace MCFTAcademics.BL
 {
@@ -25,13 +24,18 @@ namespace MCFTAcademics.BL
         }
 
         public string Name { get => name; }
-        public decimal Credit { get => credit;  }
-        public DateTime From { get => from;  }
+        public decimal Credit { get => credit; }
+        public DateTime From { get => from; }
         public DateTime To { get => to; }
 
         public bool isEligible(User u)
         {
             return false;
+        }
+
+        public static List<Course> getAllCourses()
+        {
+            return CourseDAL.getAllCourses();
         }
     }
 }
