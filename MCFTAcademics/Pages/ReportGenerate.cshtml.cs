@@ -32,7 +32,7 @@ namespace MCFTAcademics
 
         }
 
-            public static void generateReport(string name) 
+            public static void generateReport(string reportName) 
         {
             //try { 
             // Create a new PDF document
@@ -48,7 +48,7 @@ namespace MCFTAcademics
             // Create a font
             XFont font = new XFont("arial", 20, XFontStyle.Bold);
 
-            Console.Write(gfx.ToString());
+            
 
 
             // Draw the text
@@ -57,19 +57,16 @@ namespace MCFTAcademics
               XStringFormats.Center);
             gfx.DrawString("Any String", font, XBrushes.DarkBlue, new XRect(0, 50, page.Width, page.Height), XStringFormats.Center);
 
-            // Save the document...
-            
-            const string filename = "./Reports/somereport.pdf";
+            // Save the document... must be a const
+            const string filename = "./Reports/someReport.pdf";
 
-           
-            //this just saves the document into the project folder
-            document.Save(filename);
-            
             if (System.IO.Directory.Exists("./Reports")) {
 
-                if (System.IO.File.Exists("./Reports/somereport.pdf")) { 
+                document.Save(filename);
 
-                    System.IO.File.Move("./Reports/somereport.pdf", "./Reports/"+name+".pdf");
+                if (System.IO.File.Exists("./Reports/someReport.pdf")) { 
+
+                    System.IO.File.Move("./Reports/someReport.pdf", "./Reports/"+reportName+".pdf");
                 }
             }
             // ...and start a viewer.
