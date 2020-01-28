@@ -6,6 +6,7 @@ namespace MCFTAcademics.BL
 {
     public class Course
     {
+        private int id;
         private string name;
         private decimal credit;
         private DateTime from;
@@ -15,8 +16,9 @@ namespace MCFTAcademics.BL
         {
         }
 
-        public Course(string name, decimal credit, DateTime from, DateTime to)
+        public Course(int id, string name, decimal credit, DateTime from, DateTime to)
         {
+            this.id = id;
             this.name = name;
             this.credit = credit;
             this.from = from;
@@ -27,6 +29,7 @@ namespace MCFTAcademics.BL
         public decimal Credit { get => credit; }
         public DateTime From { get => from; }
         public DateTime To { get => to; }
+        public int Id { get => id; }
 
         public bool isEligible(User u)
         {
