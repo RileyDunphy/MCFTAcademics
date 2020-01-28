@@ -14,6 +14,7 @@ using System.Linq;
 using PdfSharpCore.Drawing;
 using PdfSharpCore.Pdf;
 
+
 namespace MCFTAcademics
 {
     public class ReportGenerate : PageModel
@@ -22,14 +23,16 @@ namespace MCFTAcademics
 
         public async Task<IActionResult> OnPostAsync()
         {
-            generateReport();
+            //can now name the report by passing in different arguments
+            generateReport("reportName");
 
 
+            return RedirectToPage("index");
 
-            return RedirectToPage("Index");
+
         }
 
-            public static void generateReport() 
+            public static void generateReport(string name) 
         {
             //try { 
             // Create a new PDF document
@@ -56,9 +59,19 @@ namespace MCFTAcademics
 
             // Save the document...
             
-            const string filename = "HelloWorld.pdf";
+            const string filename = "./Reports/somereport.pdf";
+
+           
             //this just saves the document into the project folder
             document.Save(filename);
+            
+            if (System.IO.Directory.Exists("./Reports")) {
+
+                if (System.IO.File.Exists("./Reports/somereport.pdf")) { 
+
+                    System.IO.File.Move("./Reports/somereport.pdf", "./Reports/"+name+".pdf");
+                }
+            }
             // ...and start a viewer.
             //Process.Start(filename);
             //}catch(Exception ex){
