@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
@@ -14,10 +15,13 @@ namespace MCFTAcademics
     {
         // Binding properties for form
         [BindProperty]
+        [Required]
         public string OldPassword { get; set; }
         [BindProperty]
+        [Required]
         public string NewPassword { get; set; }
         [BindProperty]
+        [Required]
         public string NewPasswordRepeat { get; set; }
 
         public IActionResult OnPost()
