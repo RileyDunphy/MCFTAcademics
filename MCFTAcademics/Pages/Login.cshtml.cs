@@ -23,34 +23,49 @@ namespace MCFTAcademics
 
         public async Task<IActionResult> OnPostAsync()
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                var isValid = loginData.Login();
-                if (!isValid)
-                {
-                    ModelState.AddModelError("", "username or password is invalid");
+                // the Required parts on the model will automatically print for us
+                return Page(); // no point in logging in then
+            }
+            var isValid = loginData.Login();
+            switch (isValid)
+            {
+                case LoginStatus.NoUser:
+                    ModelState.AddModelError("", "There is no user with that username.");
+                    return Page(); // don't actually add the identity then
+                case LoginStatus.DatabaseFailure:
+                    ModelState.AddModelError("", "There was an error connecting to the database.");
                     return Page();
-                }
-                var identity = new ClaimsIdentity(CookieAuthenticationDefaults.AuthenticationScheme, ClaimTypes.Name, ClaimTypes.Role);
-                identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, loginData.Id.ToString(), ClaimValueTypes.Integer));
-                identity.AddClaim(new Claim(ClaimTypes.Name, loginData.Username));
-                if (!string.IsNullOrWhiteSpace(loginData.RealName))
-                    identity.AddClaim(new Claim(ClaimTypes.GivenName, loginData.RealName));
-                var roles = loginData.GetRolesFromDatabase();
-                if (roles != null)
-                {
-                    identity.AddClaims(roles.Select(x => new Claim(ClaimTypes.Role, x)));
-                }
+                case LoginStatus.IdFailure:
+                    ModelState.AddModelError("", "There was an error getting your user ID.");
+                    return Page();
+                case LoginStatus.InvalidPassword:
+                    ModelState.AddModelError("", "The password doesn't match.");
+                    return Page();
+                case LoginStatus.Success:
+                    break;
+            }
 
-                var principal = new ClaimsPrincipal(identity);
-                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, new AuthenticationProperties { IsPersistent = loginData.RememberMe });
-                return RedirectToPage("Index");
-            }
-            else
+            var identity = new ClaimsIdentity(CookieAuthenticationDefaults.AuthenticationScheme, ClaimTypes.Name, ClaimTypes.Role);
+            identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, loginData.Id.ToString(), ClaimValueTypes.Integer));
+            identity.AddClaim(new Claim(ClaimTypes.Name, loginData.Username));
+            if (!string.IsNullOrWhiteSpace(loginData.RealName))
+                identity.AddClaim(new Claim(ClaimTypes.GivenName, loginData.RealName));
+            var roles = loginData.GetRolesFromDatabase();
+            if (roles != null)
             {
-                ModelState.AddModelError("", "username or password is blank");
-                return Page();
+                identity.AddClaims(roles.Select(x => new Claim(ClaimTypes.Role, x)));
             }
+
+            var principal = new ClaimsPrincipal(identity);
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, new AuthenticationProperties { IsPersistent = loginData.RememberMe });
+            return RedirectToPage("Index");
+        }
+
+        public enum LoginStatus
+        {
+            Success, NoUser, InvalidPassword, IdFailure, DatabaseFailure
         }
 
         public class LoginData
@@ -139,9 +154,9 @@ namespace MCFTAcademics
                 return roles;
             }
 
-            public bool Login()
+            public LoginStatus Login()
             {
-                bool loggedIn;
+                LoginStatus loggedIn;
                 SqlConnection conn = DbConn.GetConnection();
                 //Getting the stored procedure from the datbaase and adding the username paramater
                 SqlCommand selectCommand = new SqlCommand("[mcftacademics].dbo.Login_Validation", conn);
@@ -153,8 +168,8 @@ namespace MCFTAcademics
                     SqlDataReader reader = selectCommand.ExecuteReader();
                     if (reader.Read()) //If it finds a username
                     {
-                        if (Hashing.ValidatePassword(this.Password, reader["Password"].ToString())) //If the password entered matches 
-                            //the hashed password in the database
+                        if (Hashing.ValidatePassword(this.Password, reader["Password"].ToString()))
+                            //If the password entered matches the hashed password in the database
                         {
                             // a bit of an ugly place to do it, but get the user's ID
                             int id = GetUserId();
@@ -163,29 +178,31 @@ namespace MCFTAcademics
                                 Id = id;
                                 var realName = GetUserRealName();
                                 RealName = realName;
-                                loggedIn = true;
+                                loggedIn = LoginStatus.Success;
                             }
                             else
                             {
-                                loggedIn = false;
+                                loggedIn = LoginStatus.IdFailure;
                             }
                         }
                         else
                         {
-                            loggedIn = false;
+                            loggedIn = LoginStatus.InvalidPassword;
                         }
                     }
                     else
                     {
-                        loggedIn= false;
+                        loggedIn = LoginStatus.NoUser;
                     }
                 }
                 catch (Exception ex)
                 {
-                    loggedIn= false;
+                    // XXX: report exceptions
+                    loggedIn = LoginStatus.DatabaseFailure;
                 }
                 finally
-                {//close the connection either way
+                {
+                    //close the connection either way
                     conn.Close();
                 }
                 return loggedIn;
