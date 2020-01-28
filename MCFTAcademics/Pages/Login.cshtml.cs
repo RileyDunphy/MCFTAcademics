@@ -105,7 +105,8 @@ namespace MCFTAcademics
                     return res;
                 }
                 catch (SqlException e)
-                {
+                {   
+
                     // XXX: log exception
                     connection.Close();
                     return null;
