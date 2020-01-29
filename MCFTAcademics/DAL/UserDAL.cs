@@ -64,4 +64,5 @@ namespace MCFTAcademics.DAL
                     connection.Close();
             }
         }
+    }
 }
