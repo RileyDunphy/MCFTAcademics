@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MCFTAcademics.DAL;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,23 +8,20 @@ namespace MCFTAcademics.BL
 {
     public class User
     {
-        private string name;
-        private string username;
-        private string password;
-
-        public User()
+        internal User(string name, string username, string password, int id)
         {
+            this.Name = name;
+            this.Username = username;
+            this.Password = password;
         }
 
-        public User(string name, string username, string password)
-        {
-            this.name = name;
-            this.username = username;
-            this.password = password;
-        }
+        public User GetUser(int id) => UserDAL.GetUser(id);
 
-        public string Name { get => name;}
-        public string Username { get => username; }
-        public string Password { get => password;  }
+        public User GetUser(string username) => UserDAL.GetUser(username);
+
+        public string Name { get;}
+        public string Username { get; }
+        public string Password { get;  }
+        public int Id { get; }
     }
 }
