@@ -15,9 +15,9 @@ namespace MCFTAcademics.BL
             this.Password = password;
         }
 
-        public User GetUser(int id) => UserDAL.GetUser(id);
+        public static User GetUser(int id) => UserDAL.GetUser(id);
 
-        public User GetUser(string username) => UserDAL.GetUser(username);
+        public static User GetUser(string username) => UserDAL.GetUser(username);
 
         public string Name { get;}
         public string Username { get; }
