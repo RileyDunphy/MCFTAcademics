@@ -21,7 +21,8 @@ namespace MCFTAcademics.DAL
             //loop through the resultset
             while (reader.Read())
             {
-                Course c = new Course(Convert.ToInt32(reader["courseId"]), reader["name"].ToString(), Convert.ToDecimal(reader["credit"]), DateTime.Parse(reader["startDate"].ToString()),DateTime.Parse(reader["endDate"].ToString()));
+                List<Prerequisite> prereqs = PrerequisiteDAL.getPrereqs(Convert.ToInt32(reader["courseId"]));
+                Course c = new Course(Convert.ToInt32(reader["courseId"]), reader["name"].ToString(), Convert.ToDecimal(reader["credit"]), DateTime.Parse(reader["startDate"].ToString()),DateTime.Parse(reader["endDate"].ToString()),reader["Description"].ToString(),Convert.ToInt32(reader["lectureHours"]),Convert.ToInt32(reader["labHours"]),Convert.ToInt32(reader["examHours"]),Convert.ToInt32(reader["totalHours"]), prereqs);
                 courses.Add(c);
             }
             conn.Close();//don't forget to close the connection
@@ -31,18 +32,20 @@ namespace MCFTAcademics.DAL
         {
             SqlConnection conn = DbConn.GetConnection();
             conn.Open(); //open the connection
-            SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.Get_AllCoursesANDCourseCodes", conn);
+            SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectCourseByid", conn);
             selectCommand.CommandType = System.Data.CommandType.StoredProcedure;
+            selectCommand.Parameters.AddWithValue("@id", id);
             //execute the sql statement
             SqlDataReader reader = selectCommand.ExecuteReader();
             Course course = new Course();
             //loop through the resultset
             while (reader.Read())
             {
-                course = new Course(Convert.ToInt32(reader["courseId"]), reader["name"].ToString(), Convert.ToDecimal(reader["credit"]), DateTime.Parse(reader["startDate"].ToString()), DateTime.Parse(reader["endDate"].ToString()));
+                List<Prerequisite> prereqs = PrerequisiteDAL.getPrereqs(Convert.ToInt32(reader["courseId"]));
+                course = new Course(Convert.ToInt32(reader["courseId"]), reader["name"].ToString(), Convert.ToDecimal(reader["credit"]), DateTime.Parse(reader["startDate"].ToString()), DateTime.Parse(reader["endDate"].ToString()), reader["Description"].ToString(), Convert.ToInt32(reader["lectureHours"]), Convert.ToInt32(reader["labHours"]), Convert.ToInt32(reader["examHours"]), Convert.ToInt32(reader["totalHours"]), prereqs);
             }
             conn.Close();//don't forget to close the connection
-            return course;//return the list of courses
+            return course;//return the course
         }
     }
 }

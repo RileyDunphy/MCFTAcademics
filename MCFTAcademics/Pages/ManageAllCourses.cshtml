@@ -9,21 +9,6 @@
 
     List<Course> courses = Course.getAllCourses();
 }
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-<script>
-     $(document).ready(function(){
-
-   $("#ddlMake").change(function(){
-   $.ajax({
-        type:'POST',
-        url:'url.action('Controller Name','Action Method Name')'
-        data:{id:$('#ddlMake').val()},
-        sucess:{
-             $("#ddlModel").append('<option value="' + ModelId.Value + '">' + Model.Text + '</option>');
-        }
-        });)})
-        })
-</script>
 
 <div class="container">
     <div class="row">
@@ -37,7 +22,7 @@
                 <span class="label label-default">Course Code</span>
             </div>
             <div class="col-lg-2">
-                <input class="form-control" type="text" asp-for="course.Name" id="txtCourseCode">
+                <input class="form-control" type="text" asp-for="courseCode.Code" id="txtCourseCode">
             </div>
             <div class="col-md-4 col-md-offset-4">
                 <div class="dropdown">
@@ -59,7 +44,7 @@
                 <span class="label label-default">Course Title</span>
             </div>
             <div class="col-lg-2">
-                <input class="form-control" type="text" id="txtCourseTitle">
+                <input class="form-control" type="text" asp-for="course.Name" id="txtCourseTitle">
             </div>
         </div> <br />
         <div class="row">
@@ -67,7 +52,7 @@
                 <span class="label label-default descrip">Course Description</span>
             </div>
             <div class="col-lg-8">
-                <textarea class="form-control" rows="3" id="txtCourseDescrip"></textarea>
+                <textarea class="form-control" rows="3" asp-for="course.Description" id="txtCourseDescrip"></textarea>
             </div>
         </div> <br />
         <div class="row">
@@ -75,7 +60,7 @@
                 <span class="label label-default">Credit</span>
             </div>
             <div class="col-lg-2">
-                <input class="form-control" type="text" id="txtCredit">
+                <input class="form-control" type="text" asp-for="course.Credit" id="txtCredit">
             </div>
         </div><br />
         <div class="row">
@@ -83,7 +68,7 @@
                 <span class="label label-default"> Lecture Hours</span>
             </div>
             <div class="col-lg-2">
-                <input class="form-control" type="text" id="txtLectureHours">
+                <input class="form-control" type="text" asp-for="course.LectureHours" id="txtLectureHours">
             </div>
         </div><br />
         <div class="row">
@@ -91,7 +76,7 @@
                 <span class="label label-default"> Lab Hours</span>
             </div>
             <div class="col-lg-2">
-                <input class="form-control" type="text" id="txtLabHours">
+                <input class="form-control" type="text" asp-for="course.LabHours" id="txtLabHours">
             </div>
             <div class="col-lg-1">
                 <span class="label label-default"> Total Course Hours: </span>
@@ -102,7 +87,7 @@
                 <span class="label label-default"> Exam Hours</span>
             </div>
             <div class="col-lg-2">
-                <input class="form-control" type="text" id="txtExamHours">
+                <input class="form-control" type="text" asp-for="course.ExamHours" id="txtExamHours">
             </div>
         </div><br />
         <div class="row">
@@ -110,7 +95,7 @@
                 <span class="label label-default"> Revision Number</span>
             </div>
             <div class="col-lg-2">
-                <input class="form-control" type="text" id="txtRevisionNumber">
+                <input class="form-control" type="text" asp-for="courseCode.RevisionNumber" id="txtRevisionNumber">
             </div>
         </div><br />
         <div class="row">

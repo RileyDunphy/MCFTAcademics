@@ -12,13 +12,16 @@ namespace MCFTAcademics
     {
         [BindProperty]
         public Course course { get; set; }
+        [BindProperty]
+        public CourseCode courseCode { get; set; }
         public void OnGet()
         {
 
         }
         public IActionResult OnGetSelectCourse(int id)
         {
-            this.course = course.GetCourseById(id);
+            this.course = Course.getCourseById(id);
+            this.courseCode = CourseCode.getNewestCourseCodeById(id);
             return Page();
         }
     }

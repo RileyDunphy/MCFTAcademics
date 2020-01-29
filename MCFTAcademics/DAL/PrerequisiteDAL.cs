@@ -7,25 +7,26 @@ using System.Threading.Tasks;
 
 namespace MCFTAcademics.DAL
 {
-    public class CourseCodeDAL
+    public class PrerequisiteDAL
     {
-        public static CourseCode getNewestCourseCodeById(int id)
+        public static List<Prerequisite> getPrereqs(int id)
         {
             SqlConnection conn = DbConn.GetConnection();
             conn.Open(); //open the connection
-            SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectNewestCourseCodeById", conn);
+            SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectPrereqsById", conn);
             selectCommand.CommandType = System.Data.CommandType.StoredProcedure;
             selectCommand.Parameters.AddWithValue("@id", id);
             //execute the sql statement
             SqlDataReader reader = selectCommand.ExecuteReader();
-            CourseCode courseCode = new CourseCode();
+            List<Prerequisite> prereqs = new List<Prerequisite>();
             //loop through the resultset
             while (reader.Read())
             {
-                courseCode = new CourseCode(reader["courseCode"].ToString(), DateTime.Parse(reader["startDate"].ToString()), DateTime.Parse(reader["endDate"].ToString()), Convert.ToDecimal(reader["revisionNumber"]));
+                Prerequisite prereq = new Prerequisite(Convert.ToInt32(reader["courseId"]), Convert.ToInt32(reader["prereqId"]), Convert.ToBoolean(reader["isPrereq"]), Convert.ToBoolean(reader["isCoreq"]));
+                prereqs.Add(prereq);
             }
             conn.Close();//don't forget to close the connection
-            return courseCode;//return the course
+            return prereqs;//return the list of prereqs
         }
     }
 }
