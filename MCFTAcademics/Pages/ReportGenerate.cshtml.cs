@@ -51,6 +51,8 @@ namespace MCFTAcademics
             
 
 
+
+
             // Draw the text
             gfx.DrawString("Hello, World!", font, XBrushes.Black,
               new XRect(0, 0, page.Width, page.Height),
@@ -67,6 +69,7 @@ namespace MCFTAcademics
                 if (System.IO.File.Exists("./Reports/someReport.pdf")) { 
 
                     System.IO.File.Move("./Reports/someReport.pdf", "./Reports/"+reportName+".pdf");
+
                 }
             }
             // ...and start a viewer.
