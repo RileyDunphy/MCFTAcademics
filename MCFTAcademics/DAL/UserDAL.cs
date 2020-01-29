@@ -64,5 +64,28 @@ namespace MCFTAcademics.DAL
                     connection.Close();
             }
         }
+
+        public static bool ChangePassword(User user, string newPasswordHashed)
+        {
+            SqlConnection connection = null;
+            try
+            {
+                connection = DAL.DbConn.GetConnection();
+                connection.Open();
+                var sql = "[mcftacademics].dbo.Update_Password";
+                var query = connection.CreateCommand();
+                query.CommandType = CommandType.StoredProcedure;
+                query.CommandText = sql;
+                query.Parameters.AddWithValue("@userIdentity", user.Id);
+                query.Parameters.AddWithValue("@userPassword", newPasswordHashed);
+                // depends on set nocount off being in the procedure
+                return (query.ExecuteNonQuery() > 0);
+            }
+            finally
+            {
+                if (connection != null)
+                    connection.Close();
+            }
+        }
     }
 }

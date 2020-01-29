@@ -39,19 +39,10 @@ namespace MCFTAcademics
                 // this one is really fatal
                 return Page();
             }
-            try
+            BL.User user = BL.User.GetUser(userId);
+            if (!user.ValidatePassword(OldPassword))
             {
-                if (!PasswordMatches(userId, OldPassword))
-                {
-                    ModelState.AddModelError("", "The current password isn't valid.");
-                    error = true;
-                }
-            }
-            catch (Exception e)
-            {
-                ModelState.AddModelError("",
-                    "There was an exception from the system checking the password;" +
-                    "report this to an administrator: " + e.Message);
+                ModelState.AddModelError("", "The current password isn't valid.");
                 error = true;
             }
             if (OldPassword == NewPassword)
@@ -69,10 +60,9 @@ namespace MCFTAcademics
             if (error)
                 return Page();
 
-            var newPasswordHashed = BCrypt.Net.BCrypt.HashPassword(NewPassword);
             try
             {
-                if (!ChangePassword(userId, newPasswordHashed))
+                if (user.ChangePassword(NewPassword) != null)
                 {
                     ModelState.AddModelError("", "The password couldn't be changed.");
                 }
@@ -92,59 +82,6 @@ namespace MCFTAcademics
         public void OnGet()
         {
 
-        }
-
-        // XXX: There is duplication from this and Login page, should be deduped in Login class
-        bool PasswordMatches(int userId, string currentPassword)
-        {
-            SqlConnection connection = null;
-            try
-            {
-                connection = DAL.DbConn.GetConnection();
-                connection.Open();
-                var sql = "[mcftacademics].dbo.Login_Validation_ById";
-                var query = connection.CreateCommand();
-                query.CommandType = CommandType.StoredProcedure;
-                query.CommandText = sql;
-                query.Parameters.AddWithValue("@userIdentity", userId);
-                using (var reader = query.ExecuteReader())
-                {
-                    if (reader.Read())
-                    {
-                        var dbPassword = reader["password"].ToString();
-                        return BCrypt.Net.BCrypt.Verify(currentPassword, dbPassword);
-                    }
-                }
-            }
-            finally
-            {
-                if (connection != null)
-                    connection.Close();
-            }
-            return false;
-        }
-
-        bool ChangePassword(int userId, string newPassword)
-        {
-            SqlConnection connection = null;
-            try
-            {
-                connection = DAL.DbConn.GetConnection();
-                connection.Open();
-                var sql = "[mcftacademics].dbo.Update_Password";
-                var query = connection.CreateCommand();
-                query.CommandType = CommandType.StoredProcedure;
-                query.CommandText = sql;
-                query.Parameters.AddWithValue("@userIdentity", userId);
-                query.Parameters.AddWithValue("@userPassword", newPassword);
-                // depends on set nocount off being in the procedure
-                return query.ExecuteNonQuery() > 0;
-            }
-            finally
-            {
-                if (connection != null)
-                    connection.Close();
-            }
         }
     }
 }

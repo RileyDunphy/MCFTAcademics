@@ -13,6 +13,7 @@ namespace MCFTAcademics.BL
             this.Name = name;
             this.Username = username;
             this.Password = password;
+            this.Id = id;
         }
 
         /// <summary>
@@ -21,6 +22,24 @@ namespace MCFTAcademics.BL
         /// <param name="password">The password provided to check against the hash.</param>
         /// <returns>If they compare against the same value.</returns>
         public bool ValidatePassword(string password) => BCrypt.Net.BCrypt.Verify(password, this.Password);
+
+        // This function actually provides an example of why the classes here are immutable.
+        // No objects change from under you, and you can replace the previous object with
+        // the new one as necessary.
+        /// <summary>
+        /// Changes the user's password in the database and provides a replacement user object.
+        /// </summary>
+        /// <param name="newPasswordUnhashed">The new password before hashing.</param>
+        /// <returns>The user object with a new password, or null if unable to.</returns>
+        public User ChangePassword(string newPasswordUnhashed)
+        {
+            var hashed = BCrypt.Net.BCrypt.HashPassword(newPasswordUnhashed);
+            if (UserDAL.ChangePassword(this, hashed))
+            {
+                return new User(this.Name, this.Username, hashed, this.Id);
+            }
+            return null;
+        }
 
         // it IMHO makes more sense here than in Role (since it's from the user)
 
