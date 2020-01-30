@@ -1,0 +1,11 @@
+﻿@page
+@model MCFTAcademics.AccessDeniedModel
+@{
+    ViewData["Title"] = "Access Denied";
+}
+
+<h2>Access Denied</h2>
+
+<p>You aren't allowed to access <code>@Request.Query["ReturnUrl"]</code>.</p>
+
+<p>If you are allowed to access this page, but your roles were updated recently, you may need to log out and log back in again for the role updates to apply.</p>
