@@ -10,13 +10,15 @@
     List<Course> courses = Course.getAllCourses();
 }
 
+<script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.4.1.min.js"></script>
+
 <div class="container">
     <div class="row">
         <div class="col">
             <h2>Manage Courses</h2>
         </div>
     </div>
-    <form>
+    <form asp-action="Create">
         <div class="row">
             <div class="col-lg-1">
                 <span class="label label-default">Course Code</span>
@@ -31,6 +33,7 @@
                         <span class="caret"> </span>
                     </button>
                     <ul class="dropdown-menu" aria-labelledby="dropdownMenuCourses">
+                        <li> <a asp-page-handler="AddCourse">Add new course</a></li>
                         @foreach (Course c in courses)
                         {
                             <li> <a asp-page-handler="SelectCourse" asp-route-id="@c.Id">@c.Name</a> </li>
@@ -120,9 +123,9 @@
                         {
                             int count = 0;
 
-                            @foreach (Prerequisite prereq in Model.course.Prerequisites)
+                            @foreach (var prereq in Model.course.Prerequisites)
                             {
-                                <tr>
+                                <tr id="Prereq-@prereq.PrereqId">
                                     @if (prereq.IsPrereq == true)
                                     {
                                         <td><input class="form-check-input" asp-for="@prereq.IsPrereq" type="radio" name="reqRadio+@count" checked value=""></td>
@@ -134,7 +137,11 @@
                                         <td><input class="form-check-input" asp-for="@prereq.IsCoreq" type="radio" name="reqRadio+@count" checked value=""></td>
                                     }
                                     <td><input class="form-control" type="text" asp-for="@prereq.PrereqId" id="txtCourseCode" value="@BL.CourseCode.getNewestCourseCodeById(prereq.PrereqId).Code"></td>
-                                    <td>@Html.ActionLink("Delete", "Delete", new { prereq = count, id = Model.course.Id})</td>
+                                    <td>
+                                        <button type="button" data-id="@prereq.PrereqId" class="Delete btn btn-sm btn-danger d-none d-md-inline-block">
+                                            Delete
+                                        </button>
+                                    </td>
                                 </tr>
                                 count++;
                             }
@@ -143,7 +150,7 @@
                             <td><input class="form-check-input" type="radio" name="reqRadioNew" checked value=""></td>
                             <td><input class="form-check-input" type="radio" name="reqRadioNew" value=""></td>
                             <td><input class="form-control" type="text" id="txtCourseCode" value=""></td>
-                            <td><button type="button" class="btn btn-primary">Add</button></td>
+                            <td><button type="button" class="Add btn btn-primary">Add</button></td>
                         </tr>
                     </tbody>
                 </table>
@@ -154,3 +161,24 @@
         </div>
     </form>
 </div>
+
+<script type="text/javascript">
+    $("body").on("click", ".table .Delete", function () {
+        console.log("hello");
+        if (confirm("Do you want to delete this row?")) {
+            var row = $(this).closest("tr");
+
+            row.remove();
+        }
+    });
+
+    $("body").on("click", ".table .Add", function () {
+        console.log("hello");
+        if (confirm("Do you want to add this row?")) {
+            var row = $(this).closest("tr");
+
+            row.find("button").parent().html("<button type=\"button\" class=\"Delete btn btn-sm btn-danger d-none d-md-inline-block\">Delete</button>");
+            row.after('<tr> <td><input class="form-check-input" type="radio" name="reqRadioNew" checked value=""></td> <td><input class="form-check-input" type="radio" name="reqRadioNew" value=""></td><td><input class="form-control" type="text" id="txtCourseCode" value=""></td><td><button type="button" class="Add btn btn-primary">Add</button></td></tr>')
+        }
+    });
+</script>

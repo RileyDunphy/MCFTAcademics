@@ -14,6 +14,12 @@ namespace MCFTAcademics
         public Course course { get; set; }
         [BindProperty]
         public CourseCode courseCode { get; set; }
+
+        public async Task<IActionResult> Create()
+        {
+            Console.WriteLine(course.Name);
+            return Page();
+        }
         public void OnGet()
         {
 
@@ -24,13 +30,13 @@ namespace MCFTAcademics
             this.courseCode = CourseCode.getNewestCourseCodeById(id);
             return Page();
         }
-
+        [HttpPost]
         public IActionResult Delete(int prereq, int id)
         {
             this.course.Prerequisites.RemoveAt(prereq);
             this.course = Course.getCourseById(id);
             this.courseCode = CourseCode.getNewestCourseCodeById(id);
-            return Page();
+            return RedirectToAction("OnGetSelectCourse(id)");
         }
     }
 }
