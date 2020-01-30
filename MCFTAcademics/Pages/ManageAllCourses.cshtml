@@ -116,23 +116,34 @@
                         </tr>
                     </thead>
                     <tbody>
+                        @if (Model.course != null)
+                        {
+                            int count = 0;
+
+                            @foreach (Prerequisite prereq in Model.course.Prerequisites)
+                            {
+                                <tr>
+                                    @if (prereq.IsPrereq == true)
+                                    {
+                                        <td><input class="form-check-input" asp-for="@prereq.IsPrereq" type="radio" name="reqRadio+@count" checked value=""></td>
+                                        <td><input class="form-check-input" asp-for="@prereq.IsCoreq" type="radio" name="reqRadio+@count" value=""></td>
+                                    }
+                                    else if (prereq.IsCoreq == true)
+                                    {
+                                        <td><input class="form-check-input" asp-for="@prereq.IsPrereq" type="radio" name="reqRadio+@count" value=""></td>
+                                        <td><input class="form-check-input" asp-for="@prereq.IsCoreq" type="radio" name="reqRadio+@count" checked value=""></td>
+                                    }
+                                    <td><input class="form-control" type="text" asp-for="@prereq.PrereqId" id="txtCourseCode" value="@BL.CourseCode.getNewestCourseCodeById(prereq.PrereqId).Code"></td>
+                                    <td>@Html.ActionLink("Delete", "Delete", new { prereq = count, id = Model.course.Id})</td>
+                                </tr>
+                                count++;
+                            }
+                        }
                         <tr>
-                            <td><input class="form-check-input" type="radio" name="reqRadio1" value="req"></td>
-                            <td><input class="form-check-input" type="radio" name="reqRadio1" value="coreq"></td>
-                            <td>FT2001</td>
-                            <td><button type="button" class="btn btn-primary">Remove</button></td>
-                        </tr>
-                        <tr>
-                            <th scope="row">2</th>
-                            <td>Jacob</td>
-                            <td>Thornton</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <th scope="row">3</th>
-                            <td>Larry</td>
-                            <td>the Bird</td>
-                            <td>Remove</td>
+                            <td><input class="form-check-input" type="radio" name="reqRadioNew" checked value=""></td>
+                            <td><input class="form-check-input" type="radio" name="reqRadioNew" value=""></td>
+                            <td><input class="form-control" type="text" id="txtCourseCode" value=""></td>
+                            <td><button type="button" class="btn btn-primary">Add</button></td>
                         </tr>
                     </tbody>
                 </table>
