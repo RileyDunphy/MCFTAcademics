@@ -16,12 +16,15 @@ namespace MCFTAcademics
         // Binding properties for form
         [BindProperty]
         [Required]
+        [DataType(DataType.Password)]
         public string OldPassword { get; set; }
         [BindProperty]
         [Required]
+        [DataType(DataType.Password)]
         public string NewPassword { get; set; }
         [BindProperty]
         [Required]
+        [DataType(DataType.Password)]
         public string NewPasswordRepeat { get; set; }
 
         public IActionResult OnPost()
