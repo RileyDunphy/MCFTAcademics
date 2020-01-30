@@ -32,10 +32,13 @@ namespace MCFTAcademics.BL
         {
             return false;
         }
-
         public static List<Course> getAllCourses()
         {
             return CourseDAL.getAllCourses();
+}
+        public static List<Course> getCoursesByInstructor(int userid)
+        {
+            return CourseDAL.getCoursesByInstructor(userid);
         }
     }
 }

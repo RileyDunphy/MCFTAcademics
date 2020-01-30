@@ -1,0 +1,37 @@
+﻿@page
+@model MCFTAcademics.ViewCoursesModel
+@{
+    ViewData["Title"] = "ViewCourses";
+}
+
+@using System.Collections;
+@using BL;
+
+@{
+
+    List<Course> courses = Course.getCoursesByInstructor(Convert.ToInt32(HttpContext.User.FindFirst(x => x.Type == System.Security.Claims.ClaimTypes.NameIdentifier).Value));
+}
+
+<h2>Courses you are Instructing</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Credit</th>
+            <th scope="col">From</th>
+            <th scope="col">To</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (Course c in courses)
+        {
+            <tr>
+                <th scope="row">@c.Name</th>
+                <td>@c.Credit</td>
+                <td>@c.From.ToShortDateString()</td>
+                <td>@c.To.Date.ToShortDateString()</td>
+            </tr>
+        }
+    </tbody>
+</table>
