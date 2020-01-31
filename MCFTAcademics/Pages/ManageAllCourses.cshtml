@@ -18,13 +18,14 @@
             <h2>Manage Courses</h2>
         </div>
     </div>
-    <form asp-action="Create">
+    <form method="post">
         <div class="row">
             <div class="col-lg-1">
                 <span class="label label-default">Course Code</span>
             </div>
             <div class="col-lg-2">
-                <input class="form-control" type="text" asp-for="courseCode.Code" id="txtCourseCode">
+                <input class="form-control" type="hidden" name="courseId" asp-for="course.Id" id="txtCourseId">
+                <input class="form-control" type="text" name="courseCode" asp-for="courseCode.Code" id="txtCourseCode">
             </div>
             <div class="col-md-4 col-md-offset-4">
                 <div class="dropdown">
@@ -47,7 +48,7 @@
                 <span class="label label-default">Course Title</span>
             </div>
             <div class="col-lg-2">
-                <input class="form-control" type="text" asp-for="course.Name" id="txtCourseTitle">
+                <input class="form-control" type="text" asp-for="course.Name" name="courseTitle" id="txtCourseTitle">
             </div>
         </div> <br />
         <div class="row">
@@ -55,7 +56,7 @@
                 <span class="label label-default descrip">Course Description</span>
             </div>
             <div class="col-lg-8">
-                <textarea class="form-control" rows="3" asp-for="course.Description" id="txtCourseDescrip"></textarea>
+                <textarea class="form-control" rows="3" name="description" asp-for="course.Description" id="txtCourseDescrip"></textarea>
             </div>
         </div> <br />
         <div class="row">
@@ -63,7 +64,7 @@
                 <span class="label label-default">Credit</span>
             </div>
             <div class="col-lg-2">
-                <input class="form-control" type="text" asp-for="course.Credit" id="txtCredit">
+                <input class="form-control" type="text" name="credit" asp-for="course.Credit" id="txtCredit">
             </div>
         </div><br />
         <div class="row">
@@ -71,7 +72,7 @@
                 <span class="label label-default"> Lecture Hours</span>
             </div>
             <div class="col-lg-2">
-                <input class="form-control" type="text" asp-for="course.LectureHours" id="txtLectureHours">
+                <input class="form-control" type="text" name="lectureHours" asp-for="course.LectureHours" id="txtLectureHours">
             </div>
         </div><br />
         <div class="row">
@@ -79,13 +80,13 @@
                 <span class="label label-default"> Lab Hours</span>
             </div>
             <div class="col-lg-2">
-                <input class="form-control" type="text" asp-for="course.LabHours" id="txtLabHours">
+                <input class="form-control" type="text" name="labHours" asp-for="course.LabHours" id="txtLabHours">
             </div>
             <div class="col-lg-1">
                 <span class="label label-default"> Total Course Hours</span>
             </div>
             <div class="col-lg-1">
-                <input class="form-control" type="text" readonly asp-for="course.TotalHours" id="txtTotalHours">
+                <input class="form-control" type="text" name="totalHours" readonly asp-for="course.TotalHours" id="txtTotalHours">
             </div>
         </div><br />
         <div class="row">
@@ -93,7 +94,7 @@
                 <span class="label label-default"> Exam Hours</span>
             </div>
             <div class="col-lg-2">
-                <input class="form-control" type="text" asp-for="course.ExamHours" id="txtExamHours">
+                <input class="form-control" type="text" name="examHours" asp-for="course.ExamHours" id="txtExamHours">
             </div>
         </div><br />
         <div class="row">
@@ -101,7 +102,7 @@
                 <span class="label label-default"> Revision Number</span>
             </div>
             <div class="col-lg-2">
-                <input class="form-control" type="text" asp-for="courseCode.RevisionNumber" id="txtRevisionNumber">
+                <input class="form-control" type="text" name="revisionNumber" asp-for="course.RevisionNumber" id="txtRevisionNumber">
             </div>
         </div><br />
         <div class="row">
@@ -123,22 +124,22 @@
                         {
                             int count = 0;
 
-                            @foreach (var prereq in Model.course.Prerequisites)
+                            @for(var i=0; i< Model.course.Prerequisites.Count; i++)
                             {
-                                <tr id="Prereq-@prereq.PrereqId">
-                                    @if (prereq.IsPrereq == true)
+                                <tr id="Prereq-@i">
+                                    @if (Model.course.Prerequisites[i].IsPrereq == true)
                                     {
-                                        <td><input class="form-check-input" asp-for="@prereq.IsPrereq" type="radio" name="reqRadio+@count" checked value=""></td>
-                                        <td><input class="form-check-input" asp-for="@prereq.IsCoreq" type="radio" name="reqRadio+@count" value=""></td>
+                                        <td><input class="form-check-input" asp-for="course.Prerequisites[i].IsPrereq" type="radio" name="reqRadio+@count" checked value=""></td>
+                                        <td><input class="form-check-input" asp-for="course.Prerequisites[i].IsCoreq" type="radio" name="reqRadio+@count" value=""></td>
                                     }
-                                    else if (prereq.IsCoreq == true)
+                                    else if (Model.course.Prerequisites[i].IsCoreq == true)
                                     {
-                                        <td><input class="form-check-input" asp-for="@prereq.IsPrereq" type="radio" name="reqRadio+@count" value=""></td>
-                                        <td><input class="form-check-input" asp-for="@prereq.IsCoreq" type="radio" name="reqRadio+@count" checked value=""></td>
+                                        <td><input class="form-check-input" asp-for="course.Prerequisites[i].IsPrereq" type="radio" name="reqRadio+@count" value=""></td>
+                                        <td><input class="form-check-input" asp-for="course.Prerequisites[i].IsCoreq" type="radio" name="reqRadio+@count" checked value=""></td>
                                     }
-                                    <td><input class="form-control" type="text" asp-for="@prereq.PrereqId" id="txtCourseCode" value="@BL.CourseCode.getNewestCourseCodeById(prereq.PrereqId).Code"></td>
+                                    <td><input class="form-control" type="text" asp-for="course.Prerequisites[i].PrereqId" id="txtCourseCode" value="@BL.CourseCode.getNewestCourseCodeById(Model.course.Prerequisites[i].PrereqId).Code"></td>
                                     <td>
-                                        <button type="button" data-id="@prereq.PrereqId" class="Delete btn btn-sm btn-danger d-none d-md-inline-block">
+                                        <button type="button" data-id="Prereq-@i" class="Delete btn btn-sm btn-danger d-none d-md-inline-block">
                                             Delete
                                         </button>
                                     </td>

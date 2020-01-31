@@ -11,28 +11,30 @@ namespace MCFTAcademics.BL
         private string code;
         private DateTime from;
         private DateTime to;
-        private decimal revisionNumber;
 
         public CourseCode()
         {
         }
 
-        public CourseCode(string code, DateTime from, DateTime to, decimal revisionNumber)
+        public CourseCode(string code, DateTime from, DateTime to)
         {
             this.code = code;
             this.from = from;
             this.to = to;
-            this.revisionNumber = revisionNumber;
         }
 
         public string Code { get => code; }
         public DateTime From { get => from;}
         public DateTime To { get => to; }
-        public decimal RevisionNumber { get => revisionNumber; }
 
         public static CourseCode getNewestCourseCodeById(int id)
         {
             return CourseCodeDAL.getNewestCourseCodeById(id);
+        }
+
+        public static bool addCourseCode(int id, string code)
+        {
+            return CourseCodeDAL.addCourseCode(id, code);
         }
     }
 }

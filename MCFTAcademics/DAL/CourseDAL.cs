@@ -22,7 +22,7 @@ namespace MCFTAcademics.DAL
             while (reader.Read())
             {
                 List<Prerequisite> prereqs = PrerequisiteDAL.getPrereqs(Convert.ToInt32(reader["courseId"]));
-                Course c = new Course(Convert.ToInt32(reader["courseId"]), reader["name"].ToString(), Convert.ToDecimal(reader["credit"]), DateTime.Parse(reader["startDate"].ToString()),DateTime.Parse(reader["endDate"].ToString()),reader["Description"].ToString(),Convert.ToInt32(reader["lectureHours"]),Convert.ToInt32(reader["labHours"]),Convert.ToInt32(reader["examHours"]),Convert.ToInt32(reader["totalHours"]), prereqs);
+                Course c = new Course(Convert.ToInt32(reader["courseId"]), reader["name"].ToString(), Convert.ToDecimal(reader["credit"]), DateTime.Parse(reader["startDate"].ToString()),DateTime.Parse(reader["endDate"].ToString()),reader["Description"].ToString(),Convert.ToInt32(reader["lectureHours"]),Convert.ToInt32(reader["labHours"]),Convert.ToInt32(reader["examHours"]),Convert.ToInt32(reader["totalHours"]), Convert.ToDecimal(reader["revisionNumber"]), prereqs);
                 courses.Add(c);
             }
             conn.Close();//don't forget to close the connection
@@ -42,10 +42,34 @@ namespace MCFTAcademics.DAL
             while (reader.Read())
             {
                 List<Prerequisite> prereqs = PrerequisiteDAL.getPrereqs(Convert.ToInt32(reader["courseId"]));
-                course = new Course(Convert.ToInt32(reader["courseId"]), reader["name"].ToString(), Convert.ToDecimal(reader["credit"]), DateTime.Parse(reader["startDate"].ToString()), DateTime.Parse(reader["endDate"].ToString()), reader["Description"].ToString(), Convert.ToInt32(reader["lectureHours"]), Convert.ToInt32(reader["labHours"]), Convert.ToInt32(reader["examHours"]), Convert.ToInt32(reader["totalHours"]), prereqs);
+                course = new Course(Convert.ToInt32(reader["courseId"]), reader["name"].ToString(), Convert.ToDecimal(reader["credit"]), DateTime.Parse(reader["startDate"].ToString()), DateTime.Parse(reader["endDate"].ToString()), reader["Description"].ToString(), Convert.ToInt32(reader["lectureHours"]), Convert.ToInt32(reader["labHours"]), Convert.ToInt32(reader["examHours"]), Convert.ToInt32(reader["totalHours"]), Convert.ToDecimal(reader["revisionNumber"]), prereqs);
             }
             conn.Close();//don't forget to close the connection
             return course;//return the course
+        }
+
+        public static bool updateCourse(Course c)
+        {
+            SqlConnection conn = DbConn.GetConnection();
+            conn.Open();
+            SqlCommand updateCommand = new SqlCommand("mcftacademics.dbo.UpdateCourseById", conn);
+            updateCommand.CommandType = System.Data.CommandType.StoredProcedure;
+            updateCommand.Parameters.AddWithValue("@id", c.Id);
+            updateCommand.Parameters.AddWithValue("@name", c.Name);
+            updateCommand.Parameters.AddWithValue("@credit", c.Credit);
+            updateCommand.Parameters.AddWithValue("@description", c.Description);
+            updateCommand.Parameters.AddWithValue("@lectureHours", c.LectureHours);
+            updateCommand.Parameters.AddWithValue("@labHours", c.LabHours);
+            updateCommand.Parameters.AddWithValue("@examHours", c.ExamHours);
+            int rows = updateCommand.ExecuteNonQuery();
+            if (rows > 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }

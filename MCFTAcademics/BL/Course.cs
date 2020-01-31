@@ -16,13 +16,14 @@ namespace MCFTAcademics.BL
         private int labHours;
         private int examHours;
         private int totalHours;
+        private decimal revisionNumber;
         private List<Prerequisite> prerequisites;
         
         public Course()
         {
         }
 
-        public Course(int id, string name, decimal credit, DateTime from, DateTime to, string description, int lectureHours, int labHours, int examHours, int totalHours, List<Prerequisite> prerequisites)
+        public Course(int id, string name, decimal credit, DateTime from, DateTime to, string description, int lectureHours, int labHours, int examHours, int totalHours, decimal revisionNumber, List<Prerequisite> prerequisites)
         {
             this.id = id;
             this.name = name;
@@ -35,6 +36,7 @@ namespace MCFTAcademics.BL
             this.examHours = examHours;
             this.totalHours = totalHours;
             this.prerequisites = prerequisites;
+            this.revisionNumber = revisionNumber;
         }
 
         public string Name { get => name; }
@@ -48,6 +50,7 @@ namespace MCFTAcademics.BL
         public int ExamHours { get => examHours; }
         public List<Prerequisite> Prerequisites { get => prerequisites; }
         public int TotalHours { get => totalHours;  }
+        public decimal RevisionNumber { get => revisionNumber; set => revisionNumber = value; }
 
         public bool isEligible(User u)
         {
@@ -62,6 +65,10 @@ namespace MCFTAcademics.BL
         public static Course getCourseById(int id)
         {
             return CourseDAL.getCourseById(id);
+        }
+        public static bool updateCourse(Course c)
+        {
+            return CourseDAL.updateCourse(c);
         }
     }
 }

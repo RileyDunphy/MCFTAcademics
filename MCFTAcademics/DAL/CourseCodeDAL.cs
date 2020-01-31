@@ -22,10 +22,29 @@ namespace MCFTAcademics.DAL
             //loop through the resultset
             while (reader.Read())
             {
-                courseCode = new CourseCode(reader["courseCode"].ToString(), DateTime.Parse(reader["startDate"].ToString()), DateTime.Parse(reader["endDate"].ToString()), Convert.ToDecimal(reader["revisionNumber"]));
+                courseCode = new CourseCode(reader["courseCode"].ToString(), DateTime.Parse(reader["startDate"].ToString()), DateTime.Parse(reader["endDate"].ToString()));
             }
             conn.Close();//don't forget to close the connection
             return courseCode;//return the course
+        }
+
+        public static bool addCourseCode(int id, string code)
+        {
+            SqlConnection conn = DbConn.GetConnection();
+            conn.Open();
+            SqlCommand insertCommand = new SqlCommand("mcftacademics.dbo.AddCourseCode", conn);
+            insertCommand.CommandType = System.Data.CommandType.StoredProcedure;
+            insertCommand.Parameters.AddWithValue("@id", id);
+            insertCommand.Parameters.AddWithValue("@code", code);
+            int rows = insertCommand.ExecuteNonQuery();
+            if (rows > 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }
