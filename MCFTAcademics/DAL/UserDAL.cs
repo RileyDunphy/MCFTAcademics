@@ -19,6 +19,27 @@ namespace MCFTAcademics.DAL
             return new User(realname, name, password, id);
         }
 
+        public static IEnumerable<User> GetAllUsers()
+        {
+            SqlConnection connection = null;
+            try
+            {
+                connection = DbConn.GetConnection();
+                connection.Open();
+                var command = connection.CreateCommand();
+                command.CommandText = "mcftacademics.dbo.Get_All_Users";
+                command.CommandType = CommandType.StoredProcedure;
+                var reader = command.ExecuteReader();
+                while (reader.Read())
+                    yield return UserFromRow(reader);
+            }
+            finally
+            {
+                if (connection != null)
+                    connection.Close();
+            }
+        }
+
         public static User GetUser(int id)
         {
             SqlConnection connection = null;
