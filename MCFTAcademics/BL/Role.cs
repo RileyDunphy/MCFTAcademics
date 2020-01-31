@@ -7,17 +7,17 @@ namespace MCFTAcademics.BL
 {
     public class Role
     {
-        private string name;
-
-        public Role()
+        // yeah, this class is weird because it's a m2n relationship packed into one of its relations
+        // but that's a DB side thing
+        internal Role(string name, int id, User user)
         {
+            this.Name = name;
+            this.Id = id;
+            this.User = user;
         }
 
-        public Role(string name)
-        {
-            this.name = name;
-        }
-
-        public string Name { get => name; }
+        public string Name { get; }
+        public int Id { get; }
+        public User User { get; }
     }
 }
