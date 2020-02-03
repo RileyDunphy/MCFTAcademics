@@ -48,7 +48,7 @@ namespace MCFTAcademics
         public void SetViewData(BL.User user)
         {
             ViewData["ViewRoles_TargetUser"] = user;
-            ViewData["ViewRoles_TargetDescription"] = TargetUserIsSelf(id) ? "yourself" : (user?.Name ?? "nobody");
+            ViewData["ViewRoles_TargetDescription"] = TargetUserIsSelf(user?.Id ?? -1) ? "yourself" : (user?.Name ?? "nobody");
         }
 
         public void OnGetWithId(int id)
