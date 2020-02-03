@@ -37,6 +37,7 @@ namespace MCFTAcademics.DAL
             insertCommand.Parameters.AddWithValue("@id", id);
             insertCommand.Parameters.AddWithValue("@code", code);
             int rows = insertCommand.ExecuteNonQuery();
+            conn.Close();
             if (rows > 0)
             {
                 return true;

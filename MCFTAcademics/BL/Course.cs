@@ -21,6 +21,7 @@ namespace MCFTAcademics.BL
         
         public Course()
         {
+            this.prerequisites = new List<Prerequisite>();
         }
 
         public Course(int id, string name, decimal credit, DateTime from, DateTime to, string description, int lectureHours, int labHours, int examHours, int totalHours, decimal revisionNumber, List<Prerequisite> prerequisites)
@@ -69,6 +70,10 @@ namespace MCFTAcademics.BL
         public static bool updateCourse(Course c)
         {
             return CourseDAL.updateCourse(c);
+        }
+        public static int addCourse(Course c)
+        {
+            return CourseDAL.addCourse(c);
         }
     }
 }

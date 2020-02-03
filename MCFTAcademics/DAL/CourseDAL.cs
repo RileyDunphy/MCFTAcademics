@@ -61,7 +61,9 @@ namespace MCFTAcademics.DAL
             updateCommand.Parameters.AddWithValue("@lectureHours", c.LectureHours);
             updateCommand.Parameters.AddWithValue("@labHours", c.LabHours);
             updateCommand.Parameters.AddWithValue("@examHours", c.ExamHours);
+            updateCommand.Parameters.AddWithValue("@revisionNumber", c.RevisionNumber);
             int rows = updateCommand.ExecuteNonQuery();
+            conn.Close();
             if (rows > 0)
             {
                 return true;
@@ -69,6 +71,34 @@ namespace MCFTAcademics.DAL
             else
             {
                 return false;
+            }
+        }
+
+        public static int addCourse(Course c)
+        {
+            SqlConnection conn = DbConn.GetConnection();
+            conn.Open();
+            SqlCommand insertCommand = new SqlCommand("mcftacademics.dbo.InsertCourse", conn);
+            insertCommand.CommandType = System.Data.CommandType.StoredProcedure;
+            insertCommand.Parameters.AddWithValue("@name", c.Name);
+            insertCommand.Parameters.AddWithValue("@credit", c.Credit);
+            insertCommand.Parameters.AddWithValue("@description", c.Description);
+            insertCommand.Parameters.AddWithValue("@lectureHours", c.LectureHours);
+            insertCommand.Parameters.AddWithValue("@labHours", c.LabHours);
+            insertCommand.Parameters.AddWithValue("@examHours", c.ExamHours);
+            insertCommand.Parameters.AddWithValue("@revisionNumber", c.RevisionNumber);
+            int rows = insertCommand.ExecuteNonQuery();
+            if (rows > 0)
+            {
+                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectLastCourseInsert", conn);
+                int id = Convert.ToInt32(selectCommand.ExecuteScalar());
+                conn.Close();
+                return id;
+            }
+            else
+            {
+                conn.Close();
+                throw new Exception();
             }
         }
     }
