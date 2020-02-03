@@ -38,17 +38,23 @@ namespace MCFTAcademics
                 ModelState.AddModelError("", "The role couldn't be revoked.");
                 return Page();
             }
+            SetViewData(user);
             return Page();
         }
 
         // XXX: This is shared with ChangePassword; it should be broken into a seperate utility library
         public bool TargetUserIsSelf(int id) => int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)) == id;
 
+        public void SetViewData(BL.User user)
+        {
+            ViewData["ViewRoles_TargetUser"] = user;
+            ViewData["ViewRoles_TargetDescription"] = TargetUserIsSelf(id) ? "yourself" : (user?.Name ?? "nobody");
+        }
+
         public void OnGetWithId(int id)
         {
             var user = BL.User.GetUser(id);
-            ViewData["ViewRoles_TargetUser"] = user;
-            ViewData["ViewRoles_TargetDescription"] = TargetUserIsSelf(id) ? "yourself" : (user?.Name ?? "nobody");
+            SetViewData(user);
         }
     }
 }
