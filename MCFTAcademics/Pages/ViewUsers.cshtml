@@ -29,6 +29,7 @@
                 <td>@user.Name</td>
                 <td>
                     <a class="btn btn-warning" asp-page="/ChangePassword" asp-page-handler="WithId" asp-route-id="@user.Id">Change Password</a>
+                    <a class="btn btn-default" asp-page="/ViewRoles" asp-page-handler="WithId" asp-route-id="@user.Id">View Roles</a>
                 </td>
             </tr>
         }

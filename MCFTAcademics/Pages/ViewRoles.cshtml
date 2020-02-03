@@ -1,0 +1,58 @@
+﻿@page
+@model MCFTAcademics.ViewRolesModel
+@{
+    ViewData["Title"] = "View Roles";
+}
+
+@{
+    var user = (BL.User)ViewData["ViewRoles_TargetUser"];
+}
+
+<h2>View Roles</h2>
+
+<p>You are viewing the roles for <var>@ViewData["ViewRoles_TargetDescription"]</var>.</p>
+
+<div asp-validation-summary="All" class="text-danger"></div>
+
+@if (user != null)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Role</th>
+                <th scope="col">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                var roles = user.GetRoles();
+            }
+            @foreach (var role in roles)
+            {
+                <tr>
+                    <th scope="row">@role.Name</th>
+                    <td>
+                        <a class="btn btn-warning"
+                           asp-page="/ViewRoles"
+                           asp-page-handler="Revoke"
+                           asp-route-userId="@user.Id"
+                           asp-route-roleId="@role.Id">
+                            Revoke
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <h2>Grant Role</h2>
+
+    <form method="post" asp-page-handler="Grant" asp-route-userId="@user.Id">
+        <div class="form-group">
+            <label for="newRole">New Role</label>
+            <input id="newRole" class="form-control" placeholder="Enter the new role's name..." />
+        </div>
+        <input class="btn btn-default" type="submit" value="Grant" />
+        @Html.AntiForgeryToken()
+    </form>
+}
