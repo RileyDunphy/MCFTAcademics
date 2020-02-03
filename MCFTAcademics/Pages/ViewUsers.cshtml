@@ -17,6 +17,7 @@
             <th scope="col">Username</th>
             <th scope="col">Real Name</th>
             @* obviously not going to show hashes... *@
+            <th scope="col">Actions</th>
         </tr>
     </thead>
     <tbody>
@@ -26,6 +27,9 @@
                 <th scope="row">@user.Id</th>
                 <td>@user.Username</td>
                 <td>@user.Name</td>
+                <td>
+                    <a class="btn btn-warning" asp-page="/ChangePassword" asp-page-handler="WithId" asp-route-id="@user.Id">Change Password</a>
+                </td>
             </tr>
         }
     </tbody>
