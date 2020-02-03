@@ -47,6 +47,8 @@ namespace MCFTAcademics.BL
         // We only get them at login time for now though, since we convert them into Claims
         public IEnumerable<Role> GetRoles() => RoleDAL.GetRolesForUser(this);
 
+        public Role GetRole(int roleId) => RoleDAL.GetRole(this, roleId);
+
         public static IEnumerable<User> GetAllUsers() => UserDAL.GetAllUsers();
 
         public static User GetUser(int id) => UserDAL.GetUser(id);

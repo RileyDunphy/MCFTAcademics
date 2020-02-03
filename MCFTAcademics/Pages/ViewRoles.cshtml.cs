@@ -21,7 +21,24 @@ namespace MCFTAcademics
         // GET because it's from a link, not a form
         public IActionResult OnGetRevoke(int userId, int roleId)
         {
-            throw new NotImplementedException();
+            var user = BL.User.GetUser(userId);
+            if (user == null)
+            {
+                ModelState.AddModelError("", "There is no user with that ID.");
+                return Page();
+            }
+            var role = user.GetRole(roleId);
+            if (role == null)
+            {
+                ModelState.AddModelError("", "There is no role with that ID.");
+                return Page();
+            }
+            if (!role.Revoke())
+            {
+                ModelState.AddModelError("", "The role couldn't be revoked.");
+                return Page();
+            }
+            return Page();
         }
 
         // XXX: This is shared with ChangePassword; it should be broken into a seperate utility library

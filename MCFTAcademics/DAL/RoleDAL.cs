@@ -18,6 +18,53 @@ namespace MCFTAcademics.DAL
             return new Role(name, id, user);
         }
 
+        public static bool Revoke(Role role)
+        {
+            SqlConnection connection = null;
+            try
+            {
+                connection = DAL.DbConn.GetConnection();
+                connection.Open();
+                var sql = "[mcftacademics].dbo.[Revoke_UserRole_ById]";
+                var query = connection.CreateCommand();
+                query.CommandType = CommandType.StoredProcedure;
+                query.CommandText = sql;
+                query.Parameters.AddWithValue("@userIdentity", role.User.Id);
+                query.Parameters.AddWithValue("@roleIdentity", role.Id);
+                // depends on set nocount off being in the procedure
+                return (query.ExecuteNonQuery() > 0);
+            }
+            finally
+            {
+                if (connection != null)
+                    connection.Close();
+            }
+        }
+
+        public static Role GetRole(User user, int roleId)
+        {
+            SqlConnection connection = null;
+            try
+            {
+                connection = DbConn.GetConnection();
+                connection.Open();
+                var command = connection.CreateCommand();
+                command.CommandText = "mcftacademics.dbo.Get_UserRole_ById";
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@userIdentity", user.Id);
+                command.Parameters.AddWithValue("@roleIdentity", roleId);
+                var reader = command.ExecuteReader();
+                if (!reader.Read())
+                    return null;
+                return RoleFromRow(reader, user);
+            }
+            finally
+            {
+                if (connection != null)
+                    connection.Close();
+            }
+        }
+
         public static IEnumerable<Role> GetRolesForUser(User user)
         {
             var roles = new List<Role>();
