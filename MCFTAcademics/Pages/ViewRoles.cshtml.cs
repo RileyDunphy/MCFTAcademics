@@ -13,9 +13,30 @@ namespace MCFTAcademics
     public class ViewRolesModel : PageModel
     {
         // XXX: Should really be moved into a controller
-        public IActionResult OnPostGrant(int userId, string role)
+        public IActionResult OnPostGrant(int userId, string roleName)
         {
-            throw new NotImplementedException();
+            var user = BL.User.GetUser(userId);
+            if (user == null)
+            {
+                ModelState.AddModelError("", "There is no user with that ID.");
+                return Page();
+            }
+            // see comment on Grant for if this should really be some kind of static func
+            // instead of ctor then grant on instance
+            var role = new BL.Role(roleName, -1, user);
+            if (role == null)
+            {
+                ModelState.AddModelError("", "There is no role with that ID.");
+                return Page();
+            }
+            // we don't need to keep the new object around, we just care if it's null
+            if (role.Grant() == null)
+            {
+                ModelState.AddModelError("", "The role couldn't be granted.");
+                return Page();
+            }
+            SetViewData(user);
+            return Page();
         }
 
         // GET because it's from a link, not a form

@@ -49,8 +49,8 @@
 
     <form method="post" asp-page-handler="Grant" asp-route-userId="@user.Id">
         <div class="form-group">
-            <label for="newRole">New Role</label>
-            <input id="newRole" class="form-control" placeholder="Enter the new role's name..." />
+            <label for="roleName">New Role</label>
+            <input id="roleName" name="roleName" class="form-control" placeholder="Enter the new role's name..." />
         </div>
         <input class="btn btn-default" type="submit" value="Grant" />
         @Html.AntiForgeryToken()
