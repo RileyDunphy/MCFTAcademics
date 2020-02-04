@@ -28,6 +28,19 @@ namespace MCFTAcademics.DAL
             return courseCode;//return the course
         }
 
+        public static int getIdByCourseCode(string code)
+        {
+            SqlConnection conn = DbConn.GetConnection();
+            conn.Open(); //open the connection
+            SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectIdByCourseCode", conn);
+            selectCommand.CommandType = System.Data.CommandType.StoredProcedure;
+            selectCommand.Parameters.AddWithValue("@code", code);
+            //execute the sql statement
+            int id = Convert.ToInt32(selectCommand.ExecuteScalar());
+            conn.Close();
+            return id;
+        }
+
         public static bool addCourseCode(int id, string code)
         {
             SqlConnection conn = DbConn.GetConnection();

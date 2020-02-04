@@ -36,5 +36,10 @@ namespace MCFTAcademics.BL
         {
             return CourseCodeDAL.addCourseCode(id, code);
         }
+
+        public static int getIdByCourseCode(string code)
+        {
+            return CourseCodeDAL.getIdByCourseCode(code);
+        }
     }
 }

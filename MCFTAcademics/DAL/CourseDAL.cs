@@ -63,13 +63,19 @@ namespace MCFTAcademics.DAL
             updateCommand.Parameters.AddWithValue("@examHours", c.ExamHours);
             updateCommand.Parameters.AddWithValue("@revisionNumber", c.RevisionNumber);
             int rows = updateCommand.ExecuteNonQuery();
-            conn.Close();
             if (rows > 0)
             {
+                PrerequisiteDAL.dropPrereqs(c.Id);
+                foreach (Prerequisite prereq in c.Prerequisites)
+                {
+                    PrerequisiteDAL.addPrereq(prereq);
+                }
+                conn.Close();
                 return true;
             }
             else
             {
+                conn.Close();
                 return false;
             }
         }
@@ -92,6 +98,11 @@ namespace MCFTAcademics.DAL
             {
                 SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectLastCourseInsert", conn);
                 int id = Convert.ToInt32(selectCommand.ExecuteScalar());
+                PrerequisiteDAL.dropPrereqs(id);
+                foreach (Prerequisite prereq in c.Prerequisites)
+                {
+                    PrerequisiteDAL.addPrereq(prereq);
+                }
                 conn.Close();
                 return id;
             }

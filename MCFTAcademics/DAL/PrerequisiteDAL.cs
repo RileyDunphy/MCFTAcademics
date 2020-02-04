@@ -28,5 +28,44 @@ namespace MCFTAcademics.DAL
             conn.Close();//don't forget to close the connection
             return prereqs;//return the list of prereqs
         }
+        public static bool dropPrereqs(int id)
+        {
+            SqlConnection conn = DbConn.GetConnection();
+            conn.Open(); //open the connection
+            SqlCommand deleteCommand = new SqlCommand("mcftacademics.dbo.DropAllPrereqsById", conn);
+            deleteCommand.CommandType = System.Data.CommandType.StoredProcedure;
+            deleteCommand.Parameters.AddWithValue("@id", id);
+            int rows = deleteCommand.ExecuteNonQuery();
+            conn.Close();
+            if (rows > 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        public static bool addPrereq(Prerequisite prereq)
+        {
+            SqlConnection conn = DbConn.GetConnection();
+            conn.Open();
+            SqlCommand insertCommand = new SqlCommand("mcftacademics.dbo.InsertPrereq", conn);
+            insertCommand.CommandType = System.Data.CommandType.StoredProcedure;
+            insertCommand.Parameters.AddWithValue("@courseId", prereq.CourseId);
+            insertCommand.Parameters.AddWithValue("@prereqId", prereq.PrereqId);
+            insertCommand.Parameters.AddWithValue("@isPrereq", prereq.IsPrereq);
+            insertCommand.Parameters.AddWithValue("@isCoreq", prereq.IsCoreq);
+            int rows = insertCommand.ExecuteNonQuery();
+            conn.Close();
+            if (rows > 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }

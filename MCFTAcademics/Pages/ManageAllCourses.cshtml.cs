@@ -19,6 +19,8 @@ namespace MCFTAcademics
         [Required(ErrorMessage = "Please enter a course code")]
         [Display(Name = "Course Code")]
         public CourseCode courseCode { get; set; }
+        [BindProperty]
+        public string dropdownText { get; set; }
 
         //Variable to store old course code, incase it is changed. 
         //If it is changed, create a new entry in course code table
@@ -43,13 +45,27 @@ namespace MCFTAcademics
             int totalHours = Convert.ToInt32(Request.Form["totalHours"]);
             int examHours = Convert.ToInt32(Request.Form["examHours"]);
             decimal revisionNumber = Convert.ToDecimal(Request.Form["revisionNumber"]);
+            List<Prerequisite> prereqs = new List<Prerequisite>();
+            for(int i=0;  i<Convert.ToInt32(Request.Form["count"]); i++)
+            {
+                Prerequisite prereq = null;
+                if (Request.Form["reqRadio+" + i].Equals("prereq"))
+                {
+                    prereq = new Prerequisite(id, CourseCode.getIdByCourseCode(Request.Form["prereqCode+" + i]), true,false);
+                }
+                else if (Request.Form["reqRadio+" + i].Equals("coreq"))
+                {
+                    prereq = new Prerequisite(id, CourseCode.getIdByCourseCode(Request.Form["prereqCode+" + i]), false, true);
+                }
+                prereqs.Add(prereq);
+            }
             if (add == false)
             {
-                Course.updateCourse(new Course(id, name, credit, DateTime.Now, DateTime.Now, description, lectureHours, labHours, examHours, totalHours, revisionNumber, null));
+                Course.updateCourse(new Course(id, name, credit, DateTime.Now, DateTime.Now, description, lectureHours, labHours, examHours, totalHours, revisionNumber, prereqs));
             }
             else if(add == true)
             {
-                id = Course.addCourse(new Course(id, name, credit, DateTime.Now, DateTime.Now, description, lectureHours, labHours, examHours, totalHours, revisionNumber, null));
+                id = Course.addCourse(new Course(id, name, credit, DateTime.Now, DateTime.Now, description, lectureHours, labHours, examHours, totalHours, revisionNumber, prereqs));
             }
             if (courseCode != code)
             {
@@ -59,7 +75,7 @@ namespace MCFTAcademics
         }
         public void OnGet()
         {
-
+            this.dropdownText = "Please select a course to change";
         }
         public IActionResult OnGetSelectCourse(int id)
         {
@@ -67,6 +83,7 @@ namespace MCFTAcademics
             this.courseCode = CourseCode.getNewestCourseCodeById(id);
             code = courseCode.Code;
             add = false;
+            this.dropdownText = this.course.Name;
             return Page();
         }
 
@@ -76,6 +93,7 @@ namespace MCFTAcademics
             this.courseCode = new CourseCode();
             code = courseCode.Code;
             add = true;
+            this.dropdownText = "Add new course";
             return Page();
         }
     }
