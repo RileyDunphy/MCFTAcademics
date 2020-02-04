@@ -15,7 +15,10 @@
 <form method="post">
     <input type="submit" value="ReportGenerate" />
 </form>
+
+
 @if (System.IO.File.Exists("./Reports/reportName.pdf"))
 {
-    <a href="./Reports/reportName.pdf" download>view report</a>
+    <a href="/Reports/reportName.pdf" download>view report</a>
 }
+

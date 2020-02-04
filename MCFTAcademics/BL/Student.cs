@@ -14,7 +14,7 @@ namespace MCFTAcademics.BL
         private DateTime admissionDate;
 
         public Student() { }
-
+        //TODO: change this to get grades from db method (once stored procedure is created)
         public Student(List<Grade> grades, string name, string studentId, DateTime admissionDate)
         {
             this.grades = grades;

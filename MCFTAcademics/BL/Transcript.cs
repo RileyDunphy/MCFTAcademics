@@ -1,6 +1,8 @@
-﻿using PdfSharpCore.Drawing;
+﻿using Microsoft.AspNetCore.Http;
+using PdfSharpCore.Drawing;
 using PdfSharpCore.Pdf;
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -23,10 +25,10 @@ namespace MCFTAcademics.BL
             this.official = official;
             this.signatureName = signatureName;
             this.creationDate = DateTime.Now;
-            this.reportName = student.StudentId+"_"+ creationDate.TimeOfDay;
+            reportName = student.StudentId+"_"+ creationDate.ToShortDateString()+"_"+creationDate.TimeOfDay;
         }
 
-        public void generateReport()
+        public static PdfDocument generateReport(Transcript t)
         {
             //try { 
             // Create a new PDF document
@@ -41,31 +43,54 @@ namespace MCFTAcademics.BL
 
             // Create a font
             XFont font = new XFont("arial", 20, XFontStyle.Bold);
-
+            XFont smallFont=new XFont("arial", 7, XFontStyle.Bold);
 
             // Draw the text
             gfx.DrawString("Hello, World!", font, XBrushes.Black,
               new XRect(0, 0, page.Width, page.Height),
               XStringFormats.Center);
-            gfx.DrawString("Any String", font, XBrushes.DarkBlue, new XRect(0, 50, page.Width, page.Height), XStringFormats.Center);
+            string gradeContent="";
+            int height = 50;
+            foreach (Grade g in t.student.Grades) {
+                gradeContent = "is Supplemental: "+g.Supplemental.ToString() +g.Subject.Name + "--Grade " + g.GradeAssigned.ToString();
+                gfx.DrawString(gradeContent, smallFont, XBrushes.DarkBlue, new XRect(0, height, page.Width, page.Height), XStringFormats.Center);
+                height += 25;
+            }
+
+            //gfx.DrawString(gradeContent, font, XBrushes.DarkBlue, new XRect(0, 50, page.Width, page.Height), XStringFormats.Center);
+            gfx.DrawString(t.student.Name, font, XBrushes.DarkBlue, new XRect(0, 50, page.Width, page.Height), XStringFormats.TopCenter);
 
             // Save the document... must be a const
-            const string filename = "./Reports/someReport.pdf";
+            const string filename = "./Reports/joshTranscript.pdf";
 
             if (System.IO.Directory.Exists("./Reports"))
             {
 
+                // Send PDF to browser
+                MemoryStream stream = new MemoryStream();
+                document.Save(stream, false);
+
+
+
                 document.Save(filename);
-
-                if (System.IO.File.Exists("./Reports/someReport.pdf"))
+                return document;
+                try
                 {
+                    if (System.IO.File.Exists("./Reports/someReport.pdf"))
+                    {
+                        string path = "/Reports/" + t.reportName + ".pdf";
+                        string oldPath= "/Reports/someReport.pdf";
+                        System.IO.File.Move(oldPath, path);
 
-                    System.IO.File.Move("./Reports/someReport.pdf", "./Reports/" + this.reportName + ".pdf");
-
+                    }
                 }
-            }
-            
-        }
+                catch (Exception ex) {
+                    Console.Write(ex.Message);
+                }
 
+            }
+            return null;
+
+        }
     }
 }
