@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Rotativa.AspNetCore;
 
 namespace MCFTAcademics
 {
@@ -61,6 +62,9 @@ namespace MCFTAcademics
             app.UseCookiePolicy();
             app.UseAuthentication();
             app.UseMvc();
+
+            //Rotativa : https://github.com/webgio/Rotativa.AspNetCore 
+            RotativaConfiguration.Setup(env);
         }
     }
 }

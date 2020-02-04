@@ -13,70 +13,44 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using PdfSharpCore.Drawing;
 using PdfSharpCore.Pdf;
-
+using MCFTAcademics.BL;
+using System.IO;
+using Rotativa;
 
 namespace MCFTAcademics
 {
     public class ReportGenerate : PageModel
     {
-
-
+        
         public async Task<IActionResult> OnPostAsync()
         {
             //can now name the report by passing in different arguments
-            generateReport("reportName");
+            //generateReport("reportName");
+            Grade math = new Grade(95, DateTime.Now, false, 20, false, new Course("Math", 2, DateTime.Now, DateTime.Now));
+            Grade chainsaw = new Grade(95, DateTime.Now, false, 20, false, new Course("Chainsaw", 2, DateTime.Now, DateTime.Now));
+            List<Grade> grades = new List<Grade>();
 
+            grades.Add(math);
+            grades.Add(chainsaw);
 
-            return RedirectToPage("index");
+            Student josh = new Student(grades,"Josh", "1234", DateTime.Now);
 
+            Transcript t = new Transcript(josh,false, "Riley Dunphy", DateTime.Now);
 
-        }
+            PdfDocument document= Transcript.generateReport(t);
 
-            public static void generateReport(string reportName) 
-        {
-            //try { 
-            // Create a new PDF document
-            PdfDocument document = new PdfDocument();
-            document.Info.Title = "Created with PDFsharp";
-
-            // Create an empty page
-            PdfPage page = document.AddPage();
-
-            // Get an XGraphics object for drawing
-            XGraphics gfx = XGraphics.FromPdfPage(page);
-
-            // Create a font
-            XFont font = new XFont("arial", 20, XFontStyle.Bold);
-
+            // Send PDF to browser
+            MemoryStream stream = new MemoryStream();
+            document.Save(stream, false);
+            //Response.Clear();
+            //Response.ContentType = "application/pdf";
+            //Response.AddHeader("content-length", stream.Length.ToString());
+            //Response.BinaryWrite(stream.ToArray());
+            //Response.Flush();
+            stream.Close();
+            //Response.End();
+            return null;
             
-
-
-
-
-            // Draw the text
-            gfx.DrawString("Hello, World!", font, XBrushes.Black,
-              new XRect(0, 0, page.Width, page.Height),
-              XStringFormats.Center);
-            gfx.DrawString("Any String", font, XBrushes.DarkBlue, new XRect(0, 50, page.Width, page.Height), XStringFormats.Center);
-
-            // Save the document... must be a const
-            const string filename = "./Reports/someReport.pdf";
-
-            if (System.IO.Directory.Exists("./Reports")) {
-
-                document.Save(filename);
-
-                if (System.IO.File.Exists("./Reports/someReport.pdf")) { 
-
-                    System.IO.File.Move("./Reports/someReport.pdf", "./Reports/"+reportName+".pdf");
-
-                }
-            }
-            // ...and start a viewer.
-            //Process.Start(filename);
-            //}catch(Exception ex){
-
-            //}
         }
 
 
