@@ -19,6 +19,7 @@
     <table class="table">
         <thead>
             <tr>
+                <th scope="col">ID</th>
                 <th scope="col">Role</th>
                 <th scope="col">Actions</th>
             </tr>
@@ -29,18 +30,19 @@
             }
             @foreach (var role in roles)
             {
-                <tr>
-                    <th scope="row">@role.Name</th>
-                    <td>
-                        <a class="btn btn-warning"
-                           asp-page="/ViewRoles"
-                           asp-page-handler="Revoke"
-                           asp-route-userId="@user.Id"
-                           asp-route-roleId="@role.Id">
-                            Revoke
-                        </a>
-                    </td>
-                </tr>
+            <tr>
+                <th scope="row">@role.Id</th>
+                <td>@role.Name</td>
+                <td>
+                    <a class="btn btn-warning"
+                       asp-page="/ViewRoles"
+                       asp-page-handler="Revoke"
+                       asp-route-userId="@user.Id"
+                       asp-route-roleId="@role.Id">
+                        Revoke
+                    </a>
+                </td>
+            </tr>
             }
         </tbody>
     </table>
