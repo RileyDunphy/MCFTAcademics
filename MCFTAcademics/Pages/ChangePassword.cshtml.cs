@@ -32,10 +32,8 @@ namespace MCFTAcademics
         [HiddenInput]
         public int TargetUserId { get; set; }
 
-        public bool TargetUserIsSelf() => int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)) == TargetUserId;
-        public bool TargetUserIsSelf(int id) => int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)) == id;
-        // should handle names ending in 's'
-        public bool AllowedToChangePassword() => TargetUserIsSelf() || User.IsInRole("Admin");
+        // only useful for this page
+        public bool AllowedToChangePassword() => User.UserIdMatches(TargetUserId) || User.IsInRole("Admin");
 
         // XXX: turn into a route with args?
         public IActionResult OnPost()
@@ -58,12 +56,12 @@ namespace MCFTAcademics
                 ModelState.AddModelError("", "One of the values is blank.");
                 error = true;
             }
-            if (TargetUserIsSelf() && !user.ValidatePassword(OldPassword))
+            if (User.UserIdMatches(TargetUserId) && !user.ValidatePassword(OldPassword))
             {
                 ModelState.AddModelError("", "The current password isn't valid.");
                 error = true;
             }
-            if (TargetUserIsSelf() && OldPassword == NewPassword)
+            if (User.UserIdMatches(TargetUserId) && OldPassword == NewPassword)
             {
                 ModelState.AddModelError("", "The old and new password are the same.");
                 error = true;
@@ -94,7 +92,7 @@ namespace MCFTAcademics
 
             // success should be a redirect tbh (if self, back to index, otherwise, let them change more passwords)
             // XXX: Sign out?
-            return RedirectToPage(TargetUserIsSelf() ? "/Index" : "/ViewUsers");
+            return RedirectToPage(User.UserIdMatches(TargetUserId) ? "/Index" : "/ViewUsers");
         }
 
         void SetViewDataForGet(BL.User targetUser)
@@ -103,15 +101,15 @@ namespace MCFTAcademics
                 ModelState.AddModelError("", "There is no user with that ID.");
             TargetUserId = targetUser?.Id ?? -1;
             ViewData["ChangePasword_TargetUser"] = targetUser;
-            ViewData["ChangePassword_IsSelf"] = TargetUserIsSelf();
-            ViewData["ChangePassword_TargetDescription"] = TargetUserIsSelf() ? "yourself" : (targetUser?.Name ?? "nobody");
+            ViewData["ChangePassword_IsSelf"] = User.UserIdMatches(TargetUserId);
+            ViewData["ChangePassword_TargetDescription"] = targetUser.GetReferentialName(User);
         }
 
         void SetViewDataForGet() => SetViewDataForGet(BL.User.GetUser(TargetUserId));
 
         public IActionResult OnGetWithId(int id)
         {
-            if (!User.IsInRole("Admin") && !TargetUserIsSelf(id))
+            if (!AllowedToChangePassword())
             {
                 ModelState.AddModelError("", "You aren't allowed to change the password of someone else.");
                 SetViewDataForGet(null);

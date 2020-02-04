@@ -63,13 +63,11 @@ namespace MCFTAcademics
             return Page();
         }
 
-        // XXX: This is shared with ChangePassword; it should be broken into a seperate utility library
-        public bool TargetUserIsSelf(int id) => int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)) == id;
-
         public void SetViewData(BL.User user)
         {
             ViewData["ViewRoles_TargetUser"] = user;
-            ViewData["ViewRoles_TargetDescription"] = TargetUserIsSelf(user?.Id ?? -1) ? "yourself" : (user?.Name ?? "nobody");
+            // the param here is the current session user principal, being invoked on the queried user object
+            ViewData["ViewRoles_TargetDescription"] = user.GetReferentialName(User);
         }
 
         public void OnGetWithId(int id)
