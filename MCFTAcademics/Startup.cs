@@ -64,7 +64,7 @@ namespace MCFTAcademics
             app.UseMvc();
 
             //Rotativa : https://github.com/webgio/Rotativa.AspNetCore 
-            RotativaConfiguration.Setup(env);
+            //RotativaConfiguration.Setup(env);
         }
     }
 }
