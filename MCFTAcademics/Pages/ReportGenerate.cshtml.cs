@@ -40,14 +40,14 @@ namespace MCFTAcademics
             PdfDocument document= Transcript.generateReport(t);
 
             // Send PDF to browser
-            MemoryStream stream = new MemoryStream();
-            document.Save(stream, false);
+            //MemoryStream stream = new MemoryStream();
+            //document.Save(stream, false);
             //Response.Clear();
             //Response.ContentType = "application/pdf";
             //Response.AddHeader("content-length", stream.Length.ToString());
             //Response.BinaryWrite(stream.ToArray());
             //Response.Flush();
-            stream.Close();
+            //stream.Close();
             //Response.End();
             return null;
             

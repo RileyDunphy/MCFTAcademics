@@ -5,9 +5,9 @@
     ViewData["Title"] = "ReportGenerate";
 
 }
-    file = "./Reports/reportName.pdf";
+    @*file = "./Reports/reportName.pdf";
     Response.Headers.Add("Content-Disposition",$"inline; filename=\"{file.Name}\"");
-    return File(file.CreateReadStream(), "application/pdf", file.Name);
+    return File(file.CreateReadStream(), "application/pdf", file.Name);*@
 
 <form method="post">
     <input type="submit" value="ReportGenerate" />
