@@ -38,5 +38,13 @@
             <dt><a href="#">Generate reports</a></dt>
             <dd>Generate academic reports page</dd>
         </dl>
+        @if (User.IsInRole("Admin"))
+        {
+            <h2>Administrative tasks</h2>
+            <dl>
+                <dt><a asp-page="/ViewUsers">View users</a></dt>
+                <dd>View and manage all users in the system, including changing passwords and role management</dd>
+            </dl>
+        }
     </div>
 </div>
