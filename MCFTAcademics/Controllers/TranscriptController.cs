@@ -15,11 +15,12 @@ namespace MCFTAcademics.Controllers
     public class TranscriptController : ControllerBase
     {
         [Route("DownloadTranscript")]
-        [HttpGet]
-        public async Task<IActionResult> DownloadTranscriptAsync()
+        [HttpGet("DownloadTranscript/{reportName}", Name = "DownloadTranscript")]
+        public async Task<IActionResult> DownloadTranscriptAsync(string reportName)
         {
-            var bytes = await System.IO.File.ReadAllBytesAsync("./Reports/someReport.pdf");
-            return File(bytes, "application/pdf", "Example PDF");
+            var bytes = await System.IO.File.ReadAllBytesAsync("./Reports/" + reportName + ".pdf");
+            // If you give this a filename, it demands a download instead of displaying inline.
+            return File(bytes, "application/pdf");
         }
     }
 }
