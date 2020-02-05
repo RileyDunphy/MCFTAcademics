@@ -53,25 +53,26 @@ namespace MCFTAcademics
                     Prerequisite prereq = null;
                     if (Request.Form["reqRadio+" + i].Equals("prereq"))
                     {
-                        prereq = new Prerequisite(id, CourseCode.getIdByCourseCode(Request.Form["prereqCode+" + i]), true, false);
+                        prereq = new Prerequisite(id, CourseCode.GetIdByCourseCode(Request.Form["prereqCode+" + i]), true, false);
                     }
                     else if (Request.Form["reqRadio+" + i].Equals("coreq"))
                     {
-                        prereq = new Prerequisite(id, CourseCode.getIdByCourseCode(Request.Form["prereqCode+" + i]), false, true);
+                        prereq = new Prerequisite(id, CourseCode.GetIdByCourseCode(Request.Form["prereqCode+" + i]), false, true);
                     }
                     prereqs.Add(prereq);
                 }
                 if (add == false)
                 {
-                    Course.updateCourse(new Course(id, name, credit, DateTime.Now, DateTime.Now, description, lectureHours, labHours, examHours, totalHours, revisionNumber, prereqs));
+                    Course c = new Course(id, name, credit, DateTime.Now, DateTime.Now, description, lectureHours, labHours, examHours, totalHours, revisionNumber, prereqs);
+                    c.UpdateCourse();
                 }
                 else if (add == true)
                 {
-                    id = Course.addCourse(new Course(id, name, credit, DateTime.Now, DateTime.Now, description, lectureHours, labHours, examHours, totalHours, revisionNumber, prereqs));
+                    id = Course.AddCourse(new Course(id, name, credit, DateTime.Now, DateTime.Now, description, lectureHours, labHours, examHours, totalHours, revisionNumber, prereqs));
                 }
                 if (courseCode != code)
                 {
-                    CourseCode.addCourseCode(id, courseCode);
+                    CourseCode.AddCourseCode(id, courseCode);
                 }
                 return RedirectToPage("ManageAllCourses");
             }
@@ -87,8 +88,8 @@ namespace MCFTAcademics
         }
         public IActionResult OnGetSelectCourse(int id)
         {
-            this.course = Course.getCourseById(id);
-            this.courseCode = CourseCode.getNewestCourseCodeById(id);
+            this.course = Course.GetCourseById(id);
+            this.courseCode = CourseCode.GetNewestCourseCodeById(id);
             code = courseCode.Code;
             add = false;
             this.dropdownText = this.course.Name;

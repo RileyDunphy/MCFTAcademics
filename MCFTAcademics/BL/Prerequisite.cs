@@ -7,10 +7,6 @@ namespace MCFTAcademics.BL
 {
     public class Prerequisite
     {
-        private int courseId;
-        private int prereqId;
-        private bool isPrereq;
-        private bool isCoreq;
 
         public Prerequisite()
         {
@@ -18,15 +14,15 @@ namespace MCFTAcademics.BL
 
         public Prerequisite(int courseId, int prereqId, bool isPrereq, bool isCoreq)
         {
-            this.courseId = courseId;
-            this.prereqId = prereqId;
-            this.isPrereq = isPrereq;
-            this.isCoreq = isCoreq;
+            this.CourseId = courseId;
+            this.PrereqId = prereqId;
+            this.IsPrereq = isPrereq;
+            this.IsCoreq = isCoreq;
         }
 
         public int CourseId { get; set; }
-        public int PrereqId { get => prereqId; }
-        public bool IsPrereq { get => isPrereq; }
-        public bool IsCoreq { get => isCoreq; }
+        public int PrereqId { get; }
+        public bool IsPrereq { get; }
+        public bool IsCoreq { get; }
     }
 }

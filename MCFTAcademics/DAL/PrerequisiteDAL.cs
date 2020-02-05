@@ -1,71 +1,110 @@
 ﻿using MCFTAcademics.BL;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace MCFTAcademics.DAL
 {
     public class PrerequisiteDAL
     {
-        public static List<Prerequisite> getPrereqs(int id)
+        private static Prerequisite PrerequisiteFromRow(IDataReader reader)
+        {
+            return new Prerequisite(Convert.ToInt32(reader["courseId"]), Convert.ToInt32(reader["prereqId"]), Convert.ToBoolean(reader["isPrereq"]), Convert.ToBoolean(reader["isCoreq"]));
+        }
+
+        public static List<Prerequisite> GetPrereqs(int id)
         {
             SqlConnection conn = DbConn.GetConnection();
-            conn.Open(); //open the connection
-            SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectPrereqsById", conn);
-            selectCommand.CommandType = System.Data.CommandType.StoredProcedure;
-            selectCommand.Parameters.AddWithValue("@id", id);
-            //execute the sql statement
-            SqlDataReader reader = selectCommand.ExecuteReader();
             List<Prerequisite> prereqs = new List<Prerequisite>();
-            //loop through the resultset
-            while (reader.Read())
+            try
             {
-                Prerequisite prereq = new Prerequisite(Convert.ToInt32(reader["courseId"]), Convert.ToInt32(reader["prereqId"]), Convert.ToBoolean(reader["isPrereq"]), Convert.ToBoolean(reader["isCoreq"]));
-                prereqs.Add(prereq);
+                conn.Open(); //open the connection
+                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectPrereqsById", conn);
+                selectCommand.CommandType = System.Data.CommandType.StoredProcedure;
+                selectCommand.Parameters.AddWithValue("@id", id);
+                //execute the sql statement
+                SqlDataReader reader = selectCommand.ExecuteReader();
+                //loop through the resultset
+                while (reader.Read())
+                {
+                    prereqs.Add(PrerequisiteFromRow(reader));
+                }
             }
-            conn.Close();//don't forget to close the connection
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                conn.Close();//don't forget to close the connection
+            }
             return prereqs;//return the list of prereqs
         }
-        public static bool dropPrereqs(int id)
+
+        public static bool DropPrereqs(int id)
         {
             SqlConnection conn = DbConn.GetConnection();
-            conn.Open(); //open the connection
-            SqlCommand deleteCommand = new SqlCommand("mcftacademics.dbo.DropAllPrereqsById", conn);
-            deleteCommand.CommandType = System.Data.CommandType.StoredProcedure;
-            deleteCommand.Parameters.AddWithValue("@id", id);
-            int rows = deleteCommand.ExecuteNonQuery();
-            conn.Close();
-            if (rows > 0)
+            bool result;
+            try
             {
-                return true;
+                conn.Open(); //open the connection
+                SqlCommand deleteCommand = new SqlCommand("mcftacademics.dbo.DropAllPrereqsById", conn);
+                deleteCommand.CommandType = System.Data.CommandType.StoredProcedure;
+                deleteCommand.Parameters.AddWithValue("@id", id);
+                int rows = deleteCommand.ExecuteNonQuery();
+                if (rows > 0)
+                {
+                    result= true;
+                }
+                else
+                {
+                    result= false;
+                }
             }
-            else
+            catch(Exception ex)
             {
-                return false;
+                result = false;
             }
+            finally
+            {
+                conn.Close();
+            }
+            return result;
         }
-        public static bool addPrereq(Prerequisite prereq)
+
+        public static bool AddPrereq(Prerequisite prereq)
         {
             SqlConnection conn = DbConn.GetConnection();
-            conn.Open();
-            SqlCommand insertCommand = new SqlCommand("mcftacademics.dbo.InsertPrereq", conn);
-            insertCommand.CommandType = System.Data.CommandType.StoredProcedure;
-            insertCommand.Parameters.AddWithValue("@courseId", prereq.CourseId);
-            insertCommand.Parameters.AddWithValue("@prereqId", prereq.PrereqId);
-            insertCommand.Parameters.AddWithValue("@isPrereq", prereq.IsPrereq);
-            insertCommand.Parameters.AddWithValue("@isCoreq", prereq.IsCoreq);
-            int rows = insertCommand.ExecuteNonQuery();
-            conn.Close();
-            if (rows > 0)
+            bool result;
+            try
             {
-                return true;
+                conn.Open();
+                SqlCommand insertCommand = new SqlCommand("mcftacademics.dbo.InsertPrereq", conn);
+                insertCommand.CommandType = System.Data.CommandType.StoredProcedure;
+                insertCommand.Parameters.AddWithValue("@courseId", prereq.CourseId);
+                insertCommand.Parameters.AddWithValue("@prereqId", prereq.PrereqId);
+                insertCommand.Parameters.AddWithValue("@isPrereq", prereq.IsPrereq);
+                insertCommand.Parameters.AddWithValue("@isCoreq", prereq.IsCoreq);
+                int rows = insertCommand.ExecuteNonQuery();
+                if (rows > 0)
+                {
+                    result= true;
+                }
+                else
+                {
+                    result= false;
+                }
             }
-            else
+            catch(Exception ex)
             {
-                return false;
+                result = false;
             }
+            finally
+            {
+                conn.Close();
+            }
+            return result;
         }
     }
 }

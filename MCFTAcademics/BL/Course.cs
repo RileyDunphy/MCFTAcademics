@@ -6,74 +6,61 @@ namespace MCFTAcademics.BL
 {
     public class Course
     {
-        private int id;
-        private string name;
-        private decimal credit;
-        private DateTime from;
-        private DateTime to;
-        private string description;
-        private int lectureHours;
-        private int labHours;
-        private int examHours;
-        private int totalHours;
-        private decimal revisionNumber;
-        private List<Prerequisite> prerequisites;
-        
         public Course()
         {
-            this.prerequisites = new List<Prerequisite>();
+            this.Prerequisites = new List<Prerequisite>();
         }
 
         public Course(int id, string name, decimal credit, DateTime from, DateTime to, string description, int lectureHours, int labHours, int examHours, int totalHours, decimal revisionNumber, List<Prerequisite> prerequisites)
         {
-            this.id = id;
-            this.name = name;
-            this.credit = credit;
-            this.from = from;
-            this.to = to;
-            this.description = description;
-            this.lectureHours = lectureHours;
-            this.labHours = labHours;
-            this.examHours = examHours;
-            this.totalHours = totalHours;
-            this.prerequisites = prerequisites;
-            this.revisionNumber = revisionNumber;
+            this.Id = id;
+            this.Name = name;
+            this.Credit = credit;
+            this.From = from;
+            this.To = to;
+            this.Description = description;
+            this.LectureHours = lectureHours;
+            this.LabHours = labHours;
+            this.ExamHours = examHours;
+            this.TotalHours = totalHours;
+            this.Prerequisites = prerequisites;
+            this.RevisionNumber = revisionNumber;
         }
 
-        public string Name { get => name; }
-        public decimal Credit { get => credit; }
-        public DateTime From { get => from; }
-        public DateTime To { get => to; }
-        public int Id { get => id; }
-        public string Description { get => description; }
-        public int LectureHours { get => lectureHours; }
-        public int LabHours { get => labHours; }
-        public int ExamHours { get => examHours; }
-        public List<Prerequisite> Prerequisites { get => prerequisites; }
-        public int TotalHours { get => totalHours;  }
-        public decimal RevisionNumber { get => revisionNumber; set => revisionNumber = value; }
+        public string Name { get; }
+        public decimal Credit { get; }
+        public DateTime From { get; }
+        public DateTime To { get; }
+        public int Id { get; }
+        public string Description { get; }
+        public int LectureHours { get; }
+        public int LabHours { get; }
+        public int ExamHours { get; }
+        public List<Prerequisite> Prerequisites { get; }
+        public int TotalHours { get;  }
+        public decimal RevisionNumber { get; }
 
-        public bool isEligible(User u)
+        public bool IsEligible(User u)
         {
             return false;
         }
 
-        public static List<Course> getAllCourses()
+        public static List<Course> GetAllCourses()
         {
-            return CourseDAL.getAllCourses();
+            return CourseDAL.GetAllCourses();
         }
 
-        public static Course getCourseById(int id)
+        public static Course GetCourseById(int id)
         {
-            return CourseDAL.getCourseById(id);
+            return CourseDAL.GetCourseById(id);
         }
-        public static bool updateCourse(Course c)
+        public bool UpdateCourse()
         {
-            return CourseDAL.updateCourse(c);
+            return CourseDAL.UpdateCourse(this);
         }
-        public static int addCourse(Course c)
+        public static int AddCourse(Course c)
         {
-            return CourseDAL.addCourse(c);
+            return CourseDAL.AddCourse(c);
         }
     }
 }
