@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MCFTAcademics.DAL;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,9 +8,6 @@ namespace MCFTAcademics.BL
 {
     public class CourseCode
     {
-        private string code;
-        private DateTime from;
-        private DateTime to;
 
         public CourseCode()
         {
@@ -17,13 +15,28 @@ namespace MCFTAcademics.BL
 
         public CourseCode(string code, DateTime from, DateTime to)
         {
-            this.code = code;
-            this.from = from;
-            this.to = to;
+            this.Code = code;
+            this.From = from;
+            this.To = to;
         }
 
-        public string Code { get => code; }
-        public DateTime From { get => from;}
-        public DateTime To { get => to; }
+        public string Code { get; }
+        public DateTime From { get;}
+        public DateTime To { get; }
+
+        public static CourseCode GetNewestCourseCodeById(int id)
+        {
+            return CourseCodeDAL.GetNewestCourseCodeById(id);
+        }
+
+        public static bool AddCourseCode(int id, string code)
+        {
+            return CourseCodeDAL.AddCourseCode(id, code);
+        }
+
+        public static int GetIdByCourseCode(string code)
+        {
+            return CourseCodeDAL.GetIdByCourseCode(code);
+        }
     }
 }

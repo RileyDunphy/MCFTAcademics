@@ -6,39 +6,64 @@ namespace MCFTAcademics.BL
 {
     public class Course
     {
-        private string name;
-        private decimal credit;
-        private DateTime from;
-        private DateTime to;
-
         public Course()
         {
+            this.Prerequisites = new List<Prerequisite>();
         }
 
-        public Course(string name, decimal credit, DateTime from, DateTime to)
+        public Course(int id, string name, decimal credit, DateTime from, DateTime to, string description, int lectureHours, int labHours, int examHours, int totalHours, decimal revisionNumber, List<Prerequisite> prerequisites)
         {
-            this.name = name;
-            this.credit = credit;
-            this.from = from;
-            this.to = to;
+            this.Id = id;
+            this.Name = name;
+            this.Credit = credit;
+            this.From = from;
+            this.To = to;
+            this.Description = description;
+            this.LectureHours = lectureHours;
+            this.LabHours = labHours;
+            this.ExamHours = examHours;
+            this.TotalHours = totalHours;
+            this.Prerequisites = prerequisites;
+            this.RevisionNumber = revisionNumber;
         }
 
-        public string Name { get => name; }
-        public decimal Credit { get => credit; }
-        public DateTime From { get => from; }
-        public DateTime To { get => to; }
+        public string Name { get; }
+        public decimal Credit { get; }
+        public DateTime From { get; }
+        public DateTime To { get; }
+        public int Id { get; }
+        public string Description { get; }
+        public int LectureHours { get; }
+        public int LabHours { get; }
+        public int ExamHours { get; }
+        public List<Prerequisite> Prerequisites { get; }
+        public int TotalHours { get;  }
+        public decimal RevisionNumber { get; }
 
-        public bool isEligible(User u)
+        public bool IsEligible(User u)
         {
             return false;
         }
-        public static List<Course> getAllCourses()
-        {
-            return CourseDAL.getAllCourses();
-}
         public static List<Course> getCoursesByInstructor(int userid)
         {
             return CourseDAL.getCoursesByInstructor(userid);
+
+        public static List<Course> GetAllCourses()
+        {
+            return CourseDAL.GetAllCourses();
+        }
+
+        public static Course GetCourseById(int id)
+        {
+            return CourseDAL.GetCourseById(id);
+        }
+        public bool UpdateCourse()
+        {
+            return CourseDAL.UpdateCourse(this);
+        }
+        public static int AddCourse(Course c)
+        {
+            return CourseDAL.AddCourse(c);
         }
     }
 }

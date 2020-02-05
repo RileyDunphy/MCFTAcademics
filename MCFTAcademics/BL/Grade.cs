@@ -7,11 +7,6 @@ namespace MCFTAcademics.BL
 {
     public class Grade
     {
-        private decimal gradeAssigned;
-        private DateTime given;
-        private bool locked;
-        private decimal hoursAttended;
-        private bool supplemental;
 
         public Grade()
         {
@@ -19,22 +14,22 @@ namespace MCFTAcademics.BL
 
         public Grade(decimal gradeAssigned, DateTime given, bool locked, decimal hoursAttended, bool supplemental)
         {
-            this.gradeAssigned = gradeAssigned;
-            this.given = given;
-            this.locked = locked;
-            this.hoursAttended = hoursAttended;
-            this.supplemental = supplemental;
+            this.GradeAssigned = gradeAssigned;
+            this.Given = given;
+            this.Locked = locked;
+            this.HoursAttended = hoursAttended;
+            this.Supplemental = supplemental;
         }
 
-        public decimal GradeAssigned { get => gradeAssigned;  }
-        public DateTime Given { get => given;  }
-        public bool Locked { get => locked;  }
-        public decimal HoursAttended { get => hoursAttended;  }
-        public bool Supplemental { get => supplemental; }
+        public decimal GradeAssigned { get;  }
+        public DateTime Given { get;  }
+        public bool Locked { get;  }
+        public decimal HoursAttended { get;  }
+        public bool Supplemental { get; }
 
-        public bool isPassing()
+        public bool IsPassing()
         {
-            if (this.gradeAssigned >= 60)
+            if (this.GradeAssigned >= 60)
             {
                 return true;
             }
