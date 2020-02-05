@@ -19,7 +19,8 @@ namespace MCFTAcademics.DAL
             SqlConnection conn = DbConn.GetConnection();
             List<Course> courses = new List<Course>();
             try
-            {conn.Open(); //open the connection
+            {
+                conn.Open(); //open the connection
                 SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.Get_AllCoursesANDCourseCodes", conn);
                 selectCommand.CommandType = System.Data.CommandType.StoredProcedure;
                 //execute the sql statement
@@ -39,6 +40,7 @@ namespace MCFTAcademics.DAL
             finally
             {
                 conn.Close();//don't forget to close the connection
+            }
             return courses;//return the list of courses
         }
 
@@ -55,7 +57,7 @@ namespace MCFTAcademics.DAL
             //loop through the resultset
             while (reader.Read())
             {
-                Course c = new Course(reader["name"].ToString(), Convert.ToDecimal(reader["credit"]), DateTime.Parse(reader["startDate"].ToString()),DateTime.Parse(reader["endDate"].ToString()));
+                Course c = CourseFromRow(reader,null);
                 courses.Add(c);
 
             }

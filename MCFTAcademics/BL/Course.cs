@@ -47,6 +47,7 @@ namespace MCFTAcademics.BL
         public static List<Course> getCoursesByInstructor(int userid)
         {
             return CourseDAL.getCoursesByInstructor(userid);
+        }
 
         public static List<Course> GetAllCourses()
         {
