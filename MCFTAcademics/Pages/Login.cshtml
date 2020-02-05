@@ -5,12 +5,22 @@
     ViewData["Title"] = "Login";
 }
 
-<p>Login using form below:</p>
+<h1>Login to MCFT Academics</h1>
 <form method="post">
     <div asp-validation-summary="All" class="text-danger"></div>
-    Username: <input asp-for="loginData.Username" value="username" /><br /><br />
-    Password: <input asp-for="loginData.Password" value="password" /><br /><br />
-    Remember me: <input asp-for="loginData.RememberMe" type="checkbox" /><br /><br />
-    <input type="submit" value="Login" />
+    <div class="form-group">
+        <label for="usernameInput">Username</label>
+        <input id="usernameInput" class="form-control" asp-for="loginData.Username" placeholder="Username..." />
+    </div>
+    <div class="form-group">
+        <label for="passwordInput">Password</label>
+        <input id="passwordInput" class="form-control" asp-for="loginData.Password" placeholder="Password..." />
+    </div>
+    <div class="checkbox">
+        <label>
+            <input asp-for="loginData.RememberMe" type="checkbox" /> Remember Me
+        </label>
+    </div>
+    <input class="btn btn-default" type="submit" value="Login" />
     @Html.AntiForgeryToken()
 </form>

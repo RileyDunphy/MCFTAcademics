@@ -33,7 +33,12 @@ namespace MCFTAcademics
                 options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-            }).AddCookie(options => { options.LoginPath = "/Login"; });
+            }).AddCookie(options =>
+            {
+                options.LoginPath = "/Login";
+                options.AccessDeniedPath = "/AccessDenied";
+                options.LogoutPath = "/Logout";
+            });
 
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
@@ -42,6 +47,11 @@ namespace MCFTAcademics
                     options.Conventions.AuthorizeFolder("/");
                     options.Conventions.AllowAnonymousToPage("/Login");
                 });
+
+            // While we're here, init non-ASP.NET Core stuff that needs
+            // IConfiguration and friends. Clumsy, but should work.
+            DAL.DbConn.Configuration = Configuration;
+            DAL.DbConn.ConnectionStringName = "DefaultConnection";
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -1,0 +1,37 @@
+﻿@page
+@model MCFTAcademics.ViewUsersModel
+@{
+    ViewData["Title"] = "List of Users";
+}
+
+@{ 
+    var users = BL.User.GetAllUsers();
+}
+
+<h2>List of Users</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Username</th>
+            <th scope="col">Real Name</th>
+            @* obviously not going to show hashes... *@
+            <th scope="col">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in users)
+        {
+            <tr>
+                <th scope="row">@user.Id</th>
+                <td>@user.Username</td>
+                <td>@user.Name</td>
+                <td>
+                    <a class="btn btn-warning" asp-page="/ChangePassword" asp-page-handler="WithId" asp-route-id="@user.Id">Change Password</a>
+                    <a class="btn btn-default" asp-page="/ViewRoles" asp-page-handler="WithId" asp-route-id="@user.Id">View Roles</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
