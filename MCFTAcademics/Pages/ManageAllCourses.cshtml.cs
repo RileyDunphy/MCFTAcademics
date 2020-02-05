@@ -26,52 +26,60 @@ namespace MCFTAcademics
         //If it is changed, create a new entry in course code table
         public static string code { get; set; }
 
-        //Flag to tell whether to add course or update course on submit
-        public static bool add { get; set; } 
+        //Flag to tell whether to add course or update course on submit, or if null then no menu item selected
+        public static bool? add { get; set; } 
 
         public IActionResult OnPost()
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return Page();
-            }
-            int id = Convert.ToInt32(Request.Form["courseId"]);
-            string name = Request.Form["courseTitle"];
-            string courseCode = Request.Form["courseCode"];
-            string description = Request.Form["description"];
-            int credit = Convert.ToInt32(Request.Form["credit"]);
-            int lectureHours = Convert.ToInt32(Request.Form["lectureHours"]);
-            int labHours = Convert.ToInt32(Request.Form["labHours"]);
-            int totalHours = Convert.ToInt32(Request.Form["totalHours"]);
-            int examHours = Convert.ToInt32(Request.Form["examHours"]);
-            decimal revisionNumber = Convert.ToDecimal(Request.Form["revisionNumber"]);
-            List<Prerequisite> prereqs = new List<Prerequisite>();
-            for(int i=0;  i<Convert.ToInt32(Request.Form["count"]); i++)
-            {
-                Prerequisite prereq = null;
-                if (Request.Form["reqRadio+" + i].Equals("prereq"))
+                if (!ModelState.IsValid)
                 {
-                    prereq = new Prerequisite(id, CourseCode.getIdByCourseCode(Request.Form["prereqCode+" + i]), true,false);
+                    return Page();
                 }
-                else if (Request.Form["reqRadio+" + i].Equals("coreq"))
+                int id = Convert.ToInt32(Request.Form["courseId"]);
+                string name = Request.Form["courseTitle"];
+                string courseCode = Request.Form["courseCode"];
+                string description = Request.Form["description"];
+                int credit = Convert.ToInt32(Request.Form["credit"]);
+                int lectureHours = Convert.ToInt32(Request.Form["lectureHours"]);
+                int labHours = Convert.ToInt32(Request.Form["labHours"]);
+                int totalHours = Convert.ToInt32(Request.Form["totalHours"]);
+                int examHours = Convert.ToInt32(Request.Form["examHours"]);
+                decimal revisionNumber = Convert.ToDecimal(Request.Form["revisionNumber"]);
+                List<Prerequisite> prereqs = new List<Prerequisite>();
+                for (int i = 0; i < Convert.ToInt32(Request.Form["count"]); i++)
                 {
-                    prereq = new Prerequisite(id, CourseCode.getIdByCourseCode(Request.Form["prereqCode+" + i]), false, true);
+                    Prerequisite prereq = null;
+                    if (Request.Form["reqRadio+" + i].Equals("prereq"))
+                    {
+                        prereq = new Prerequisite(id, CourseCode.getIdByCourseCode(Request.Form["prereqCode+" + i]), true, false);
+                    }
+                    else if (Request.Form["reqRadio+" + i].Equals("coreq"))
+                    {
+                        prereq = new Prerequisite(id, CourseCode.getIdByCourseCode(Request.Form["prereqCode+" + i]), false, true);
+                    }
+                    prereqs.Add(prereq);
                 }
-                prereqs.Add(prereq);
+                if (add == false)
+                {
+                    Course.updateCourse(new Course(id, name, credit, DateTime.Now, DateTime.Now, description, lectureHours, labHours, examHours, totalHours, revisionNumber, prereqs));
+                }
+                else if (add == true)
+                {
+                    id = Course.addCourse(new Course(id, name, credit, DateTime.Now, DateTime.Now, description, lectureHours, labHours, examHours, totalHours, revisionNumber, prereqs));
+                }
+                if (courseCode != code)
+                {
+                    CourseCode.addCourseCode(id, courseCode);
+                }
+                return RedirectToPage("ManageAllCourses");
             }
-            if (add == false)
+            catch(Exception ex)
             {
-                Course.updateCourse(new Course(id, name, credit, DateTime.Now, DateTime.Now, description, lectureHours, labHours, examHours, totalHours, revisionNumber, prereqs));
+                this.dropdownText = "Please select a course to change";
+                return RedirectToPage("ManageAllCourses");
             }
-            else if(add == true)
-            {
-                id = Course.addCourse(new Course(id, name, credit, DateTime.Now, DateTime.Now, description, lectureHours, labHours, examHours, totalHours, revisionNumber, prereqs));
-            }
-            if (courseCode != code)
-            {
-                CourseCode.addCourseCode(id, courseCode);
-            }
-            return RedirectToPage("ManageAllCourses");
         }
         public void OnGet()
         {

@@ -101,6 +101,7 @@ namespace MCFTAcademics.DAL
                 PrerequisiteDAL.dropPrereqs(id);
                 foreach (Prerequisite prereq in c.Prerequisites)
                 {
+                    prereq.CourseId = id;
                     PrerequisiteDAL.addPrereq(prereq);
                 }
                 conn.Close();

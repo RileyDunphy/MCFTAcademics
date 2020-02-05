@@ -24,7 +24,7 @@ namespace MCFTAcademics.BL
             this.isCoreq = isCoreq;
         }
 
-        public int CourseId { get => courseId; }
+        public int CourseId { get; set; }
         public int PrereqId { get => prereqId; }
         public bool IsPrereq { get => isPrereq; }
         public bool IsCoreq { get => isCoreq; }
