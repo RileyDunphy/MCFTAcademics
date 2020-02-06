@@ -108,5 +108,29 @@ namespace MCFTAcademics.DAL
                     connection.Close();
             }
         }
+
+        public static bool ChangeProfile(User user, string newRealName, string newUserName)
+        {
+            SqlConnection connection = null;
+            try
+            {
+                connection = DAL.DbConn.GetConnection();
+                connection.Open();
+                var sql = "[mcftacademics].dbo.Update_Profile";
+                var query = connection.CreateCommand();
+                query.CommandType = CommandType.StoredProcedure;
+                query.CommandText = sql;
+                query.Parameters.AddWithValue("@userIdentity", user.Id);
+                query.Parameters.AddWithValue("@userRealName", newRealName);
+                query.Parameters.AddWithValue("@userName", newUserName);
+                // depends on set nocount off being in the procedure
+                return (query.ExecuteNonQuery() > 0);
+            }
+            finally
+            {
+                if (connection != null)
+                    connection.Close();
+            }
+        }
     }
 }

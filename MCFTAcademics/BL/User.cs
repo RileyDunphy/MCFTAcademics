@@ -41,6 +41,30 @@ namespace MCFTAcademics.BL
             return null;
         }
 
+        /// <summary>
+        /// Changes the user's profile fields.
+        /// </summary>
+        /// <param name="newRealName">The new real name of the user.</param>
+        /// <param name="newUserName">The new user name of the user.</param>
+        /// <returns>The user with a new profile, or null if unable to.</returns>
+        public User ChangeProfile(string newRealName, string newUserName)
+        {
+            if (newRealName == null)
+                throw new ArgumentNullException(nameof(newRealName));
+            if (string.IsNullOrWhiteSpace(newRealName))
+                throw new ArgumentException(nameof(newRealName));
+            if (newUserName == null)
+                throw new ArgumentNullException(nameof(newUserName));
+            if (string.IsNullOrWhiteSpace(newUserName))
+                throw new ArgumentException(nameof(newUserName));
+            // XXX: More validation
+            if (UserDAL.ChangeProfile(this, newRealName, newUserName))
+            {
+                return new User(newRealName, newUserName, this.Password, this.Id);
+            }
+            return null;
+        }
+
         // it IMHO makes more sense here than in Role (since it's from the user)
 
         // XXX: Cache these/get on acquiring the user object, instead of constantly refetching
