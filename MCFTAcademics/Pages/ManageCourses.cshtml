@@ -1,20 +1,21 @@
 ﻿@page
-@model MCFTAcademics.ManageAllCoursesModel
+@model MCFTAcademics.ManageCoursesModel
 @{
-    ViewData["Title"] = "Manage All Courses";
+    ViewData["Title"] = "Manage Courses";
 }
+
 @using System.Collections;
 @using BL;
 @{
 
-    List<Course> courses = Course.GetAllCourses();
+    List<Course> courses = Course.GetCoursesByInstructor(Convert.ToInt32(HttpContext.User.FindFirst(x => x.Type == System.Security.Claims.ClaimTypes.NameIdentifier).Value));
     int count = 0;
 }
 
 <div class="container">
     <div class="row">
         <div class="col">
-            <h2>Manage Courses</h2>
+            <h2>Manage Courses you are Instructing</h2>
         </div>
     </div>
     <form method="post">
@@ -194,6 +195,7 @@
         });
 
         $(document).ready(function () {
+            //option A
             $("form").submit(function (e) {
                 if ($('#hdnCourseId').val() == '') {
                     alert("Please select an option from the dropdown menu");
