@@ -21,7 +21,16 @@ namespace MCFTAcademics.BL
         /// </summary>
         /// <param name="password">The password provided to check against the hash.</param>
         /// <returns>If they compare against the same value.</returns>
-        public bool ValidatePassword(string password) => BCrypt.Net.BCrypt.Verify(password, this.Password);
+        public bool ValidatePassword(string password)
+        {
+            if (password == null)
+                throw new ArgumentNullException(nameof(password));
+            // a password of just spaces is technically valid?
+            if (string.IsNullOrEmpty(password))
+                throw new ArgumentException(nameof(password));
+
+            return BCrypt.Net.BCrypt.Verify(password, this.Password);
+        }
 
         // This function actually provides an example of why the classes here are immutable.
         // No objects change from under you, and you can replace the previous object with
@@ -33,6 +42,11 @@ namespace MCFTAcademics.BL
         /// <returns>The user object with a new password, or null if unable to.</returns>
         public User ChangePassword(string newPasswordUnhashed)
         {
+            if (newPasswordUnhashed == null)
+                throw new ArgumentNullException(nameof(newPasswordUnhashed));
+            // a password of just spaces is technically valid?
+            if (string.IsNullOrEmpty(newPasswordUnhashed))
+                throw new ArgumentException(nameof(newPasswordUnhashed));
             var hashed = BCrypt.Net.BCrypt.HashPassword(newPasswordUnhashed);
             if (UserDAL.ChangePassword(this, hashed))
             {
@@ -77,11 +91,20 @@ namespace MCFTAcademics.BL
 
         public static User GetUser(int id) => UserDAL.GetUser(id);
 
-        public static User GetUser(string username) => UserDAL.GetUser(username);
+        public static User GetUser(string username)
+        {
+            if (username == null)
+                throw new ArgumentNullException(nameof(username));
+            if (string.IsNullOrWhiteSpace(username))
+                throw new ArgumentException(nameof(username));
+
+            return UserDAL.GetUser(username);
+        }
 
         public string Name { get;}
         public string Username { get; }
         public string Password { get;  }
+        // XXX: What is the valid range of UIDs?
         public int Id { get; }
     }
 }
