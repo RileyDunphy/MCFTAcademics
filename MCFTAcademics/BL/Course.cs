@@ -44,9 +44,9 @@ namespace MCFTAcademics.BL
         {
             return false;
         }
-        public static List<Course> getCoursesByInstructor(int userid)
+        public static List<Course> GetCoursesByInstructor(int userid)
         {
-            return CourseDAL.getCoursesByInstructor(userid);
+            return CourseDAL.GetCoursesByInstructor(userid);
         }
 
         public static List<Course> GetAllCourses()

@@ -44,22 +44,33 @@ namespace MCFTAcademics.DAL
             return courses;//return the list of courses
         }
 
-        public static List<Course> getCoursesByInstructor(int userid)
+        public static List<Course> GetCoursesByInstructor(int userid)
         {
             SqlConnection conn = DbConn.GetConnection();
-            conn.Open(); //open the connection
-            SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectCoursesByInstructor", conn);
-            selectCommand.CommandType = System.Data.CommandType.StoredProcedure;
-            selectCommand.Parameters.AddWithValue("@userid", userid);
-            //execute the sql statement
-            SqlDataReader reader = selectCommand.ExecuteReader();
             List<Course> courses = new List<Course>();
-            //loop through the resultset
-            while (reader.Read())
+            try
             {
-                Course c = CourseFromRow(reader,null);
-                courses.Add(c);
+                conn.Open(); //open the connection
+                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectCoursesByInstructor", conn);
+                selectCommand.CommandType = System.Data.CommandType.StoredProcedure;
+                selectCommand.Parameters.AddWithValue("@userid", userid);
+                //execute the sql statement
+                SqlDataReader reader = selectCommand.ExecuteReader();
+                //loop through the resultset
+                while (reader.Read())
+                {
+                    Course c = CourseFromRow(reader, null);
+                    courses.Add(c);
 
+                }
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                conn.Close();
             }
             return courses;//return the list of courses
         }

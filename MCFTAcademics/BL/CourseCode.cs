@@ -40,5 +40,10 @@ namespace MCFTAcademics.BL
         {
             return CourseCodeDAL.GetIdByCourseCode(code);
         }
+
+        public static List<CourseCode>GetAllCourseCodesById(int id)
+        {
+            return CourseCodeDAL.GetAllCourseCodesById(id);
+        }
     }
 }
