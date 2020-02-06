@@ -12,7 +12,7 @@ namespace MCFTAcademics.DAL
     {
         static Course CourseFromRow(IDataReader reader, List<Prerequisite> prereqs)
         {
-            return new Course(Convert.ToInt32(reader["courseId"]), reader["name"].ToString(), Convert.ToDecimal(reader["credit"]), DateTime.Parse(reader["startDate"].ToString()), DateTime.Parse(reader["endDate"].ToString()), reader["Description"].ToString(), Convert.ToInt32(reader["lectureHours"]), Convert.ToInt32(reader["labHours"]), Convert.ToInt32(reader["examHours"]), Convert.ToInt32(reader["totalHours"]), Convert.ToDecimal(reader["revisionNumber"]), prereqs);
+            return new Course(Convert.ToInt32(reader["courseId"]), reader["name"].ToString(), Convert.ToDecimal(reader["credit"]), reader["Description"].ToString(), Convert.ToInt32(reader["lectureHours"]), Convert.ToInt32(reader["labHours"]), Convert.ToInt32(reader["examHours"]), Convert.ToInt32(reader["totalHours"]), Convert.ToDecimal(reader["revisionNumber"]), reader["program"].ToString(), Convert.ToBoolean(reader["accreditation"]), prereqs);
         }
         public static List<Course> GetAllCourses()
         {
@@ -90,6 +90,8 @@ namespace MCFTAcademics.DAL
                 updateCommand.Parameters.AddWithValue("@labHours", c.LabHours);
                 updateCommand.Parameters.AddWithValue("@examHours", c.ExamHours);
                 updateCommand.Parameters.AddWithValue("@revisionNumber", c.RevisionNumber);
+                updateCommand.Parameters.AddWithValue("@program", c.Program);
+                updateCommand.Parameters.AddWithValue("@accreditation", c.Accreditation);
                 int rows = updateCommand.ExecuteNonQuery();
                 if (rows > 0)
                 {
@@ -132,6 +134,8 @@ namespace MCFTAcademics.DAL
                 insertCommand.Parameters.AddWithValue("@labHours", c.LabHours);
                 insertCommand.Parameters.AddWithValue("@examHours", c.ExamHours);
                 insertCommand.Parameters.AddWithValue("@revisionNumber", c.RevisionNumber);
+                insertCommand.Parameters.AddWithValue("@program", c.Program);
+                insertCommand.Parameters.AddWithValue("@accreditation", c.Accreditation);
                 int rows = insertCommand.ExecuteNonQuery();
                 if (rows > 0)
                 {

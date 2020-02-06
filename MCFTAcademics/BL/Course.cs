@@ -11,13 +11,11 @@ namespace MCFTAcademics.BL
             this.Prerequisites = new List<Prerequisite>();
         }
 
-        public Course(int id, string name, decimal credit, DateTime from, DateTime to, string description, int lectureHours, int labHours, int examHours, int totalHours, decimal revisionNumber, List<Prerequisite> prerequisites)
+        public Course(int id, string name, decimal credit, string description, int lectureHours, int labHours, int examHours, int totalHours, decimal revisionNumber,string program, bool accreditation, List<Prerequisite> prerequisites)
         {
             this.Id = id;
             this.Name = name;
             this.Credit = credit;
-            this.From = from;
-            this.To = to;
             this.Description = description;
             this.LectureHours = lectureHours;
             this.LabHours = labHours;
@@ -25,12 +23,12 @@ namespace MCFTAcademics.BL
             this.TotalHours = totalHours;
             this.Prerequisites = prerequisites;
             this.RevisionNumber = revisionNumber;
+            this.Program = program;
+            this.Accreditation = accreditation;
         }
 
         public string Name { get; }
         public decimal Credit { get; }
-        public DateTime From { get; }
-        public DateTime To { get; }
         public int Id { get; }
         public string Description { get; }
         public int LectureHours { get; }
@@ -39,6 +37,8 @@ namespace MCFTAcademics.BL
         public List<Prerequisite> Prerequisites { get; }
         public int TotalHours { get;  }
         public decimal RevisionNumber { get; }
+        public string Program { get; }
+        public bool Accreditation { get; }
 
         public bool IsEligible(User u)
         {

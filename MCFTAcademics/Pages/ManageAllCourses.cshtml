@@ -52,10 +52,42 @@
         </div> <br />
         <div class="row">
             <div class="col-lg-1">
+                <span class="label label-default">Program</span>
+            </div>
+            <div class="col-lg-2">
+                <input class="form-control" type="text" asp-for="course.Program" required name="program" id="txtProgram">
+            </div>
+        </div> <br />
+        <div class="row">
+            <div class="col-lg-1">
                 <span class="label label-default descrip">Description</span>
             </div>
             <div class="col-lg-8">
                 <textarea class="form-control" rows="3" name="description" required asp-for="course.Description" id="txtCourseDescrip"></textarea>
+            </div>
+        </div> <br />
+        <div class="row">
+            <div class="col-lg-1">
+                <span class="label label-default descrip">Semester</span>
+            </div>
+            <div class="col-lg-8">
+                <input class="form-control" rows="3" name="number" required asp-for="courseCode.Semester" id="txtSemester">
+            </div>
+        </div> <br />
+        <div class="row">
+            <div class="col-lg-1">
+                <span class="label label-default descrip">Start Date</span>
+            </div>
+            <div class="col-lg-8">
+                <input class="form-control" rows="3" name="startDate" required asp-for="courseCode.From" id="txtStartDate">
+            </div>
+        </div> <br />
+        <div class="row">
+            <div class="col-lg-1">
+                <span class="label label-default descrip">Description</span>
+            </div>
+            <div class="col-lg-8">
+                <input class="form-control" rows="3" name="endDate" required asp-for="courseCode.From" id="txtEndDate">
             </div>
         </div> <br />
         <div class="row">
@@ -102,6 +134,14 @@
             </div>
             <div class="col-lg-2">
                 <input class="form-control" type="number" step="any" name="revisionNumber" required asp-for="course.RevisionNumber" id="txtRevisionNumber">
+            </div>
+        </div><br />
+        <div class="row">
+            <div class="col-lg-1">
+                <span class="label label-default"> Accreditation</span>
+            </div>
+            <div class="col-lg-2">
+                <input class="form-control" type="text" step="any" name="accreditation" required asp-for="course.Accreditation" id="txtAccreditation">
             </div>
         </div><br />
         <div class="row">

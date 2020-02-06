@@ -12,7 +12,7 @@ namespace MCFTAcademics.DAL
     {
         static CourseCode CourseCodeFromRow(IDataReader reader)
         {
-            return new CourseCode(reader["courseCode"].ToString(), DateTime.Parse(reader["startDate"].ToString()), DateTime.Parse(reader["endDate"].ToString()));
+            return new CourseCode(reader["courseCode"].ToString(), DateTime.Parse(reader["startDate"].ToString()), DateTime.Parse(reader["endDate"].ToString()), Convert.ToInt32(reader["semester"]));
         }
         public static CourseCode GetNewestCourseCodeById(int id)
         {
@@ -67,7 +67,7 @@ namespace MCFTAcademics.DAL
             return id;
         }
 
-        public static bool AddCourseCode(int id, string code)
+        public static bool AddCourseCode(int id, CourseCode c)
         {
             SqlConnection conn = DbConn.GetConnection();
             bool result;
@@ -77,7 +77,10 @@ namespace MCFTAcademics.DAL
                 SqlCommand insertCommand = new SqlCommand("mcftacademics.dbo.AddCourseCode", conn);
                 insertCommand.CommandType = System.Data.CommandType.StoredProcedure;
                 insertCommand.Parameters.AddWithValue("@id", id);
-                insertCommand.Parameters.AddWithValue("@code", code);
+                insertCommand.Parameters.AddWithValue("@code", c.Code);
+                insertCommand.Parameters.AddWithValue("@startDate", c.From);
+                insertCommand.Parameters.AddWithValue("@endDate", c.To);
+                insertCommand.Parameters.AddWithValue("@semester", c.Semester);
                 int rows = insertCommand.ExecuteNonQuery();
                 conn.Close();
                 if (rows > 0)
