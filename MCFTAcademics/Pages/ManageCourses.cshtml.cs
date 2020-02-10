@@ -52,6 +52,9 @@ namespace MCFTAcademics
                 int semester = Convert.ToInt32(Request.Form["semester"]);
                 DateTime startDate = Convert.ToDateTime(Request.Form["startDate"]);
                 DateTime endDate = Convert.ToDateTime(Request.Form["endDate"]);
+                Staff leadStaff = new Staff(id, Request.Form["leadStaff"], "lead");
+                Staff supportStaff = new Staff(id, Request.Form["supportStaff"], "support");
+
 
                 List<Prerequisite> prereqs = new List<Prerequisite>();
                 for (int i = 0; i < Convert.ToInt32(Request.Form["count"]); i++)
@@ -69,12 +72,12 @@ namespace MCFTAcademics
                 }
                 if (add == false)
                 {
-                    Course c = new Course(id, name, credit, description, lectureHours, labHours, examHours, totalHours, revisionNumber, program, accreditation, prereqs);
+                    Course c = new Course(id, name, credit, description, lectureHours, labHours, examHours, totalHours, revisionNumber, program, accreditation, prereqs, leadStaff, supportStaff);
                     c.UpdateCourse();
                 }
                 else if (add == true)
                 {
-                    id = Course.AddCourse(new Course(id, name, credit, description, lectureHours, labHours, examHours, totalHours, revisionNumber, program, accreditation, prereqs));
+                    id = Course.AddCourse(new Course(id, name, credit, description, lectureHours, labHours, examHours, totalHours, revisionNumber, program, accreditation, prereqs, leadStaff, supportStaff));
                 }
                 if (courseCode != code)
                 {

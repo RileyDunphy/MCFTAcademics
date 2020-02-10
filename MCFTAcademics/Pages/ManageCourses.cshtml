@@ -64,6 +64,32 @@
         </div> <br />
         <div class="row">
             <div class="col-lg-1">
+                <span class="label label-default"> Lead Instructor</span>
+            </div>
+            <div class="col-lg-2">
+                <select class="form-control" asp-for="course.LeadStaff" name="leadStaff" id="selLeadStaff">
+                    @foreach (Staff s in Staff.GetAllStaff())
+                    {
+                        <option>@s.Name</option>
+                    }
+                </select>
+            </div>
+        </div><br />
+        <div class="row">
+            <div class="col-lg-1">
+                <span class="label label-default"> Support Instructor</span>
+            </div>
+            <div class="col-lg-2">
+                <select class="form-control" asp-for="course.SupportStaff" name="supportStaff" id="selSupportStaff">
+                    @foreach (Staff s in Staff.GetAllStaff())
+                    {
+                        <option>@s.Name</option>
+                    }
+                </select>
+            </div>
+        </div><br />
+        <div class="row">
+            <div class="col-lg-1">
                 <span class="label label-default descrip">Description</span>
             </div>
             <div class="col-lg-8">

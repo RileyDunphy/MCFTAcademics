@@ -11,7 +11,7 @@ namespace MCFTAcademics.BL
             this.Prerequisites = new List<Prerequisite>();
         }
 
-        public Course(int id, string name, decimal credit, string description, int lectureHours, int labHours, int examHours, int totalHours, decimal revisionNumber,string program, bool accreditation, List<Prerequisite> prerequisites)
+        public Course(int id, string name, decimal credit, string description, int lectureHours, int labHours, int examHours, int totalHours, decimal revisionNumber,string program, bool accreditation, List<Prerequisite> prerequisites, Staff lead, Staff support)
         {
             this.Id = id;
             this.Name = name;
@@ -25,6 +25,8 @@ namespace MCFTAcademics.BL
             this.RevisionNumber = revisionNumber;
             this.Program = program;
             this.Accreditation = accreditation;
+            this.LeadStaff = lead;
+            this.SupportStaff = support;
         }
 
         public string Name { get; }
@@ -39,6 +41,8 @@ namespace MCFTAcademics.BL
         public decimal RevisionNumber { get; }
         public string Program { get; }
         public bool Accreditation { get; }
+        public Staff LeadStaff { get; }
+        public Staff SupportStaff { get; }
 
         public bool IsEligible(User u)
         {

@@ -10,9 +10,9 @@ namespace MCFTAcademics.DAL
 {
     public class CourseDAL
     {
-        static Course CourseFromRow(IDataReader reader, List<Prerequisite> prereqs)
+        static Course CourseFromRow(IDataReader reader, List<Prerequisite> prereqs, Staff leadStaff, Staff supportStaff)
         {
-            return new Course(Convert.ToInt32(reader["courseId"]), reader["name"].ToString(), Convert.ToDecimal(reader["credit"]), reader["Description"].ToString(), Convert.ToInt32(reader["lectureHours"]), Convert.ToInt32(reader["labHours"]), Convert.ToInt32(reader["examHours"]), Convert.ToInt32(reader["totalHours"]), Convert.ToDecimal(reader["revisionNumber"]), reader["program"].ToString(), Convert.ToBoolean(reader["accreditation"]), prereqs);
+            return new Course(Convert.ToInt32(reader["courseId"]), reader["name"].ToString(), Convert.ToDecimal(reader["credit"]), reader["Description"].ToString(), Convert.ToInt32(reader["lectureHours"]), Convert.ToInt32(reader["labHours"]), Convert.ToInt32(reader["examHours"]), Convert.ToInt32(reader["totalHours"]), Convert.ToDecimal(reader["revisionNumber"]), reader["program"].ToString(), Convert.ToBoolean(reader["accreditation"]), prereqs, leadStaff, supportStaff);
         }
         public static List<Course> GetAllCourses()
         {
@@ -28,8 +28,10 @@ namespace MCFTAcademics.DAL
                 //loop through the resultset
                 while (reader.Read())
                 {
+                    Staff leadStaff = StaffDAL.GetStaffByCourseIdAndType(Convert.ToInt32(reader["courseId"]),"lead");
+                    Staff supportStaff = StaffDAL.GetStaffByCourseIdAndType(Convert.ToInt32(reader["courseId"]),"support");
                     List<Prerequisite> prereqs = PrerequisiteDAL.GetPrereqs(Convert.ToInt32(reader["courseId"]));
-                    Course c = CourseFromRow(reader, prereqs);
+                    Course c = CourseFromRow(reader, prereqs, leadStaff, supportStaff);
                     courses.Add(c);
                 }
             }
@@ -59,7 +61,7 @@ namespace MCFTAcademics.DAL
                 //loop through the resultset
                 while (reader.Read())
                 {
-                    Course c = CourseFromRow(reader, null);
+                    Course c = CourseFromRow(reader, null,null,null);
                     courses.Add(c);
 
                 }
@@ -89,8 +91,10 @@ namespace MCFTAcademics.DAL
                 //loop through the resultset
                 if (reader.Read())
                 {
+                    Staff leadStaff = StaffDAL.GetStaffByCourseIdAndType(Convert.ToInt32(reader["courseId"]), "lead");
+                    Staff supportStaff = StaffDAL.GetStaffByCourseIdAndType(Convert.ToInt32(reader["courseId"]), "support");
                     List<Prerequisite> prereqs = PrerequisiteDAL.GetPrereqs(Convert.ToInt32(reader["courseId"]));
-                    course = CourseFromRow(reader, prereqs);
+                    course = CourseFromRow(reader, prereqs, leadStaff, supportStaff);
                 }
             }
             catch (Exception ex)
@@ -126,6 +130,14 @@ namespace MCFTAcademics.DAL
                 int rows = updateCommand.ExecuteNonQuery();
                 if (rows > 0)
                 {
+                    //Drop existing staff (so they're not multiple instructors) 
+                    //and add back the lead staff and support if there is one
+                    StaffDAL.DropStaff(c.Id);
+                    StaffDAL.AddStaff(c.Id, c.LeadStaff);
+                    if (c.SupportStaff != null)
+                    {
+                        StaffDAL.AddStaff(c.Id, c.SupportStaff);
+                    }
                     PrerequisiteDAL.DropPrereqs(c.Id);
                     foreach (Prerequisite prereq in c.Prerequisites)
                     {
@@ -172,6 +184,14 @@ namespace MCFTAcademics.DAL
                 {
                     SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectLastCourseInsert", conn);
                     id = Convert.ToInt32(selectCommand.ExecuteScalar());
+                    //Drop existing staff (so they're not multiple instructors) 
+                    //and add back the lead staff and support if there is one
+                    StaffDAL.DropStaff(id);
+                    StaffDAL.AddStaff(id, c.LeadStaff);
+                    if(c.SupportStaff != null)
+                    {
+                        StaffDAL.AddStaff(id, c.SupportStaff);
+                    }
                     PrerequisiteDAL.DropPrereqs(id);
                     foreach (Prerequisite prereq in c.Prerequisites)
                     {
