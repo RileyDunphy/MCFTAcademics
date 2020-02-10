@@ -91,6 +91,31 @@ namespace MCFTAcademics.BL
 
         public static User GetUser(int id) => UserDAL.GetUser(id);
 
+        public static User CreateUser(string name, string username, string password)
+        {
+            if (name == null)
+                throw new ArgumentNullException(nameof(name));
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentException(nameof(name));
+            if (username == null)
+                throw new ArgumentNullException(nameof(username));
+            if (string.IsNullOrWhiteSpace(username))
+                throw new ArgumentException(nameof(username));
+            if (password == null)
+                throw new ArgumentNullException(nameof(password));
+            // a password of just spaces is technically valid?
+            if (string.IsNullOrEmpty(password))
+                throw new ArgumentException(nameof(password));
+
+            // hash the pw since we have it unhashed
+            var hashedPassword = BCrypt.Net.BCrypt.HashPassword(password);
+
+            var newUser = new User(name, username, hashedPassword, -1);
+            // same but with the new ID and such
+            var insertedUser = UserDAL.CreateUser(newUser);
+            return insertedUser;
+        }
+
         public static User GetUser(string username)
         {
             if (username == null)
