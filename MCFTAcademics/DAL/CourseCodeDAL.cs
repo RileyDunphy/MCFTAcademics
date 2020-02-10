@@ -12,7 +12,7 @@ namespace MCFTAcademics.DAL
     {
         static CourseCode CourseCodeFromRow(IDataReader reader)
         {
-            return new CourseCode(reader["courseCode"].ToString(), DateTime.Parse(reader["startDate"].ToString()), DateTime.Parse(reader["endDate"].ToString()));
+            return new CourseCode(reader["courseCode"].ToString(), DateTime.Parse(reader["startDate"].ToString()), DateTime.Parse(reader["endDate"].ToString()), Convert.ToInt32(reader["semester"]));
         }
         public static CourseCode GetNewestCourseCodeById(int id)
         {
@@ -67,7 +67,7 @@ namespace MCFTAcademics.DAL
             return id;
         }
 
-        public static bool AddCourseCode(int id, string code)
+        public static bool AddCourseCode(int id, CourseCode c)
         {
             SqlConnection conn = DbConn.GetConnection();
             bool result;
@@ -77,7 +77,10 @@ namespace MCFTAcademics.DAL
                 SqlCommand insertCommand = new SqlCommand("mcftacademics.dbo.AddCourseCode", conn);
                 insertCommand.CommandType = System.Data.CommandType.StoredProcedure;
                 insertCommand.Parameters.AddWithValue("@id", id);
-                insertCommand.Parameters.AddWithValue("@code", code);
+                insertCommand.Parameters.AddWithValue("@code", c.Code);
+                insertCommand.Parameters.AddWithValue("@startDate", c.From);
+                insertCommand.Parameters.AddWithValue("@endDate", c.To);
+                insertCommand.Parameters.AddWithValue("@semester", c.Semester);
                 int rows = insertCommand.ExecuteNonQuery();
                 conn.Close();
                 if (rows > 0)
@@ -98,6 +101,36 @@ namespace MCFTAcademics.DAL
                 conn.Close();
             }
             return result;
+        }
+        public static List<CourseCode> GetAllCourseCodesById(int id)
+        {
+            SqlConnection conn = DbConn.GetConnection();
+            List<CourseCode> courseCodes = new List<CourseCode>();
+            try
+            {
+                conn.Open(); //open the connection
+                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectCourseCodesById", conn);
+                selectCommand.CommandType = System.Data.CommandType.StoredProcedure;
+                selectCommand.Parameters.AddWithValue("@courseId", id);
+                //execute the sql statement
+                SqlDataReader reader = selectCommand.ExecuteReader();
+                //loop through the resultset
+                while (reader.Read())
+                {
+                    CourseCode c = CourseCodeFromRow(reader);
+                    courseCodes.Add(c);
+
+                }
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                conn.Close();
+            }
+            return courseCodes;//return the list of courses
         }
     }
 }

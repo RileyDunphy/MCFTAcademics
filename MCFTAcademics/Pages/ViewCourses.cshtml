@@ -17,21 +17,24 @@
 <table class="table">
     <thead>
         <tr>
+            <th scope="col">Code</th>
             <th scope="col">Name</th>
+            <th scope="col">Semester</th>
             <th scope="col">Credit</th>
-            <th scope="col">From</th>
-            <th scope="col">To</th>
         </tr>
     </thead>
     <tbody>
         @foreach (Course c in courses)
         {
-            <tr>
-                <th scope="row">@c.Name</th>
-                <td>@c.Credit</td>
-                <td>@c.From.ToShortDateString()</td>
-                <td>@c.To.Date.ToShortDateString()</td>
-            </tr>
+            @foreach (CourseCode cc in CourseCode.GetAllCourseCodesById(c.Id))
+            {
+                <tr>
+                    <th scope="row">@cc.Code</th>
+                    <td>@c.Name</td>
+                    <td>@cc.Semester</td>
+                    <td>@c.Credit</td>
+                </tr>
+            }
         }
     </tbody>
 </table>

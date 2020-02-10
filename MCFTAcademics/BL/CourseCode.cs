@@ -13,30 +13,37 @@ namespace MCFTAcademics.BL
         {
         }
 
-        public CourseCode(string code, DateTime from, DateTime to)
+        public CourseCode(string code, DateTime from, DateTime to, int semester)
         {
             this.Code = code;
             this.From = from;
             this.To = to;
+            this.Semester = semester;
         }
 
         public string Code { get; }
         public DateTime From { get;}
         public DateTime To { get; }
+        public int Semester { get; }
 
         public static CourseCode GetNewestCourseCodeById(int id)
         {
             return CourseCodeDAL.GetNewestCourseCodeById(id);
         }
 
-        public static bool AddCourseCode(int id, string code)
+        public static bool AddCourseCode(int id, CourseCode c)
         {
-            return CourseCodeDAL.AddCourseCode(id, code);
+            return CourseCodeDAL.AddCourseCode(id, c);
         }
 
         public static int GetIdByCourseCode(string code)
         {
             return CourseCodeDAL.GetIdByCourseCode(code);
+        }
+
+        public static List<CourseCode>GetAllCourseCodesById(int id)
+        {
+            return CourseCodeDAL.GetAllCourseCodesById(id);
         }
     }
 }

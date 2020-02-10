@@ -52,10 +52,45 @@
         </div> <br />
         <div class="row">
             <div class="col-lg-1">
+                <span class="label label-default">Program</span>
+            </div>
+            <div class="col-lg-2">
+                <select class="form-control" asp-for="course.Program" name="program" id="selAccreditation">
+                    <option>Wildlife</option>
+                    <option>Forestry</option>
+                </select>
+            </div>
+        </div> <br />
+        <div class="row">
+            <div class="col-lg-1">
                 <span class="label label-default descrip">Description</span>
             </div>
             <div class="col-lg-8">
                 <textarea class="form-control" rows="3" name="description" required asp-for="course.Description" id="txtCourseDescrip"></textarea>
+            </div>
+        </div> <br />
+        <div class="row">
+            <div class="col-lg-1">
+                <span class="label label-default">Semester</span>
+            </div>
+            <div class="col-lg-2">
+                <input class="form-control" type="number" name="semester" required asp-for="courseCode.Semester" id="txtSemester">
+            </div>
+        </div> <br />
+        <div class="row">
+            <div class="col-lg-1">
+                <span class="label label-default">Start Date</span>
+            </div>
+            <div class="col-lg-2">
+                <input class="form-control" name="startDate" type="date" required asp-for="courseCode.From" id="txtStartDate">
+            </div>
+        </div> <br />
+        <div class="row">
+            <div class="col-lg-1">
+                <span class="label label-default">End Date</span>
+            </div>
+            <div class="col-lg-2">
+                <input class="form-control" name="endDate" type="date" required asp-for="courseCode.To" id="txtEndDate">
             </div>
         </div> <br />
         <div class="row">
@@ -104,6 +139,27 @@
                 <input class="form-control" type="number" step="any" name="revisionNumber" required asp-for="course.RevisionNumber" id="txtRevisionNumber">
             </div>
         </div><br />
+        <div class="row">
+            <div class="col-lg-1">
+                <span class="label label-default"> Accreditation</span>
+            </div>
+            <div class="col-lg-2">
+                <select class="form-control" asp-for="course.Accreditation" name="accreditation" id="selAccreditation">
+                    <option>True</option>
+                    <option>False</option>
+                </select>
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-lg-1">
+                <span class="label label-default"> Accreditation</span>
+            </div>
+            <div class="col-lg-2">
+                <input class="form-control" type="text" step="any" name="accreditation" required asp-for="course.Accreditation" id="txtAccreditation">
+            </div>
+        </div>
+        <br />
         <div class="row">
             <div class="col-lg-1">
                 <span class="label label-default"> Prerequisites</span>
