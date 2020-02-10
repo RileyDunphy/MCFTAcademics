@@ -56,6 +56,24 @@ namespace MCFTAcademics.BL
         }
 
         /// <summary>
+        /// Blanks out a user's password to prevent them from logging in.
+        /// </summary>
+        /// <returns>The user after having the change applied.</returns>
+        public User DisableUser()
+        {
+            if (UserDAL.ChangePassword(this, ""))
+            {
+                return new User(this.Name, this.Username, "", this.Id);
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Gets if a user is disabled (as in their account) to prevent login.
+        /// </summary>
+        public bool IsDisabled => string.IsNullOrWhiteSpace(Password);
+
+        /// <summary>
         /// Changes the user's profile fields.
         /// </summary>
         /// <param name="newRealName">The new real name of the user.</param>
