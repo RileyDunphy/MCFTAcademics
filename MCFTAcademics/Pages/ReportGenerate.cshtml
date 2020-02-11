@@ -1,0 +1,24 @@
+﻿@page
+@model MCFTAcademics.ReportGenerate
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    ViewData["Title"] = "ReportGenerate";
+
+}
+    @*file = "./Reports/reportName.pdf";
+    Response.Headers.Add("Content-Disposition",$"inline; filename=\"{file.Name}\"");
+    return File(file.CreateReadStream(), "application/pdf", file.Name);*@
+
+<form method="post">
+    <input type="submit" value="ReportGenerate" />
+</form>
+<form method="post">
+    <input type="submit" value="ReportGenerate" />
+</form>
+
+
+@if (System.IO.File.Exists("./Reports/reportName.pdf"))
+{
+    <a href="/Reports/reportName.pdf" download>view report</a>
+}
+
