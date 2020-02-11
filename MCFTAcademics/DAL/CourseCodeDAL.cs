@@ -58,7 +58,7 @@ namespace MCFTAcademics.DAL
             }
             catch (Exception ex)
             {
-                throw ex;
+                return 0;
             }
             finally
             {
