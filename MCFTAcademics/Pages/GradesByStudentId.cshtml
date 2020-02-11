@@ -19,57 +19,42 @@
         <input class="form-control" style="width:200px" type="text" required name="studentId" id="studentId">
         <button class="btn" id="searchById" type="submit">Search</button>
     </div>
-    @{
-
-
-    }
-    <form id="form1" runat="server">
-        <div>
-            <asp:GridView ID="GridView1" runat="server" CellPadding="6" AutoGenerateColumns="False" OnRowDataBound="GridView1_RowDataBound">
-                <Columns>
-                    <asp:BoundField DataField="Id" HeaderText="Id" />
-                    <asp:BoundField DataField="Name" HeaderText="Name" />
-                    <asp:BoundField DataField="City" HeaderText="City" />
-                    <asp:BoundField DataField="Salary" HeaderText="Salary" />
-                </Columns>
-            </asp:GridView>
-        </div>
-    </form>
+ 
 
 
 </form>
 @section scripts{
 
     <script type="text/javascript">
-        $(document).ready(function () {
+        //$(document).ready(function () {
 
-            $("form").submit(function (e) {
-                alert("in fucnt");
-                if ($('studentId').val() == '') {
-                    alert("Please enter a student Id");
-                    e.preventDefault();
-                }
-                if ($('studentId').val().isNaN()) {
-                    alert("Please enter a student Id (numbers only)");
-                    e.preventDefault();
-                }
-                else {
-                    alert("in else");
-                    var xmlhttp = new XMLHttpRequest();
-                    xmlhttp.onreadystatechange = function() {
-                    if (this.readyState == 4 && this.status == 200) {
-                    alert(this.responseText);
-                    }
-                };
-                xmlhttp.open("GET", "gradesByStudentId?q=" + str, true);
-                xmlhttp.send();
-                }
+        //    $("form").submit(function (e) {
+        //        alert("in fucnt");
+        //        if ($('studentId').val() == '') {
+        //            alert("Please enter a student Id");
+        //            e.preventDefault();
+        //        }
+        //        if ($('studentId').val().isNaN()) {
+        //            alert("Please enter a student Id (numbers only)");
+        //            e.preventDefault();
+        //        }
+        //        else {
+        //            alert("in else");
+        //            var xmlhttp = new XMLHttpRequest();
+        //            xmlhttp.onreadystatechange = function() {
+        //            if (this.readyState == 4 && this.status == 200) {
+        //            alert(this.responseText);
+        //            }
+        //        };
+        //        xmlhttp.open("GET", "gradesByStudentId?q=" + str, true);
+        //        xmlhttp.send();
+        //        }
 
-            });
+          //  });
 
 
 
-        });
+       // });
     </script>
 }
 

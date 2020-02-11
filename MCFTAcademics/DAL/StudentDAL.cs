@@ -43,6 +43,38 @@ namespace MCFTAcademics.DAL
             return students;//return the list of students
         }
 
+        internal static List<Grade> GetGradeByStudentId(int studentId)
+        {
+            SqlConnection conn = DbConn.GetConnection();
+            List<Grade> grades = new List<Grade>();
+            Grade grade = null;
+            try
+            {
+                conn.Open(); //open the connection
+                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectStudentGradeById2", conn);
+                selectCommand.CommandType = System.Data.CommandType.StoredProcedure;
+                selectCommand.Parameters.AddWithValue("@studentId", studentId);
+                //execute the sql statement
+                SqlDataReader reader = selectCommand.ExecuteReader();
+                //loop through the resultset
+                while (reader.Read())
+                {
+                    grade = GradeDAL.GradeFromRow(reader);
+                    grades.Add(grade);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                conn.Close();//don't forget to close the connection
+            }
+            return grades;
+        }
+
+
         internal static Grade GetGradeByCourseId(int id, Student student)
         {
             SqlConnection conn = DbConn.GetConnection();

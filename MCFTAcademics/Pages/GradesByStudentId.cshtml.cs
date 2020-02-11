@@ -51,8 +51,11 @@ namespace MCFTAcademics
                 }
                 int id = Convert.ToInt32(Request.Form["studentId"]);
 
+                List<Grade> grades=StudentDAL.GetGradeByStudentId(id);
+                foreach (Grade g in grades) {
+                    Console.WriteLine(g.ToString());
 
-
+                }
 
 
 

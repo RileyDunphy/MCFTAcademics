@@ -13,5 +13,6 @@ namespace MCFTAcademics.DAL
         {
             return new Grade(Convert.ToDecimal(reader["grade"]), Convert.ToDateTime(reader["given"]), Convert.ToBoolean(reader["lock"]), Convert.ToDecimal(reader["hoursAttended"]),Convert.ToBoolean(reader["isSupplemental"]),Course.GetCourseById(Convert.ToInt32(reader["courseId"])));
         }
+
     }
 }
