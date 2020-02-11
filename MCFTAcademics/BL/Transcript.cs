@@ -51,6 +51,7 @@ namespace MCFTAcademics.BL
               XStringFormats.Center);
             string gradeContent="";
             int height = 50;
+
             foreach (Grade g in t.student.Grades) {
                 gradeContent = "is Supplemental: "+g.Supplemental.ToString() +g.Subject.Name + "--Grade " + g.GradeAssigned.ToString();
                 gfx.DrawString(gradeContent, smallFont, XBrushes.DarkBlue, new XRect(0, height, page.Width, page.Height), XStringFormats.Center);
@@ -59,9 +60,9 @@ namespace MCFTAcademics.BL
 
             //gfx.DrawString(gradeContent, font, XBrushes.DarkBlue, new XRect(0, 50, page.Width, page.Height), XStringFormats.Center);
             gfx.DrawString(t.student.Name, font, XBrushes.DarkBlue, new XRect(0, 50, page.Width, page.Height), XStringFormats.TopCenter);
-
+            
             // Save the document... must be a const
-            const string filename = "./Reports/joshTranscript.pdf";
+            const string filename = "./Reports/Transcript.pdf";
 
             if (System.IO.Directory.Exists("./Reports"))
             {
@@ -73,13 +74,14 @@ namespace MCFTAcademics.BL
 
 
                 document.Save(filename);
-                return document;
+                
+                //this is to rname the document
                 try
                 {
-                    if (System.IO.File.Exists("./Reports/someReport.pdf"))
+                    if (System.IO.File.Exists("./Reports/Transcript.pdf"))
                     {
                         string path = "/Reports/" + t.reportName + ".pdf";
-                        string oldPath= "/Reports/someReport.pdf";
+                        string oldPath= "/Reports/Transcript.pdf";
                         System.IO.File.Move(oldPath, path);
 
                     }
@@ -87,6 +89,7 @@ namespace MCFTAcademics.BL
                 catch (Exception ex) {
                     Console.Write(ex.Message);
                 }
+                return document;
 
             }
             return null;
