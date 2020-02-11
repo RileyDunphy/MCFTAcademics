@@ -130,7 +130,7 @@ namespace MCFTAcademics.DAL
             {
                 conn.Close();
             }
-            return courseCodes;//return the list of courses
+            return courseCodes;//return the list of coursecodes
         }
     }
 }
