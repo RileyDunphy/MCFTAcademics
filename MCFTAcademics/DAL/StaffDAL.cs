@@ -114,7 +114,7 @@ namespace MCFTAcademics.DAL
                 conn.Open(); //open the connection
                 SqlCommand deleteCommand = new SqlCommand("mcftacademics.dbo.DropAllStaffById", conn);
                 deleteCommand.CommandType = System.Data.CommandType.StoredProcedure;
-                deleteCommand.Parameters.AddWithValue("@id", id);
+                deleteCommand.Parameters.AddWithValue("@courseId", id);
                 int rows = deleteCommand.ExecuteNonQuery();
                 if (rows > 0)
                 {

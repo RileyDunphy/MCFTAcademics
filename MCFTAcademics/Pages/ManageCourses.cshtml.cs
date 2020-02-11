@@ -21,6 +21,7 @@ namespace MCFTAcademics
         public CourseCode courseCode { get; set; }
         [BindProperty]
         public string dropdownText { get; set; }
+        public string alertMessage { get; set; }
 
         //Variable to store old course code, incase it is changed. 
         //If it is changed, create a new entry in course code table
@@ -52,21 +53,34 @@ namespace MCFTAcademics
                 int semester = Convert.ToInt32(Request.Form["semester"]);
                 DateTime startDate = Convert.ToDateTime(Request.Form["startDate"]);
                 DateTime endDate = Convert.ToDateTime(Request.Form["endDate"]);
-                Staff leadStaff = new Staff(id, Request.Form["leadStaff"], "lead");
-                Staff supportStaff = new Staff(id, Request.Form["supportStaff"], "support");
-
-
+                Staff leadStaff = new Staff(Convert.ToInt32(Request.Form["leadStaff"]), "", "lead");
+                Staff supportStaff = null;
+                //Leave support staff as null unless there was a choice selected (its optional)
+                if (Request.Form["supportStaff"] != "")
+                {
+                    supportStaff = new Staff(Convert.ToInt32(Request.Form["supportStaff"]), "", "support");
+                }
                 List<Prerequisite> prereqs = new List<Prerequisite>();
                 for (int i = 0; i < Convert.ToInt32(Request.Form["count"]); i++)
                 {
                     Prerequisite prereq = null;
+                    //Validation to see if the entered prereq coursecode is valid
+                    //If it isn't, the method will return 0 and then it will refresh with a message (should be no courseid of 0)
+                    int prereqId = CourseCode.GetIdByCourseCode(Request.Form["prereqCode+" + i]);
+                    if (prereqId == 0)
+                    {
+                        this.dropdownText = "Please select a course to change";
+                        this.alertMessage = "You entered a invalid Course Code for a Prerequisite";
+                        return Page();
+                    }
+                    //If it returned a valid id, now check if its a coreq or a prereq
                     if (Request.Form["reqRadio+" + i].Equals("prereq"))
                     {
-                        prereq = new Prerequisite(id, CourseCode.GetIdByCourseCode(Request.Form["prereqCode+" + i]), true, false);
+                        prereq = new Prerequisite(id, prereqId, true, false);
                     }
                     else if (Request.Form["reqRadio+" + i].Equals("coreq"))
                     {
-                        prereq = new Prerequisite(id, CourseCode.GetIdByCourseCode(Request.Form["prereqCode+" + i]), false, true);
+                        prereq = new Prerequisite(id, prereqId, false, true);
                     }
                     prereqs.Add(prereq);
                 }
@@ -81,18 +95,20 @@ namespace MCFTAcademics
                 }
                 if (courseCode != code)
                 {
-                    CourseCode.AddCourseCode(id, this.courseCode);
+                    CourseCode.AddCourseCode(id, new CourseCode(courseCode, startDate, endDate, semester));
                 }
-                return RedirectToPage("ManageAllCourses");
+                return RedirectToPage("ManageCourses");
             }
             catch (Exception ex)
             {
                 this.dropdownText = "Please select a course to change";
-                return RedirectToPage("ManageAllCourses");
+                this.alertMessage = "An error occured";
+                return Page();
             }
         }
         public void OnGet()
         {
+            this.alertMessage = "";
             this.dropdownText = "Please select a course to change";
         }
         public IActionResult OnGetSelectCourse(int id)
