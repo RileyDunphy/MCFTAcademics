@@ -10,6 +10,10 @@
     List<Course> courses = Course.GetAllCourses();
     int count = 0;
 }
+@if (!string.IsNullOrEmpty(Model.alertMessage))
+{
+    <script>alert("@Model.alertMessage");</script>
+}
 
 <div class="container">
     <div class="row">
@@ -63,6 +67,33 @@
         </div> <br />
         <div class="row">
             <div class="col-lg-1">
+                <span class="label label-default"> Lead Instructor</span>
+            </div>
+            <div class="col-lg-2">
+                <select class="form-control" asp-for="course.LeadStaff.UserId" name="leadStaff" id="selLeadStaff">
+                    @foreach (Staff s in Staff.GetAllStaff())
+                    {
+                        <option value=@s.UserId>@s.Name</option>
+                    }
+                </select>
+            </div>
+        </div><br />
+        <div class="row">
+            <div class="col-lg-1">
+                <span class="label label-default"> Support Staff</span>
+            </div>
+            <div class="col-lg-2">
+                <select class="form-control" asp-for="course.SupportStaff.UserId" name="supportStaff" id="selSupportStaff">
+                    <option value="">None</option>
+                    @foreach (Staff s in Staff.GetAllStaff())
+                    {
+                        <option value=@s.UserId>@s.Name</option>
+                    }
+                </select>
+            </div>
+        </div><br />
+        <div class="row">
+            <div class="col-lg-1">
                 <span class="label label-default descrip">Description</span>
             </div>
             <div class="col-lg-8">
@@ -82,7 +113,7 @@
                 <span class="label label-default">Start Date</span>
             </div>
             <div class="col-lg-2">
-                <input class="form-control" name="startDate" type="date" required asp-for="courseCode.From" id="txtStartDate">
+                <input class="form-control" name="startDate" type="date" min="2000-01-01" max="2090-01-01" required asp-for="courseCode.From" id="txtStartDate">
             </div>
         </div> <br />
         <div class="row">
@@ -90,7 +121,7 @@
                 <span class="label label-default">End Date</span>
             </div>
             <div class="col-lg-2">
-                <input class="form-control" name="endDate" type="date" required asp-for="courseCode.To" id="txtEndDate">
+                <input class="form-control" name="endDate" type="date" min="2000-01-01" max="2090-01-01" required asp-for="courseCode.To" id="txtEndDate">
             </div>
         </div> <br />
         <div class="row">

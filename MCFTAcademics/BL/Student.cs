@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MCFTAcademics.DAL;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,16 +10,18 @@ namespace MCFTAcademics.BL
     {
         
         private List<Grade> grades;
-        private string name;
+        private string firstName;
+        private string lastName;
         private string studentId;
         private DateTime admissionDate;
 
         public Student() { }
         //TODO: change this to get grades from db method (once stored procedure is created)
-        public Student(List<Grade> grades, string name, string studentId, DateTime admissionDate)
+        public Student(List<Grade> grades, string firstName, string lastName, string studentId, DateTime admissionDate)
         {
             this.grades = grades;
-            this.name = name;
+            this.firstName = firstName;
+            this.lastName = lastName;
             this.studentId = studentId;
             this.admissionDate = admissionDate;
         }
@@ -26,9 +29,18 @@ namespace MCFTAcademics.BL
 
         public DateTime AdmissionDate { get => admissionDate; }
         public string StudentId { get => studentId; }
-        public string Name { get => name; }
+        public string FirstName { get => firstName; }
+        public string LastName { get => lastName; }
         public List<Grade> Grades { get => grades; }
 
+        public static List<Student> GetStudentsByCourseId(int id)
+        {
+            return StudentDAL.GetStudentsByCourseId(id);
+        }
 
+        public Grade GetGradeByCourseId(int id)
+        {
+            return StudentDAL.GetGradeByCourseId(id, this);
+        }
     }
 }

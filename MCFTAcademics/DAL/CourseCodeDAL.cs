@@ -58,7 +58,7 @@ namespace MCFTAcademics.DAL
             }
             catch (Exception ex)
             {
-                throw ex;
+                return 0;
             }
             finally
             {
@@ -130,7 +130,7 @@ namespace MCFTAcademics.DAL
             {
                 conn.Close();
             }
-            return courseCodes;//return the list of courses
+            return courseCodes;//return the list of coursecodes
         }
     }
 }

@@ -59,7 +59,7 @@ namespace MCFTAcademics.BL
             }
 
             //gfx.DrawString(gradeContent, font, XBrushes.DarkBlue, new XRect(0, 50, page.Width, page.Height), XStringFormats.Center);
-            gfx.DrawString(t.student.Name, font, XBrushes.DarkBlue, new XRect(0, 50, page.Width, page.Height), XStringFormats.TopCenter);
+            gfx.DrawString(t.student.FirstName + " " + t.student.LastName, font, XBrushes.DarkBlue, new XRect(0, 50, page.Width, page.Height), XStringFormats.TopCenter);
             
             // Save the document... must be a const
             const string filename = "./Reports/Transcript.pdf";
