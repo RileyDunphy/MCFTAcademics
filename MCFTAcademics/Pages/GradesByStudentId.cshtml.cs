@@ -16,20 +16,51 @@ using PdfSharpCore.Pdf;
 using MCFTAcademics.BL;
 using System.IO;
 using Rotativa;
+using System.Data;
 
 namespace MCFTAcademics
 {
     public class GradeByStudentId : PageModel
     {
-       public void SubmitBtn_Click() {
-        
-        
+        public void SubmitBtn_Click()
+        {
+            int id = Convert.ToInt32(Request.Form["studentId"]);
+
         }
+        public IActionResult OnGet() {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return Page();
+                }
+                string somestrang="SomeString";
+                
+            }
+            catch (Exception ex) { }
+            return null;
+
+        }
+        public IActionResult OnPost()
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return Page();
+                }
+                int id = Convert.ToInt32(Request.Form["studentId"]);
 
 
+
+
+
+
+            }
+            catch (Exception ex) { }
+            return null;
+        }
     }
-
-
 
 
             

@@ -26,8 +26,8 @@ namespace MCFTAcademics
         {
             //can now name the report by passing in different arguments
             //generateReport("reportName");
-            Grade math = new Grade(95, DateTime.Now, false, 20, false, new Course("Math", 2, DateTime.Now, DateTime.Now));
-            Grade chainsaw = new Grade(95, DateTime.Now, false, 20, false, new Course("Chainsaw", 2, DateTime.Now, DateTime.Now));
+            Grade math = new Grade(95, DateTime.Now, false, 20, false, new Course(1, "Math", 1.2m, "MathTest",3,3,3,9,12,"maths",true,null));
+            Grade chainsaw = new Grade(95, DateTime.Now, false, 20, false, new Course(2,"Chainsaw", 1.2m, "this is for trees",1,2,3,4,1.5m,"forestry",true,null));
             List<Grade> grades = new List<Grade>();
 
             grades.Add(math);

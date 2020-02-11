@@ -22,6 +22,7 @@ namespace MCFTAcademics.BL
             this.studentId = studentId;
             this.admissionDate = admissionDate;
         }
+        
 
         public DateTime AdmissionDate { get => admissionDate; }
         public string StudentId { get => studentId; }
