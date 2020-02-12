@@ -56,9 +56,9 @@ namespace MCFTAcademics.DAL
             try
             {
                 conn.Open(); //open the connection
-                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectStudentsByCourseId", conn);
+                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.[SelectStudentGradeById2]", conn);
                 selectCommand.CommandType = System.Data.CommandType.StoredProcedure;
-                selectCommand.Parameters.AddWithValue("@courseId", id);
+                selectCommand.Parameters.AddWithValue("@studentId", id);
                 //execute the sql statement
                 SqlDataReader reader = selectCommand.ExecuteReader();
                 //loop through the resultset
