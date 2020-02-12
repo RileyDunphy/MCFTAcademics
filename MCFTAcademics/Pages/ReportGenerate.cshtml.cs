@@ -33,7 +33,7 @@ namespace MCFTAcademics
             grades.Add(math);
             grades.Add(chainsaw);
 
-            Student josh = new Student(grades,"Josh", "Kleine-Deters", "1234", DateTime.Now);
+            Student josh = new Student(-1, "Josh", "Kleine-Deters", "1234", "TestProgran", DateTime.Now);
 
             Transcript t = new Transcript(josh,false, "Riley Dunphy", DateTime.Now);
 

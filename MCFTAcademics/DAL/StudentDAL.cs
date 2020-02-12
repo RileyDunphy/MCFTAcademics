@@ -15,7 +15,7 @@ namespace MCFTAcademics.DAL
             var lastName = reader["lastName"].ToString();
             var studentCode = reader["studentCode"].ToString();
             var program = reader["program"].ToString();
-            var admissionDate = (DateTime)reader["admissionDate"];
+            var admissionDate = reader["admissionDate"] is DateTime ? (DateTime?)reader["admissionDate"] : null;
             return new Student(id, firstName, lastName, studentCode, program, admissionDate);
         } 
 

@@ -43,7 +43,6 @@ namespace MCFTAcademics
         }
         public IActionResult OnPost()
         {
-            try
             {
                 if (!ModelState.IsValid)
                 {
@@ -51,7 +50,8 @@ namespace MCFTAcademics
                 }
                 int id = Convert.ToInt32(Request.Form["studentId"]);
 
-                List<Grade> grades=StudentDAL.GetGradeByStudentId(id);
+                var student = Student.GetStudent(id);
+                var grades = student.GetGrades();
                 foreach (Grade g in grades) {
                     Console.WriteLine(g.ToString());
 
@@ -60,7 +60,6 @@ namespace MCFTAcademics
 
 
             }
-            catch (Exception ex) { }
             return null;
         }
     }

@@ -8,7 +8,7 @@ namespace MCFTAcademics.BL
 {
     public class Student
     {
-        public Student(int id, string firstName, string lastName, string studentCode, string program, DateTime admissionDate)
+        public Student(int id, string firstName, string lastName, string studentCode, string program, DateTime? admissionDate)
         {
             Id = id;
             FirstName = firstName;
@@ -22,7 +22,8 @@ namespace MCFTAcademics.BL
         /// This is the student ID used as the database primary key.
         /// </summary>
         public int Id { get; }
-        public DateTime AdmissionDate { get; }
+        // XXX: This can be nullable in the DB, is that right?
+        public DateTime? AdmissionDate { get; }
         /// <summary>
         /// This is the student ID that MCFT uses for display.
         /// (not the database PK)
@@ -50,7 +51,7 @@ namespace MCFTAcademics.BL
             return StudentDAL.GetStudent(id);
         }
 
-        public static List<Student> GetStudentsByCourseId(Course course)
+        public static List<Student> GetStudentsByCourse(Course course)
         {
             return StudentDAL.GetStudentsInCourse(course);
         }
