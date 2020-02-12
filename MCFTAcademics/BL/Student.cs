@@ -54,5 +54,32 @@ namespace MCFTAcademics.BL
         {
             return StudentDAL.GetStudentsInCourse(course);
         }
+
+        /// <summary>
+        /// Creates a student code for display purposes.
+        /// </summary>
+        /// <param name="year">The two-digit year.</param>
+        /// <param name="id">A three-digit student ID.</param>
+        /// <returns>The student code used for display.</returns>
+        /// <remarks>
+        /// The ID has no relation to the database key.
+        /// </remarks>
+        public static string GenerateStudentCode(int year, int id = 0)
+        {
+            if (year < 0 || year > 99)
+                throw new ArgumentException("Year must be two-digit positive number", nameof(year));
+            if (id > 999 || id < 0)
+                throw new ArgumentException("ID must be three-digit positive number", nameof(id));
+
+            // pad with zeros
+            var studentCode = $"S{year:D2}{id:D3}";
+            // XXX: try something less intensive, like using 
+            if (StudentDAL.GetStudent(studentCode) != null)
+            {
+                // it exists, try again
+                return GenerateStudentCode(year, id++);
+            }
+            return studentCode;
+        }
     }
 }
