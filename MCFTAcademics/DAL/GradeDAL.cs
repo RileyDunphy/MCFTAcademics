@@ -69,4 +69,65 @@ namespace MCFTAcademics.DAL
                     connection.Close();
             }
         }
+
+        // moved from StudentDAL
+        internal static List<Grade> GetGradesForStudent(Student student)
+        {
+            SqlConnection conn = DbConn.GetConnection();
+            List<Grade> grades = new List<Grade>();
+            Grade grade = null;
+            try
+            {
+                conn.Open(); //open the connection
+                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectStudentGradeById2", conn);
+                selectCommand.CommandType = System.Data.CommandType.StoredProcedure;
+                selectCommand.Parameters.AddWithValue("@studentId", student.Id);
+                SqlDataReader reader = selectCommand.ExecuteReader();
+                while (reader.Read())
+                {
+                    grade = GradeDAL.GradeFromRow(reader);
+                    grades.Add(grade);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                conn.Close();//don't forget to close the connection
+            }
+            return grades;
+        }
+
+        internal static Grade GetGradesForStudentInCourse(Course course, Student student)
+        {
+            SqlConnection conn = DbConn.GetConnection();
+            Grade grade = null;
+            try
+            {
+                conn.Open(); //open the connection
+                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectGradeByCourseAndStudent", conn);
+                selectCommand.CommandType = System.Data.CommandType.StoredProcedure;
+                selectCommand.Parameters.AddWithValue("@courseId", course.Id);
+                selectCommand.Parameters.AddWithValue("@studentId", student.Id);
+                //execute the sql statement
+                SqlDataReader reader = selectCommand.ExecuteReader();
+                //loop through the resultset
+                if (reader.Read())
+                {
+                    grade = GradeDAL.GradeFromRow(reader);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                conn.Close();//don't forget to close the connection
+            }
+            return grade;//return the grade
+        }
+    }
 }

@@ -8,49 +8,51 @@ namespace MCFTAcademics.BL
 {
     public class Student
     {
-        
-        private List<Grade> grades;
-        private string firstName;
-        private string lastName;
-        private string studentId;
-        private DateTime admissionDate;
-
-        public Student() { }
-
-        public Student(int id) {
-            Student s=StudentDAL.GetStudentByStudentId(id);
-            this.grades = s.grades;
-            this.firstName = s.firstName;
-            this.lastName = s.lastName;
-            this.lastName = s.lastName;
-            this.admissionDate = s.admissionDate;
-            this.studentId = s.studentId;
+        public Student(int id, string firstName, string lastName, string studentCode, string program, DateTime admissionDate)
+        {
+            Id = id;
+            FirstName = firstName;
+            LastName = lastName;
+            StudentCode = studentCode;
+            Program = program;
+            AdmissionDate = admissionDate;
         }
 
-        //TODO: change this to get grades from db method (once stored procedure is created)
-        public Student(List<Grade> grades, string firstName, string lastName, string studentId, DateTime admissionDate)
+        /// <summary>
+        /// This is the student ID used as the database primary key.
+        /// </summary>
+        public int Id { get; }
+        public DateTime AdmissionDate { get; }
+        /// <summary>
+        /// This is the student ID that MCFT uses for display.
+        /// (not the database PK)
+        /// </summary>
+        public string StudentCode { get; }
+        public string FirstName { get; }
+        public string LastName { get; }
+        // XXX: Since this and Course have this, does this need to be its own
+        // type or table?
+        public string Program { get; }
+
+        // XXX: Does this make sense to put in here, or does it go in Grade?
+        public IEnumerable<Grade> GetGrades()
         {
-            this.grades = grades;
-            this.firstName = firstName;
-            this.lastName = lastName;
-            this.studentId = studentId;
-            this.admissionDate = admissionDate;
+            return GradeDAL.GetGradesForStudent(this);
         }
 
-        public DateTime AdmissionDate { get => admissionDate; }
-        public string StudentId { get => studentId; }
-        public string FirstName { get => firstName; }
-        public string LastName { get => lastName; }
-        public List<Grade> Grades { get => grades; }
-
-        public static List<Student> GetStudentsByCourseId(int id)
+        public Grade GetGradeForCourse(Course course)
         {
-            return StudentDAL.GetStudentsByCourseId(id);
+            return GradeDAL.GetGradesForStudentInCourse(course, this);
         }
 
-        public Grade GetGradeByCourseId(int id)
+        public static Student GetStudent(int id)
         {
-            return StudentDAL.GetGradeByCourseId(id, this);
+            return StudentDAL.GetStudent(id);
+        }
+
+        public static List<Student> GetStudentsByCourseId(Course course)
+        {
+            return StudentDAL.GetStudentsInCourse(course);
         }
     }
 }
