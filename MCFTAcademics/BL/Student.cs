@@ -16,6 +16,17 @@ namespace MCFTAcademics.BL
         private DateTime admissionDate;
 
         public Student() { }
+
+        public Student(int id) {
+            Student s=StudentDAL.GetStudentByStudentId(id);
+            this.grades = s.grades;
+            this.firstName = s.firstName;
+            this.lastName = s.lastName;
+            this.lastName = s.lastName;
+            this.admissionDate = s.admissionDate;
+            this.studentId = s.studentId;
+        }
+
         //TODO: change this to get grades from db method (once stored procedure is created)
         public Student(List<Grade> grades, string firstName, string lastName, string studentId, DateTime admissionDate)
         {
@@ -25,7 +36,6 @@ namespace MCFTAcademics.BL
             this.studentId = studentId;
             this.admissionDate = admissionDate;
         }
-        
 
         public DateTime AdmissionDate { get => admissionDate; }
         public string StudentId { get => studentId; }

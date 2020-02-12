@@ -10,8 +10,9 @@ namespace MCFTAcademics.DAL
     {
         private static Student StudentFromRow(IDataReader reader)
         {
-            return new Student(null, reader["firstName"].ToString(), reader["lastName"].ToString(), reader["studentId"].ToString(), DateTime.Now);
-        }
+            List<Grade> g =GetGradeByStudentId((int)reader["studentId"]);
+            return new Student(g, reader["firstName"].ToString(), reader["lastName"].ToString(), reader["studentId"].ToString(), DateTime.Now);
+        } 
 
         public static List<Student> GetStudentsByCourseId(int id)
         {
@@ -41,6 +42,35 @@ namespace MCFTAcademics.DAL
                 conn.Close();
             }
             return students;//return the list of students
+        }
+        public static Student GetStudentByStudentId(int id)
+        {
+            SqlConnection conn = DbConn.GetConnection();
+            
+            try
+            {
+                conn.Open(); //open the connection
+                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectStudentsByCourseId", conn);
+                selectCommand.CommandType = System.Data.CommandType.StoredProcedure;
+                selectCommand.Parameters.AddWithValue("@courseId", id);
+                //execute the sql statement
+                SqlDataReader reader = selectCommand.ExecuteReader();
+                //loop through the resultset
+                while (reader.Read())
+                {
+                    Student s = StudentFromRow(reader);
+                    return s;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                conn.Close();
+            }
+            return null;//return the list of students
         }
 
         internal static List<Grade> GetGradeByStudentId(int studentId)
