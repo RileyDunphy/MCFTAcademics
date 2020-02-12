@@ -8,7 +8,10 @@
 @using System.Collections;
 @using BL;
 @{
-
+    Student studentUser = null;
+    if (Model.s != null) {
+        studentUser = @Model.s;
+    }
 
 }
 <h1>Grade By Student Id</h1>
@@ -19,42 +22,63 @@
         <input class="form-control" style="width:200px" type="text" required name="studentId" id="studentId">
         <button class="btn" id="searchById" type="submit">Search</button>
     </div>
- 
 
 
 </form>
+@if (studentUser != null)
+{
+    
+
+    <h3>@studentUser.StudentId @studentUser.FirstName @studentUser.LastName</h3>
+    <table class="table">
+        <thead>Subject</thead>
+        <thead>Grade</thead>
+        <thead>null</thead>
+        @foreach (Grade g in studentUser.Grades)
+        {
+            if (g.Subject != null)
+            {
+                <tr>
+                    <td>@g.Subject.Name</td>
+                    <td>@g.GradeAssigned</td>
+                    <td></td>
+                </tr>
+            }
+        }
+    </table>
+}
 @section scripts{
 
     <script type="text/javascript">
-        //$(document).ready(function () {
+                                //$(document).ready(function () {
 
-        //    $("form").submit(function (e) {
-        //        alert("in fucnt");
-        //        if ($('studentId').val() == '') {
-        //            alert("Please enter a student Id");
-        //            e.preventDefault();
-        //        }
-        //        if ($('studentId').val().isNaN()) {
-        //            alert("Please enter a student Id (numbers only)");
-        //            e.preventDefault();
-        //        }
-        //        else {
-        //            alert("in else");
-        //            var xmlhttp = new XMLHttpRequest();
-        //            xmlhttp.onreadystatechange = function() {
-        //            if (this.readyState == 4 && this.status == 200) {
-        //            alert(this.responseText);
-        //            }
-        //        };
-        //        xmlhttp.open("GET", "gradesByStudentId?q=" + str, true);
-        //        xmlhttp.send();
-        //        }
+                                //    $("form").submit(function (e) {
+                                //        alert("in fucnt");
+                                //        if ($('studentId').val() == '') {
+                                //            alert("Please enter a student Id");
+                                //            e.preventDefault();
+                                //        }
+                                //        if ($('studentId').val().isNaN()) {
+                                //            alert("Please enter a student Id (numbers only)");
+                                //            e.preventDefault();
+                                //        }
+                                //        else {
+                                //            alert("in else");
+                                //            var xmlhttp = new XMLHttpRequest();
+                                //            xmlhttp.onreadystatechange = function() {
+                                //            if (this.readyState == 4 && this.status == 200) {
+                                //            alert(this.responseText);
+                                //            }
+                                //        };
+                                //        xmlhttp.open("GET", "gradesByStudentId?q=" + str, true);
+                                //        xmlhttp.send();
+                                //        }
 
-          //  });
+                                  //  });
 
 
 
-       // });
+                               // });
     </script>
 }
 

@@ -22,6 +22,12 @@ namespace MCFTAcademics
 {
     public class GradeByStudentId : PageModel
     {
+        [BindProperty]
+        [Required(ErrorMessage = "Please enter a StudentId")]
+        [Display(Name = "Student")]
+        public Student s { get; set; }
+
+
         public void SubmitBtn_Click()
         {
             int id = Convert.ToInt32(Request.Form["studentId"]);
@@ -50,17 +56,17 @@ namespace MCFTAcademics
                 }
                 int id = Convert.ToInt32(Request.Form["studentId"]);
 
-                var student = Student.GetStudent(id);
-                var grades = student.GetGrades();
+                this.s = new Student(id);
+                //List<Grade> grades=StudentDAL.GetGradeByStudentId(id);
+                List<Grade> grades = s.Grades;
+
                 foreach (Grade g in grades) {
                     Console.WriteLine(g.ToString());
-
                 }
 
-
-
             }
-            return null;
+            catch (Exception ex) { }
+            return Page();
         }
     }
 
