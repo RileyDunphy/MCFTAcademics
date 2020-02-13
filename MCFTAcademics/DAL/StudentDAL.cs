@@ -46,20 +46,19 @@ namespace MCFTAcademics.DAL
         public static Student GetStudentByStudentId(int id)
         {
             SqlConnection conn = DbConn.GetConnection();
-            
+            Student s = null;
             try
             {
                 conn.Open(); //open the connection
-                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectStudentsByCourseId", conn);
+                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectStudentByStudentId", conn);
                 selectCommand.CommandType = System.Data.CommandType.StoredProcedure;
-                selectCommand.Parameters.AddWithValue("@courseId", id);
+                selectCommand.Parameters.AddWithValue("@studentId", id);
                 //execute the sql statement
                 SqlDataReader reader = selectCommand.ExecuteReader();
                 //loop through the resultset
-                while (reader.Read())
+                if (reader.Read())
                 {
-                    Student s = StudentFromRow(reader);
-                    return s;
+                    s = StudentFromRow(reader);
                 }
             }
             catch (Exception ex)
@@ -70,7 +69,7 @@ namespace MCFTAcademics.DAL
             {
                 conn.Close();
             }
-            return null;//return the list of students
+            return s;//return the student
         }
 
         internal static List<Grade> GetGradeByStudentId(int studentId)

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MCFTAcademics.DAL;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,6 +8,7 @@ namespace MCFTAcademics.BL
 {
     public class Grade
     {
+        private int studentId;
         private decimal gradeAssigned;
         private DateTime given;
         private bool locked;
@@ -18,8 +20,9 @@ namespace MCFTAcademics.BL
         {
         }
 
-        public Grade(decimal gradeAssigned, DateTime given, bool locked, decimal hoursAttended, bool supplemental, Course subject)
+        public Grade(int studentId, decimal gradeAssigned, DateTime given, bool locked, decimal hoursAttended, bool supplemental, Course subject)
         {
+            this.studentId = studentId;
             this.gradeAssigned = gradeAssigned;
             this.given = given;
             this.locked = locked;
@@ -28,6 +31,7 @@ namespace MCFTAcademics.BL
             this.subject=subject;
         }
 
+        public int StudentId { get => studentId; }
         public decimal GradeAssigned { get => gradeAssigned;  }
         public DateTime Given { get => given;  }
         public bool Locked { get => locked;  }
@@ -45,6 +49,10 @@ namespace MCFTAcademics.BL
             {
                 return false;
             }
+        }
+        public static List<Grade> GetAllGrades()
+        {
+            return GradeDAL.GetAllGrades();
         }
     }
 }

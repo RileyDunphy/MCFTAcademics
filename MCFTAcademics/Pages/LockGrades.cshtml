@@ -1,0 +1,58 @@
+﻿@page
+@using BL;
+@model MCFTAcademics.LockGradesModel
+@{
+    ViewData["Title"] = "Lock Grades";
+}
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.css">
+
+<h2>Lock Grades</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Name</th>
+                <th scope="col">Program</th>
+                <th scope="col">Course</th>
+                <th scope="col">Grade</th>
+                <th scope="col">Toggle Lock</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (Grade g in Grade.GetAllGrades())
+            {
+                Student s = Student.GetStudentByStudentId(g.StudentId);
+            <tr>
+                <th scope="row">@g.StudentId</th>
+                <td>@s.FirstName @s.LastName</td>
+                <td>@g.Subject.Program</td>
+                <td>@g.Subject.Name</td>
+                <td>@g.GradeAssigned</td>
+               @if (!g.Locked)
+               {
+                <td><button type="button" class="lock btn btn-primary">Unlocked</button></td>
+               }
+               else if (g.Locked)
+               {
+            <td><button type="button" class="btn btn-danger">Locked</button></td>
+               }
+            </tr>
+            }
+        </tbody>
+    </table>
+
+@section scripts{
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.table').DataTable();
+        });
+        $("body").on("click", ".table .lock", function() {
+            if (confirm("Do you want to lock this row?")) {
+                var row = $(this).closest("tr");
+                row.find("button").parent().html("<button type=\"button\" class=\"Delete btn btn-sm btn-danger d-none d-md-inline-block\">Delete</button>");
+                row.after('<tr> <td><input class="form-check-input" type="radio" checked value="prereq"></td> <td><input class="form-check-input" type="radio" name="reqRadio+' + count + '" value="coreq"></td><td><input class="form-control" name="prereqCode+' + count + '" type="text" id="txtCourseCode" value=""></td><td><button type="button" class="Add btn btn-primary">Add</button></td></tr>');
+            }
+    </script>
+
+} 

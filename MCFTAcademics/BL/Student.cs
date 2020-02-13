@@ -52,5 +52,10 @@ namespace MCFTAcademics.BL
         {
             return StudentDAL.GetGradeByCourseId(id, this);
         }
+
+        public static Student GetStudentByStudentId(int id)
+        {
+            return StudentDAL.GetStudentByStudentId(id);
+        }
     }
 }
