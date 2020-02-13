@@ -12,7 +12,7 @@
     if (Model.s != null) {
         studentUser = @Model.s;
     }
-
+    int rowCounter = 1;
 }
 <h1>Grade By Student Id</h1>
 <br>
@@ -31,27 +31,72 @@
 
     <h3>@studentUser.StudentId @studentUser.FirstName @studentUser.LastName</h3>
     <table class="table">
-        <thead>Subject</thead>
-        <thead>Grade</thead>
-        <thead>null</thead>
+        <thead>
+            <tr>
+                <th scope="col">Course Code</th>
+                <th scope="col">Subject</th>
+                <th scope="col">Instructor</th>
+                <th scope="col">Grade</th>
+            </tr>
+        </thead>
+        
         @foreach (Grade g in studentUser.Grades)
         {
-            if (g.Subject != null)
+
+            if (g.Subject != null && g.Locked)
             {
-                <tr>
-                    <td>@g.Subject.Name</td>
-                    <td>@g.GradeAssigned</td>
-                    <td></td>
-                </tr>
+    <tr>
+        <th scope="row">@rowCounter</th>
+        <td>@g.Subject.Name</td>
+        <td>@g.Subject.LeadStaff.Name</td>
+        <td>@g.GradeAssigned</td>
+
+        <td></td>
+    </tr>
+                rowCounter++;
+            }
+            else if (g.Subject != null && !g.Locked)
+            {
+    <tr>
+        <th scope="row">@g.Subject.Id</th>
+
+        <td>@g.Subject.Name</td>
+        <td>@g.Subject.LeadStaff.Name</td>
+        <td><input id="@g.Subject" onchange="method(this.value)" type="number" value="@g.GradeAssigned" /></td>
+
+        <td></td>
+    </tr>
+    rowCounter++;
             }
         }
     </table>
+    <div id="commentBox">
+        <form class="form-inline" id="form" method="Post">
+            <div class="row">
+                <label>Please comment on changes: </label>
+                <input class="form-control" style="width:200px" type="text" required name="commentField" id="commentField">
+                <button class="btn" id="submitChanges" type="submit">Submit Changes</button>
+            </div>
+        </form>
+    </div>
+    
 }
+
+
+
 @section scripts{
 
     <script type="text/javascript">
-                                //$(document).ready(function () {
-
+        $(document).ready(function () {
+            $('commentBox').hide();
+                                    method = function (val) {
+                                       // alert(val);
+                                        console.log('hidden')
+                                        $('commentBox').hidden=true;
+                                        
+                                        
+                                    }
+                                    
                                 //    $("form").submit(function (e) {
                                 //        alert("in fucnt");
                                 //        if ($('studentId').val() == '') {
@@ -74,7 +119,7 @@
                                 //        xmlhttp.send();
                                 //        }
 
-                                  //  });
+                                    });
 
 
 
