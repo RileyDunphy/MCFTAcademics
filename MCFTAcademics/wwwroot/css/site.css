@@ -35,3 +35,8 @@ body {
         display: none;
     }
 }
+
+/* Our own CSS */
+.userDisabled {
+    text-decoration: line-through;
+}

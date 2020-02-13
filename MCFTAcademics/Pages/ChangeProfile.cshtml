@@ -1,0 +1,27 @@
+﻿@page
+@model MCFTAcademics.ChangeProfileModel
+@{
+    ViewData["Title"] = "Change Profile";
+}
+
+<h2>Change Profile</h2>
+<p>You are changing the profile for <var>@ViewData["ChangeProfile_TargetDescription"]</var>.</p>
+<p>Note that the user may need to sign out and then sign back in to have changes take effect.</p>
+<form method="post">
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <input type="hidden" asp-for="TargetUserId" />
+    @if (ViewData["ChangeProfile_TargetUser"] != null)
+    {
+        <div class="form-group">
+            <label for="usernameInput">New Username</label>
+            <input id="usernameInput" class="form-control" asp-for="Username" placeholder="Enter the new username..." />
+        </div>
+        <div class="form-group">
+            <label for="realNameInput">New Real Name</label>
+            <input id="realNameInput" class="form-control" asp-for="RealName" placeholder="Enter the new real name..." />
+        </div>
+        <input class="btn btn-default" type="submit" value="Change" />
+    }
+    @Html.AntiForgeryToken()
+</form>
+

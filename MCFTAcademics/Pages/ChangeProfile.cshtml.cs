@@ -1,92 +1,72 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Data;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace MCFTAcademics
 {
-    public class ChangePasswordModel : PageModel
+    // based on changepassword
+    public class ChangeProfileModel : PageModel
     {
-        // Binding properties for form
-        [BindProperty]
-        // not required if changing PW of others
-        [DataType(DataType.Password)]
-        public string OldPassword { get; set; }
         [BindProperty]
         [Required]
-        [DataType(DataType.Password)]
-        public string NewPassword { get; set; }
+        public string Username { get; set; }
         [BindProperty]
         [Required]
-        [DataType(DataType.Password)]
-        public string NewPasswordRepeat { get; set; }
-        // for selecting which user to change PW for/presenting that
+        public string RealName { get; set; }
         [BindProperty]
         [Required]
         [HiddenInput]
         public int TargetUserId { get; set; }
 
         // only useful for this page
-        public bool AllowedToChangePassword() => User.UserIdMatches(TargetUserId) || User.IsInRole("Admin");
+        public bool AllowedToChangeProfile() => User.UserIdMatches(TargetUserId) || User.IsInRole("Admin");
 
-        // XXX: turn into a route with args?
         public IActionResult OnPost()
         {
             // we still perform a bunch of verification in case someone tries to bamboozle us
-            if (!AllowedToChangePassword())
+            if (!AllowedToChangeProfile())
             {
-                ModelState.AddModelError("", "You aren't allowed to change the password of someone else.");
+                ModelState.AddModelError("", "You aren't allowed to change the profile of someone else.");
+                SetViewDataForGet();
                 return Page();
             }
-            bool error = false;
             BL.User user = BL.User.GetUser(TargetUserId);
             if (user == null)
             {
                 ModelState.AddModelError("", "The user isn't valid.");
+                SetViewDataForGet();
                 return Page();
             }
             if (!ModelState.IsValid)
             {
                 ModelState.AddModelError("", "One of the values is blank.");
-                error = true;
-            }
-            if (User.UserIdMatches(TargetUserId) && !user.ValidatePassword(OldPassword))
-            {
-                ModelState.AddModelError("", "The current password isn't valid.");
-                error = true;
-            }
-            if (User.UserIdMatches(TargetUserId) && OldPassword == NewPassword)
-            {
-                ModelState.AddModelError("", "The old and new password are the same.");
-                error = true;
-            }
-            if (NewPassword != NewPasswordRepeat)
-            {
-                ModelState.AddModelError("", "The new passwords don't match.");
-                error = true;
-            }
-            // TODO: This would be a good place to put password validation rules if we had any.
-            // any errors that are pointless do any work with, stop here
-            if (error)
+                SetViewDataForGet();
                 return Page();
+            }
+            if (user.Username != Username && BL.User.GetUser(Username) != null)
+            {
+                ModelState.AddModelError("", "A user with that username exists already.");
+                SetViewDataForGet();
+                return Page();
+            }
 
             try
             {
-                if (user.ChangePassword(NewPassword) != null)
+                if (user.ChangeProfile(RealName, Username) != null)
                 {
-                    ModelState.AddModelError("", "The password couldn't be changed.");
+                    ModelState.AddModelError("", "The profile couldn't be changed.");
                 }
             }
             catch (Exception e)
             {
                 ModelState.AddModelError("",
-                    "There was an exception from the system changing the password;" +
+                    "There was an exception from the system changing the profile;" +
                     "report this to an administrator: " + e.Message);
             }
 
@@ -100,18 +80,20 @@ namespace MCFTAcademics
             if (targetUser == null)
                 ModelState.AddModelError("", "There is no user with that ID.");
             TargetUserId = targetUser?.Id ?? -1;
-            ViewData["ChangePassword_TargetUser"] = targetUser;
-            ViewData["ChangePassword_IsSelf"] = User.UserIdMatches(TargetUserId);
-            ViewData["ChangePassword_TargetDescription"] = targetUser.GetReferentialName(User);
+            RealName = targetUser?.Name;
+            Username = targetUser?.Username;
+            ViewData["ChangeProfile_TargetUser"] = targetUser;
+            ViewData["ChangeProfile_IsSelf"] = User.UserIdMatches(TargetUserId);
+            ViewData["ChangeProfile_TargetDescription"] = targetUser.GetReferentialName(User);
         }
 
         void SetViewDataForGet() => SetViewDataForGet(BL.User.GetUser(TargetUserId));
 
         public IActionResult OnGetWithId(int id)
         {
-            if (!AllowedToChangePassword())
+            if (!AllowedToChangeProfile())
             {
-                ModelState.AddModelError("", "You aren't allowed to change the password of someone else.");
+                ModelState.AddModelError("", "You aren't allowed to change the profile of someone else.");
                 SetViewDataForGet(null);
                 return Page();
             }
