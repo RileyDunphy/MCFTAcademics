@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MCFTAcademics.DAL;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -35,16 +36,24 @@ namespace MCFTAcademics.BL
         public bool Supplemental { get => supplemental; }
         public Course Subject { get => subject; }
 
-        public bool IsPassing()
-        {
-            if (this.GradeAssigned >= 60)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
+        public static IEnumerable<Grade> GetAllGrades() => GradeDAL.GetAllGrades();
+
+        public static IEnumerable<Grade> GetGradesForInstructor(User staff) =>
+            GradeDAL.GetGradesForInstructor(staff);
+
+        /// <summary>
+        /// Calculates the final grade.
+        /// </summary>
+        /// <returns>The grade after a formula is applied to it.</returns>
+        /// <remarks>
+        /// The current algorithm MCFT uses is if the grade is a supplemental,
+        /// the result is maximum 60 regardless if more was earned on the
+        /// supplemental.
+        /// </remarks>
+        // XXX: How do we handle historical versions?
+        public decimal CalculateFinalGrade() =>
+            Supplemental ? Math.Min(60, GradeAssigned) : GradeAssigned;
+
+        public bool IsPassing() => CalculateFinalGrade() >= 60;
     }
 }

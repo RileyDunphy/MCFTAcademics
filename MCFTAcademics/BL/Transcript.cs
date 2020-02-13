@@ -25,7 +25,11 @@ namespace MCFTAcademics.BL
             this.official = official;
             this.signatureName = signatureName;
             this.creationDate = DateTime.Now;
-            reportName = student.StudentId+"_"+ creationDate.ToShortDateString()+"_"+creationDate.TimeOfDay;
+            reportName = student.StudentCode
+                + "_"
+                + creationDate.ToShortDateString()
+                + "_"
+                + creationDate.TimeOfDay;
         }
 
         public static PdfDocument generateReport(Transcript t)
@@ -52,7 +56,7 @@ namespace MCFTAcademics.BL
             string gradeContent="";
             int height = 50;
 
-            foreach (Grade g in t.student.Grades) {
+            foreach (Grade g in t.student.GetGrades()) {
                 gradeContent = "is Supplemental: "+g.Supplemental.ToString() +g.Subject.Name + "--Grade " + g.GradeAssigned.ToString();
                 gfx.DrawString(gradeContent, smallFont, XBrushes.DarkBlue, new XRect(0, height, page.Width, page.Height), XStringFormats.Center);
                 height += 25;
