@@ -83,43 +83,58 @@ namespace MCFTAcademics.DAL
 
         public static bool UpdateCourse(Course c)
         {
-            bool result;
+            bool result = false;
             using (var connection = DbConn.GetConnection())
             {
                 connection.Open();
-                SqlCommand updateCommand = new SqlCommand("mcftacademics.dbo.UpdateCourseById", connection);
-                updateCommand.CommandType = System.Data.CommandType.StoredProcedure;
-                updateCommand.Parameters.AddWithValue("@id", c.Id);
-                updateCommand.Parameters.AddWithValue("@name", c.Name);
-                updateCommand.Parameters.AddWithValue("@credit", c.Credit);
-                updateCommand.Parameters.AddWithValue("@description", c.Description);
-                updateCommand.Parameters.AddWithValue("@lectureHours", c.LectureHours);
-                updateCommand.Parameters.AddWithValue("@labHours", c.LabHours);
-                updateCommand.Parameters.AddWithValue("@examHours", c.ExamHours);
-                updateCommand.Parameters.AddWithValue("@revisionNumber", c.RevisionNumber);
-                updateCommand.Parameters.AddWithValue("@program", c.Program);
-                updateCommand.Parameters.AddWithValue("@accreditation", c.Accreditation);
-                int rows = updateCommand.ExecuteNonQuery();
-                if (rows > 0)
+                var transaction = connection.BeginTransaction("UpdateCourse for " + c.Id);
+                try
                 {
-                    //Drop existing staff (so they're not multiple instructors) 
-                    //and add back the lead staff and support if there is one
-                    StaffDAL.DropStaff(c.Id);
-                    StaffDAL.AddStaff(c.Id, c.LeadStaff);
-                    if (c.SupportStaff != null)
+                    SqlCommand updateCommand = new SqlCommand("mcftacademics.dbo.UpdateCourseById", connection);
+                    updateCommand.Transaction = transaction;
+                    updateCommand.CommandType = System.Data.CommandType.StoredProcedure;
+                    updateCommand.Parameters.AddWithValue("@id", c.Id);
+                    updateCommand.Parameters.AddWithValue("@name", c.Name);
+                    updateCommand.Parameters.AddWithValue("@credit", c.Credit);
+                    updateCommand.Parameters.AddWithValue("@description", c.Description);
+                    updateCommand.Parameters.AddWithValue("@lectureHours", c.LectureHours);
+                    updateCommand.Parameters.AddWithValue("@labHours", c.LabHours);
+                    updateCommand.Parameters.AddWithValue("@examHours", c.ExamHours);
+                    updateCommand.Parameters.AddWithValue("@revisionNumber", c.RevisionNumber);
+                    updateCommand.Parameters.AddWithValue("@program", c.Program);
+                    updateCommand.Parameters.AddWithValue("@accreditation", c.Accreditation);
+                    int rows = updateCommand.ExecuteNonQuery();
+                    if (rows > 0)
                     {
-                        StaffDAL.AddStaff(c.Id, c.SupportStaff);
+                        //Drop existing staff (so they're not multiple instructors) 
+                        //and add back the lead staff and support if there is one
+                        StaffDAL.DropStaff(connection, c.Id, transaction);
+                        StaffDAL.AddStaff(connection, c.Id, c.LeadStaff, transaction);
+                        if (c.SupportStaff != null)
+                        {
+                            StaffDAL.AddStaff(connection, c.Id, c.SupportStaff, transaction);
+                        }
+                        PrerequisiteDAL.DropPrereqs(connection, c.Id, transaction);
+                        foreach (Prerequisite prereq in c.Prerequisites)
+                        {
+                            PrerequisiteDAL.AddPrereq(connection, prereq, transaction);
+                        }
+                        transaction.Commit();
+                        result = true;
                     }
-                    PrerequisiteDAL.DropPrereqs(c.Id);
-                    foreach (Prerequisite prereq in c.Prerequisites)
-                    {
-                        PrerequisiteDAL.AddPrereq(prereq);
-                    }
-                    result= true;
                 }
-                else
+                catch (Exception)
                 {
-                    result= false;
+                    try
+                    {
+                        transaction.Rollback();
+                    }
+                    catch
+                    {
+                        // if THAT fails
+                        throw;
+                    }
+                    throw;
                 }
             }
             return result;
@@ -131,40 +146,60 @@ namespace MCFTAcademics.DAL
             using (var connection = DbConn.GetConnection())
             {
                 connection.Open();
-                SqlCommand insertCommand = new SqlCommand("mcftacademics.dbo.InsertCourse", connection);
-                insertCommand.CommandType = System.Data.CommandType.StoredProcedure;
-                insertCommand.Parameters.AddWithValue("@name", c.Name);
-                insertCommand.Parameters.AddWithValue("@credit", c.Credit);
-                insertCommand.Parameters.AddWithValue("@description", c.Description);
-                insertCommand.Parameters.AddWithValue("@lectureHours", c.LectureHours);
-                insertCommand.Parameters.AddWithValue("@labHours", c.LabHours);
-                insertCommand.Parameters.AddWithValue("@examHours", c.ExamHours);
-                insertCommand.Parameters.AddWithValue("@revisionNumber", c.RevisionNumber);
-                insertCommand.Parameters.AddWithValue("@program", c.Program);
-                insertCommand.Parameters.AddWithValue("@accreditation", c.Accreditation);
-                int rows = insertCommand.ExecuteNonQuery();
-                if (rows > 0)
+                var transaction = connection.BeginTransaction("AddCourse");
+                try
                 {
-                    SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectLastCourseInsert", connection);
-                    id = Convert.ToInt32(selectCommand.ExecuteScalar());
-                    //Drop existing staff (so they're not multiple instructors) 
-                    //and add back the lead staff and support if there is one
-                    StaffDAL.DropStaff(id);
-                    StaffDAL.AddStaff(id, c.LeadStaff);
-                    if(c.SupportStaff != null)
+                    SqlCommand insertCommand = new SqlCommand("mcftacademics.dbo.InsertCourse", connection);
+                    insertCommand.Transaction = transaction;
+                    insertCommand.CommandType = System.Data.CommandType.StoredProcedure;
+                    insertCommand.Parameters.AddWithValue("@name", c.Name);
+                    insertCommand.Parameters.AddWithValue("@credit", c.Credit);
+                    insertCommand.Parameters.AddWithValue("@description", c.Description);
+                    insertCommand.Parameters.AddWithValue("@lectureHours", c.LectureHours);
+                    insertCommand.Parameters.AddWithValue("@labHours", c.LabHours);
+                    insertCommand.Parameters.AddWithValue("@examHours", c.ExamHours);
+                    insertCommand.Parameters.AddWithValue("@revisionNumber", c.RevisionNumber);
+                    insertCommand.Parameters.AddWithValue("@program", c.Program);
+                    insertCommand.Parameters.AddWithValue("@accreditation", c.Accreditation);
+                    int rows = insertCommand.ExecuteNonQuery();
+                    if (rows > 0)
                     {
-                        StaffDAL.AddStaff(id, c.SupportStaff);
+                        SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectLastCourseInsert", connection);
+                        selectCommand.Transaction = transaction;
+                        id = Convert.ToInt32(selectCommand.ExecuteScalar());
+                        //Drop existing staff (so they're not multiple instructors) 
+                        //and add back the lead staff and support if there is one
+                        StaffDAL.DropStaff(connection, id, transaction);
+                        StaffDAL.AddStaff(connection, id, c.LeadStaff, transaction);
+                        if (c.SupportStaff != null)
+                        {
+                            StaffDAL.AddStaff(connection, id, c.SupportStaff, transaction);
+                        }
+                        PrerequisiteDAL.DropPrereqs(connection, id, transaction);
+                        foreach (Prerequisite prereq in c.Prerequisites)
+                        {
+                            prereq.CourseId = id;
+                            PrerequisiteDAL.AddPrereq(connection, prereq, transaction);
+                        }
+                        transaction.Commit();
                     }
-                    PrerequisiteDAL.DropPrereqs(id);
-                    foreach (Prerequisite prereq in c.Prerequisites)
+                    else
                     {
-                        prereq.CourseId = id;
-                        PrerequisiteDAL.AddPrereq(prereq);
+                        throw new Exception();
                     }
                 }
-                else
+                catch (Exception)
                 {
-                    throw new Exception();
+                    try
+                    {
+                        transaction.Rollback();
+                    }
+                    catch
+                    {
+                        // if THAT fails
+                        throw;
+                    }
+                    throw;
                 }
             }
             return id;

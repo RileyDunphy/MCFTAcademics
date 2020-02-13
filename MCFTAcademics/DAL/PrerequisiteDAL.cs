@@ -38,9 +38,11 @@ namespace MCFTAcademics.DAL
             }
         }
 
-        public static bool DropPrereqs(SqlConnection connection, int id)
+        public static bool DropPrereqs(SqlConnection connection, int id, SqlTransaction transaction = null)
         {
             SqlCommand deleteCommand = new SqlCommand("mcftacademics.dbo.DropAllPrereqsById", connection);
+            if (transaction != null)
+                deleteCommand.Transaction = transaction;
             deleteCommand.CommandType = System.Data.CommandType.StoredProcedure;
             deleteCommand.Parameters.AddWithValue("@id", id);
             int rows = deleteCommand.ExecuteNonQuery();
@@ -56,9 +58,11 @@ namespace MCFTAcademics.DAL
             }
         }
 
-        public static bool AddPrereq(SqlConnection connection, Prerequisite prereq)
+        public static bool AddPrereq(SqlConnection connection, Prerequisite prereq, SqlTransaction transaction = null)
         {
             SqlCommand insertCommand = new SqlCommand("mcftacademics.dbo.InsertPrereq", connection);
+            if (transaction != null)
+                insertCommand.Transaction = transaction;
             insertCommand.CommandType = System.Data.CommandType.StoredProcedure;
             insertCommand.Parameters.AddWithValue("@courseId", prereq.CourseId);
             insertCommand.Parameters.AddWithValue("@prereqId", prereq.PrereqId);

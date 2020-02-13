@@ -59,9 +59,11 @@ namespace MCFTAcademics.DAL
             }
         }
 
-        internal static bool AddStaff(SqlConnection connection, int courseId, Staff staff)
+        internal static bool AddStaff(SqlConnection connection, int courseId, Staff staff, SqlTransaction transaction = null)
         {
             SqlCommand insertCommand = new SqlCommand("mcftacademics.dbo.InsertStaff", connection);
+            if (transaction != null)
+                insertCommand.Transaction = transaction;
             insertCommand.CommandType = System.Data.CommandType.StoredProcedure;
             insertCommand.Parameters.AddWithValue("@courseId", courseId);
             insertCommand.Parameters.AddWithValue("@staffId", staff.UserId);
@@ -79,9 +81,11 @@ namespace MCFTAcademics.DAL
             }
         }
 
-        public static bool DropStaff(SqlConnection connection, int id)
+        public static bool DropStaff(SqlConnection connection, int id, SqlTransaction transaction = null)
         {
             SqlCommand deleteCommand = new SqlCommand("mcftacademics.dbo.DropAllStaffById", connection);
+            if (transaction != null)
+                deleteCommand.Transaction = transaction;
             deleteCommand.CommandType = System.Data.CommandType.StoredProcedure;
             deleteCommand.Parameters.AddWithValue("@courseId", id);
             int rows = deleteCommand.ExecuteNonQuery();
