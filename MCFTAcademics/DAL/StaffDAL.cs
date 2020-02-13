@@ -34,70 +34,67 @@ namespace MCFTAcademics.DAL
             return staff;//return the list of staff
         }
 
+        internal static Staff GetStaffByCourseIdAndType(SqlConnection connection, int id, string type)
+        {
+            SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectStaffByCourseIdAndType", connection);
+            selectCommand.CommandType = System.Data.CommandType.StoredProcedure;
+            selectCommand.Parameters.AddWithValue("@id", id);
+            selectCommand.Parameters.AddWithValue("@type", type);
+            //execute the sql statement
+            SqlDataReader reader = selectCommand.ExecuteReader();
+            //loop through the resultset
+            if (reader.Read())
+            {
+                return StaffFromRow(reader);
+            }
+            return null;
+        }
+
         public static Staff GetStaffByCourseIdAndType(int id, string type)
         {
-            Staff staff = null;
             using (var connection = DbConn.GetConnection())
             {
                 connection.Open();
-                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectStaffByCourseIdAndType", connection);
-                selectCommand.CommandType = System.Data.CommandType.StoredProcedure;
-                selectCommand.Parameters.AddWithValue("@id", id);
-                selectCommand.Parameters.AddWithValue("@type", type);
-                //execute the sql statement
-                SqlDataReader reader = selectCommand.ExecuteReader();
-                //loop through the resultset
-                if (reader.Read())
-                {
-                    staff = StaffFromRow(reader);
-                }
+                return GetStaffByCourseIdAndType(connection, id, type);
             }
-            return staff;//return the staff
         }
+
+        internal static bool AddStaff(SqlConnection connection, int courseId, Staff staff)
+        {
+            SqlCommand insertCommand = new SqlCommand("mcftacademics.dbo.InsertStaff", connection);
+            insertCommand.CommandType = System.Data.CommandType.StoredProcedure;
+            insertCommand.Parameters.AddWithValue("@courseId", courseId);
+            insertCommand.Parameters.AddWithValue("@staffId", staff.UserId);
+            insertCommand.Parameters.AddWithValue("@type", staff.Type);
+            int rows = insertCommand.ExecuteNonQuery();
+            return (rows > 0);
+        }
+
         public static bool AddStaff(int courseId, Staff staff)
         {
-            bool result;
             using (var connection = DbConn.GetConnection())
             {
                 connection.Open();
-                SqlCommand insertCommand = new SqlCommand("mcftacademics.dbo.InsertStaff", connection);
-                insertCommand.CommandType = System.Data.CommandType.StoredProcedure;
-                insertCommand.Parameters.AddWithValue("@courseId", courseId);
-                insertCommand.Parameters.AddWithValue("@staffId", staff.UserId);
-                insertCommand.Parameters.AddWithValue("@type", staff.Type);
-                int rows = insertCommand.ExecuteNonQuery();
-                if (rows > 0)
-                {
-                    result = true;
-                }
-                else
-                {
-                    result = false;
-                }
+                return AddStaff(connection, courseId, staff);
             }
-            return result;
+        }
+
+        public static bool DropStaff(SqlConnection connection, int id)
+        {
+            SqlCommand deleteCommand = new SqlCommand("mcftacademics.dbo.DropAllStaffById", connection);
+            deleteCommand.CommandType = System.Data.CommandType.StoredProcedure;
+            deleteCommand.Parameters.AddWithValue("@courseId", id);
+            int rows = deleteCommand.ExecuteNonQuery();
+            return (rows > 0);
         }
 
         public static bool DropStaff(int id)
         {
-            bool result;
             using (var connection = DbConn.GetConnection())
             {
                 connection.Open();
-                SqlCommand deleteCommand = new SqlCommand("mcftacademics.dbo.DropAllStaffById", connection);
-                deleteCommand.CommandType = System.Data.CommandType.StoredProcedure;
-                deleteCommand.Parameters.AddWithValue("@courseId", id);
-                int rows = deleteCommand.ExecuteNonQuery();
-                if (rows > 0)
-                {
-                    result = true;
-                }
-                else
-                {
-                    result = false;
-                }
+                return DropStaff(connection, id);
             }
-            return result;
         }
     }
 }
