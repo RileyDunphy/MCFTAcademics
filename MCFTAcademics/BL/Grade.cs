@@ -54,5 +54,10 @@ namespace MCFTAcademics.BL
         {
             return GradeDAL.GetAllGrades();
         }
+
+        public static bool ToggleGradeLock(int studentId, int courseId)
+        {
+            return GradeDAL.ToggleGradeLock(studentId, courseId);
+        }
     }
 }
