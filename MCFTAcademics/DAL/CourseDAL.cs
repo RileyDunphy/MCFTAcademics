@@ -16,12 +16,11 @@ namespace MCFTAcademics.DAL
         }
         public static List<Course> GetAllCourses()
         {
-            SqlConnection conn = DbConn.GetConnection();
             List<Course> courses = new List<Course>();
-            try
+            using (var connection = DbConn.GetConnection())
             {
-                conn.Open(); //open the connection
-                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.Get_AllCoursesANDCourseCodes", conn);
+                connection.Open();
+                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.Get_AllCoursesANDCourseCodes", connection);
                 selectCommand.CommandType = System.Data.CommandType.StoredProcedure;
                 //execute the sql statement
                 SqlDataReader reader = selectCommand.ExecuteReader();
@@ -35,25 +34,16 @@ namespace MCFTAcademics.DAL
                     courses.Add(c);
                 }
             }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            finally
-            {
-                conn.Close();//don't forget to close the connection
-            }
             return courses;//return the list of courses
         }
 
         public static List<Course> GetCoursesByInstructor(int userid)
         {
-            SqlConnection conn = DbConn.GetConnection();
             List<Course> courses = new List<Course>();
-            try
+            using (var connection = DbConn.GetConnection())
             {
-                conn.Open(); //open the connection
-                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectCoursesByInstructor", conn);
+                connection.Open();
+                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectCoursesByInstructor", connection);
                 selectCommand.CommandType = System.Data.CommandType.StoredProcedure;
                 selectCommand.Parameters.AddWithValue("@userid", userid);
                 //execute the sql statement
@@ -66,24 +56,15 @@ namespace MCFTAcademics.DAL
 
                 }
             }
-            catch(Exception ex)
-            {
-                throw ex;
-            }
-            finally
-            {
-                conn.Close();
-            }
             return courses;//return the list of courses
         }
         public static Course GetCourseById(int id)
         {
-            SqlConnection conn = DbConn.GetConnection();
             Course course = null;
-            try
+            using (var connection = DbConn.GetConnection())
             {
-                conn.Open(); //open the connection
-                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectCourseById", conn);
+                connection.Open();
+                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectCourseByid", connection);
                 selectCommand.CommandType = System.Data.CommandType.StoredProcedure;
                 selectCommand.Parameters.AddWithValue("@id", id);
                 //execute the sql statement
@@ -97,25 +78,16 @@ namespace MCFTAcademics.DAL
                     course = CourseFromRow(reader, prereqs, leadStaff, supportStaff);
                 }
             }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            finally
-            {
-                conn.Close();//don't forget to close the connection
-            }
             return course;//return the course
         }
 
         public static bool UpdateCourse(Course c)
         {
-            SqlConnection conn = DbConn.GetConnection();
             bool result;
-            try
+            using (var connection = DbConn.GetConnection())
             {
-                conn.Open();
-                SqlCommand updateCommand = new SqlCommand("mcftacademics.dbo.UpdateCourseById", conn);
+                connection.Open();
+                SqlCommand updateCommand = new SqlCommand("mcftacademics.dbo.UpdateCourseById", connection);
                 updateCommand.CommandType = System.Data.CommandType.StoredProcedure;
                 updateCommand.Parameters.AddWithValue("@id", c.Id);
                 updateCommand.Parameters.AddWithValue("@name", c.Name);
@@ -150,25 +122,16 @@ namespace MCFTAcademics.DAL
                     result= false;
                 }
             }
-            catch(Exception ex)
-            {
-                result = false;
-            }
-            finally
-            {
-                conn.Close();
-            }
             return result;
         }
 
         public static int AddCourse(Course c)
         {
-            SqlConnection conn = DbConn.GetConnection();
             int id;
-            try
+            using (var connection = DbConn.GetConnection())
             {
-                conn.Open();
-                SqlCommand insertCommand = new SqlCommand("mcftacademics.dbo.InsertCourse", conn);
+                connection.Open();
+                SqlCommand insertCommand = new SqlCommand("mcftacademics.dbo.InsertCourse", connection);
                 insertCommand.CommandType = System.Data.CommandType.StoredProcedure;
                 insertCommand.Parameters.AddWithValue("@name", c.Name);
                 insertCommand.Parameters.AddWithValue("@credit", c.Credit);
@@ -182,7 +145,7 @@ namespace MCFTAcademics.DAL
                 int rows = insertCommand.ExecuteNonQuery();
                 if (rows > 0)
                 {
-                    SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectLastCourseInsert", conn);
+                    SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectLastCourseInsert", connection);
                     id = Convert.ToInt32(selectCommand.ExecuteScalar());
                     //Drop existing staff (so they're not multiple instructors) 
                     //and add back the lead staff and support if there is one
@@ -203,14 +166,6 @@ namespace MCFTAcademics.DAL
                 {
                     throw new Exception();
                 }
-            }
-            catch(Exception ex)
-            {
-                throw ex;
-            }
-            finally
-            {
-                conn.Close();
             }
             return id;
         }

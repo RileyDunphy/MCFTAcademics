@@ -26,10 +26,8 @@ namespace MCFTAcademics.DAL
 
         public static IEnumerable<Grade> GetAllGrades()
         {
-            SqlConnection connection = null;
-            try
+            using (var connection = DbConn.GetConnection())
             {
-                connection = DbConn.GetConnection();
                 connection.Open();
                 var command = connection.CreateCommand();
                 command.CommandText = "mcftacademics.dbo.Get_All_Grades";
@@ -37,11 +35,6 @@ namespace MCFTAcademics.DAL
                 var reader = command.ExecuteReader();
                 while (reader.Read())
                     yield return GradeFromRow(reader);
-            }
-            finally
-            {
-                if (connection != null)
-                    connection.Close();
             }
         }
 
@@ -52,10 +45,8 @@ namespace MCFTAcademics.DAL
         // (This should really be changed.)
         public static IEnumerable<Grade> GetGradesForInstructor(User staff)
         {
-            SqlConnection connection = null;
-            try
+            using (var connection = DbConn.GetConnection())
             {
-                connection = DbConn.GetConnection();
                 connection.Open();
                 var command = connection.CreateCommand();
                 command.CommandText = "mcftacademics.dbo.Get_Grades_ByStaff";
@@ -64,23 +55,17 @@ namespace MCFTAcademics.DAL
                 while (reader.Read())
                     yield return GradeFromRow(reader);
             }
-            finally
-            {
-                if (connection != null)
-                    connection.Close();
-            }
         }
 
         // moved from StudentDAL
         internal static List<Grade> GetGradesForStudent(Student student)
         {
-            SqlConnection conn = DbConn.GetConnection();
             List<Grade> grades = new List<Grade>();
             Grade grade = null;
-            try
+            using (var connection = DbConn.GetConnection())
             {
-                conn.Open(); //open the connection
-                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectStudentGradeById2", conn);
+                connection.Open();
+                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectStudentGradeById2", connection);
                 selectCommand.CommandType = System.Data.CommandType.StoredProcedure;
                 selectCommand.Parameters.AddWithValue("@studentId", student.Id);
                 SqlDataReader reader = selectCommand.ExecuteReader();
@@ -90,25 +75,16 @@ namespace MCFTAcademics.DAL
                     grades.Add(grade);
                 }
             }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            finally
-            {
-                conn.Close();//don't forget to close the connection
-            }
             return grades;
         }
 
         internal static Grade GetGradesForStudentInCourse(Course course, Student student)
         {
-            SqlConnection conn = DbConn.GetConnection();
             Grade grade = null;
-            try
+            using (var connection = DbConn.GetConnection())
             {
-                conn.Open(); //open the connection
-                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectGradeByCourseAndStudent", conn);
+                connection.Open();
+                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectGradeByCourseAndStudent", connection);
                 selectCommand.CommandType = System.Data.CommandType.StoredProcedure;
                 selectCommand.Parameters.AddWithValue("@courseId", course.Id);
                 selectCommand.Parameters.AddWithValue("@studentId", student.Id);
@@ -119,14 +95,6 @@ namespace MCFTAcademics.DAL
                 {
                     grade = GradeDAL.GradeFromRow(reader);
                                     }
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            finally
-            {
-                conn.Close();//don't forget to close the connection
             }
             return grade;//return the grade
         }

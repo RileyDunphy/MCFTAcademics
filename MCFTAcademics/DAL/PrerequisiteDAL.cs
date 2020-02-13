@@ -15,12 +15,11 @@ namespace MCFTAcademics.DAL
 
         public static List<Prerequisite> GetPrereqs(int id)
         {
-            SqlConnection conn = DbConn.GetConnection();
             List<Prerequisite> prereqs = new List<Prerequisite>();
-            try
+            using (var connection = DbConn.GetConnection())
             {
-                conn.Open(); //open the connection
-                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectPrereqsById", conn);
+                connection.Open();
+                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectPrereqsById", connection);
                 selectCommand.CommandType = System.Data.CommandType.StoredProcedure;
                 selectCommand.Parameters.AddWithValue("@id", id);
                 //execute the sql statement
@@ -31,25 +30,16 @@ namespace MCFTAcademics.DAL
                     prereqs.Add(PrerequisiteFromRow(reader));
                 }
             }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            finally
-            {
-                conn.Close();//don't forget to close the connection
-            }
             return prereqs;//return the list of prereqs
         }
 
         public static bool DropPrereqs(int id)
         {
-            SqlConnection conn = DbConn.GetConnection();
             bool result;
-            try
+            using (var connection = DbConn.GetConnection())
             {
-                conn.Open(); //open the connection
-                SqlCommand deleteCommand = new SqlCommand("mcftacademics.dbo.DropAllPrereqsById", conn);
+                connection.Open();
+                SqlCommand deleteCommand = new SqlCommand("mcftacademics.dbo.DropAllPrereqsById", connection);
                 deleteCommand.CommandType = System.Data.CommandType.StoredProcedure;
                 deleteCommand.Parameters.AddWithValue("@id", id);
                 int rows = deleteCommand.ExecuteNonQuery();
@@ -62,25 +52,16 @@ namespace MCFTAcademics.DAL
                     result= false;
                 }
             }
-            catch(Exception ex)
-            {
-                result = false;
-            }
-            finally
-            {
-                conn.Close();
-            }
             return result;
         }
 
         public static bool AddPrereq(Prerequisite prereq)
         {
-            SqlConnection conn = DbConn.GetConnection();
             bool result;
-            try
+            using (var connection = DbConn.GetConnection())
             {
-                conn.Open();
-                SqlCommand insertCommand = new SqlCommand("mcftacademics.dbo.InsertPrereq", conn);
+                connection.Open();
+                SqlCommand insertCommand = new SqlCommand("mcftacademics.dbo.InsertPrereq", connection);
                 insertCommand.CommandType = System.Data.CommandType.StoredProcedure;
                 insertCommand.Parameters.AddWithValue("@courseId", prereq.CourseId);
                 insertCommand.Parameters.AddWithValue("@prereqId", prereq.PrereqId);
@@ -95,14 +76,6 @@ namespace MCFTAcademics.DAL
                 {
                     result= false;
                 }
-            }
-            catch(Exception ex)
-            {
-                result = false;
-            }
-            finally
-            {
-                conn.Close();
             }
             return result;
         }
