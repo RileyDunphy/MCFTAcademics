@@ -19,14 +19,14 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (Student s in Student.GetStudentsByCourseId(c.Id))
+            @foreach (Student s in Student.GetStudentsByCourse(c))
             {
                 <tr>
-                    <th scope="row">@s.StudentId</th>
+                    <th scope="row">@s.StudentCode</th>
                     <td>@s.FirstName</td>
                     <td>@s.LastName</td>
                     @{
-                        Grade g = @s.GetGradeByCourseId(c.Id);
+                        Grade g = @s.GetGradeForCourse(c);
                     }
                     @if (g != null)
                     {
