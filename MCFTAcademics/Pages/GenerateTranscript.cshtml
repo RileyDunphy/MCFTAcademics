@@ -21,7 +21,7 @@
 
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.css">
 
-<h2>Lock Grades</h2>
+<h2>Generate Transcripts</h2>
 <table class="table">
     <thead>
         <tr>
@@ -53,15 +53,15 @@
         });
         $("body").on("click", ".table .generate", function () {
             if (confirm("Do you want to generate this transcript?")) {
-                var id = $(this).attr("id");
+                var studentId = $(this).attr("id");
                 var row = $(this).closest("tr");
                 $.ajax({
                     type: "GET",
-                    url: "/LockGrades?handler=Ajax&studentId=" + studentId,
+                    url: "/GenerateTranscript?handler=Ajax&studentId=" + studentId,
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",
                     success: function (response) {
-                        row.find("button").parent().html("<a href=\"/Reports/reportName.pdf\" download>View Report</a>");
+                        row.find("button").parent().html("<a href=\""+response+"\" download>View Report</a>");
                     },
                     failure: function (response) {
                         alert(response);

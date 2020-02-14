@@ -34,12 +34,13 @@ namespace MCFTAcademics.BL
             //I had to replace the . in the time of day string so it didn't interfere with the filename saving
         }
 
-        public PdfDocument generateReport()
+        public string generateReport()
         {
             //try { 
             // Create a new PDF document
             PdfDocument document = new PdfDocument();
             document.Info.Title = "Created with PDFsharp";
+            string path=null;
 
             // Create an empty page
             PdfPage page = document.AddPage();
@@ -86,7 +87,7 @@ namespace MCFTAcademics.BL
                 {
                     if (System.IO.File.Exists("./Reports/Transcript.pdf"))
                     {
-                        string path = "./Reports/" + this.reportName + ".pdf";
+                        path = "./Reports/" + this.reportName + ".pdf";
                         string oldPath= "./Reports/Transcript.pdf";
                         System.IO.File.Move(oldPath, path);
                         TranscriptDAL.AddTranscript(path, student);
@@ -96,10 +97,10 @@ namespace MCFTAcademics.BL
                 catch (Exception ex) {
                     Console.Write(ex.Message);
                 }
-                return document;
+                return path;
 
             }
-            return null;
+            return path;
 
         }
     }

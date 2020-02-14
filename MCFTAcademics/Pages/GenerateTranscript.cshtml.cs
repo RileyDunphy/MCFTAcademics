@@ -37,7 +37,7 @@ namespace MCFTAcademics
 
             Transcript t = new Transcript(josh,false, "Riley Dunphy", DateTime.Now);
 
-            PdfDocument document= t.generateReport();
+            string document= t.generateReport();
 
             // Send PDF to browser
             //MemoryStream stream = new MemoryStream();
@@ -51,6 +51,23 @@ namespace MCFTAcademics
             //Response.End();
             return null;
             
+        }
+
+        public ActionResult OnGetAjax(int studentId)
+        {
+            Grade math = new Grade(95, DateTime.Now, false, 20, false, Course.GetCourseById(4));
+            Grade chainsaw = new Grade(95, DateTime.Now, false, 20, false, Course.GetCourseById(5));
+            List<Grade> grades = new List<Grade>();
+
+            grades.Add(math);
+            grades.Add(chainsaw);
+
+            Student josh = new Student(2, "Josh", "Kleine-Deters", "1234", "TestProgran", DateTime.Now);
+
+            Transcript t = new Transcript(josh, false, "Riley Dunphy", DateTime.Now);
+
+            string path = t.generateReport();
+            return new JsonResult(path);
         }
 
 
