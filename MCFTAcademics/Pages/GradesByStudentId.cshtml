@@ -20,23 +20,23 @@
     <div class="row">
         <label>Please Enter Student ID: </label>
         <input class="form-control" style="width:200px" type="text" required name="studentId" id="studentId">
-        <button class="btn" id="searchById" type="submit">Search</button>
+        <button class="btn btn-primary" id="searchById" type="submit">Search</button>
     </div>
 
 
 </form>
 @if (studentUser != null)
 {
-    
 
     <h3>@studentUser.StudentId @studentUser.FirstName @studentUser.LastName</h3>
     <table class="table">
         <thead>
             <tr>
-                <th scope="col">Course Code</th>
-                <th scope="col">Subject</th>
-                <th scope="col">Instructor</th>
-                <th scope="col">Grade</th>
+                <th scope="col" width="10%">Course Code</th>
+                <th scope="col" width="20%">Subject</th>
+                <th scope="col" width="20%">Instructor</th>
+                <th scope="col" width="10%">Grade</th>
+                <th scope="col" width="40%">Comment</th>
             </tr>
         </thead>
         
@@ -50,7 +50,6 @@
         <td>@g.Subject.Name</td>
         <td>@g.Subject.LeadStaff.Name</td>
         <td>@g.GradeAssigned</td>
-
         <td></td>
     </tr>
                 rowCounter++;
@@ -62,9 +61,9 @@
 
         <td>@g.Subject.Name</td>
         <td>@g.Subject.LeadStaff.Name</td>
-        <td><input id="@g.Subject" onchange="method(this.value)" type="number" value="@g.GradeAssigned" /></td>
+        <td><input id="@g.Subject" class="input-sm" onchange="method(this.value)" type="number" value="@g.GradeAssigned" /></td>
 
-        <td></td>
+        <td><input class="input-sm" style="width:200px" placeholder="comment on changes" type="text" required name="commentField" id="commentField"><button class="btn btn-danger">Submit</button></td>
     </tr>
     rowCounter++;
             }
