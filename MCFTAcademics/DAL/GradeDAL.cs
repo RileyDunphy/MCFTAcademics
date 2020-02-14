@@ -12,6 +12,7 @@ namespace MCFTAcademics.DAL
     {
         static Grade GradeFromRow(IDataReader reader)
         {
+            var studentId = (int)reader["studentId"];
             var locked = (bool)reader["lock"];
             var supplemental = (bool)reader["isSupplemental"];
             var given = (DateTime)reader["given"];
@@ -20,7 +21,7 @@ namespace MCFTAcademics.DAL
             // XXX: Switch query to a join and use CourseDAL
             var course = Course.GetCourseById((int)reader["courseId"]);
             // XXX: Preserve the staff stuff too?
-            return new Grade(grade, given, locked, hoursAttended, supplemental, course);
+            return new Grade(studentId,grade, given, locked, hoursAttended, supplemental, course);
         }
 
         public static IEnumerable<Grade> GetAllGrades()
@@ -42,7 +43,6 @@ namespace MCFTAcademics.DAL
                 if (connection != null)
                     connection.Close();
             }
-            return grades;//return the list of grades;
         }
 
         // XXX: This is probably very wrong. CourseStaff is halfway a
@@ -69,7 +69,6 @@ namespace MCFTAcademics.DAL
                 if (connection != null)
                     connection.Close();
             }
-            return grades;//return the list of grades;
         }
 
         // moved from StudentDAL

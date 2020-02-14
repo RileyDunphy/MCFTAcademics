@@ -58,10 +58,6 @@ namespace MCFTAcademics.BL
             Supplemental ? Math.Min(60, GradeAssigned) : GradeAssigned;
 
         public bool IsPassing() => CalculateFinalGrade() >= 60;
-        public static List<Grade> GetAllGrades()
-        {
-            return GradeDAL.GetAllGrades();
-        }
 
         public static bool ToggleGradeLock(int studentId, int courseId)
         {
