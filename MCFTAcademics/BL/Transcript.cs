@@ -6,6 +6,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MCFTAcademics.DAL;
 
 namespace MCFTAcademics.BL
 {/// <summary>
@@ -29,10 +30,11 @@ namespace MCFTAcademics.BL
                 + "_"
                 + creationDate.ToShortDateString()
                 + "_"
-                + creationDate.TimeOfDay;
+                + creationDate.TimeOfDay.ToString().Replace('.','_').Replace(':','_');
+            //I had to replace the . in the time of day string so it didn't interfere with the filename saving
         }
 
-        public static PdfDocument generateReport(Transcript t)
+        public PdfDocument generateReport()
         {
             //try { 
             // Create a new PDF document
@@ -56,14 +58,14 @@ namespace MCFTAcademics.BL
             string gradeContent="";
             int height = 50;
 
-            foreach (Grade g in t.student.GetGrades()) {
+            foreach (Grade g in this.student.GetGrades()) {
                 gradeContent = "is Supplemental: "+g.Supplemental.ToString() +g.Subject.Name + "--Grade " + g.GradeAssigned.ToString();
                 gfx.DrawString(gradeContent, smallFont, XBrushes.DarkBlue, new XRect(0, height, page.Width, page.Height), XStringFormats.Center);
                 height += 25;
             }
 
             //gfx.DrawString(gradeContent, font, XBrushes.DarkBlue, new XRect(0, 50, page.Width, page.Height), XStringFormats.Center);
-            gfx.DrawString(t.student.FirstName + " " + t.student.LastName, font, XBrushes.DarkBlue, new XRect(0, 50, page.Width, page.Height), XStringFormats.TopCenter);
+            gfx.DrawString(this.student.FirstName + " " + this.student.LastName, font, XBrushes.DarkBlue, new XRect(0, 50, page.Width, page.Height), XStringFormats.TopCenter);
             
             // Save the document... must be a const
             const string filename = "./Reports/Transcript.pdf";
@@ -84,9 +86,10 @@ namespace MCFTAcademics.BL
                 {
                     if (System.IO.File.Exists("./Reports/Transcript.pdf"))
                     {
-                        string path = "/Reports/" + t.reportName + ".pdf";
-                        string oldPath= "/Reports/Transcript.pdf";
+                        string path = "./Reports/" + this.reportName + ".pdf";
+                        string oldPath= "./Reports/Transcript.pdf";
                         System.IO.File.Move(oldPath, path);
+                        TranscriptDAL.AddTranscript(path, student);
 
                     }
                 }

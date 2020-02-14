@@ -1,0 +1,74 @@
+﻿@page
+@model MCFTAcademics.GenerateTranscript
+@using BL;
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    ViewData["Title"] = "Genereate Transcripts";
+
+}
+@*file = "./Reports/reportName.pdf";
+    Response.Headers.Add("Content-Disposition",$"inline; filename=\"{file.Name}\"");
+    return File(file.CreateReadStream(), "application/pdf", file.Name);*@
+
+<form method="post">
+    <input type="submit" value="ReportGenerate" />
+</form>
+
+@if (System.IO.File.Exists("./Reports/reportName.pdf"))
+{
+    <a href="/Reports/reportName.pdf" download>view report</a>
+}
+
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.css">
+
+<h2>Lock Grades</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Student ID</th>
+            <th scope="col">First Name</th>
+            <th scope="col">Last Name</th>
+            <th scope="col">Generate Transcript</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (Student s in Student.GetAllStudents()) {
+        <tr>
+            <th scope="row">@s.Id</th>
+            <td>@s.FirstName</td>
+            <td>@s.LastName</td>
+            <td>
+                <button type="button" id="@s.Id" class="generate btn btn-primary">Generate Transcript</button>
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>
+
+@section scripts{
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.table').DataTable();
+        });
+        $("body").on("click", ".table .generate", function () {
+            if (confirm("Do you want to generate this transcript?")) {
+                var id = $(this).attr("id");
+                var row = $(this).closest("tr");
+                $.ajax({
+                    type: "GET",
+                    url: "/LockGrades?handler=Ajax&studentId=" + studentId,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        row.find("button").parent().html("<a href=\"/Reports/reportName.pdf\" download>View Report</a>");
+                    },
+                    failure: function (response) {
+                        alert(response);
+                    }
+                });
+            }
+        });
+    </script>
+
+} 

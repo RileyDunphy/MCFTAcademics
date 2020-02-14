@@ -19,7 +19,7 @@ using Rotativa;
 
 namespace MCFTAcademics
 {
-    public class ReportGenerate : PageModel
+    public class GenerateTranscript : PageModel
     {
         
         public async Task<IActionResult> OnPostAsync()
@@ -33,11 +33,11 @@ namespace MCFTAcademics
             grades.Add(math);
             grades.Add(chainsaw);
 
-            Student josh = new Student(-1, "Josh", "Kleine-Deters", "1234", "TestProgran", DateTime.Now);
+            Student josh = new Student(2, "Josh", "Kleine-Deters", "1234", "TestProgran", DateTime.Now);
 
             Transcript t = new Transcript(josh,false, "Riley Dunphy", DateTime.Now);
 
-            PdfDocument document= Transcript.generateReport(t);
+            PdfDocument document= t.generateReport();
 
             // Send PDF to browser
             //MemoryStream stream = new MemoryStream();

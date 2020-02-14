@@ -78,5 +78,34 @@ namespace MCFTAcademics.DAL
             }
             return null;
         }
+
+        public static List<Student> GetAllStudents()
+        {
+            SqlConnection conn = DbConn.GetConnection();
+            List<Student> students = new List<Student>();
+            try
+            {
+                conn.Open(); //open the connection
+                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectAllStudents", conn);
+                selectCommand.CommandType = System.Data.CommandType.StoredProcedure;
+                //execute the sql statement
+                SqlDataReader reader = selectCommand.ExecuteReader();
+                //loop through the resultset
+                while (reader.Read())
+                {
+                    Student s = StudentFromRow(reader);
+                    students.Add(s);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                conn.Close();//don't forget to close the connection
+            }
+            return students;//return the list of students
+        }
     }
 }
