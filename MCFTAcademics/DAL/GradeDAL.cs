@@ -10,7 +10,7 @@ namespace MCFTAcademics.DAL
 {
     public static class GradeDAL
     {
-        static Grade GradeFromRow(IDataReader reader)
+        static Grade GradeFromRow(IDataReader reader, Course course = null)
         {
             var studentId = (int)reader["studentId"];
             var locked = (bool)reader["lock"];
@@ -18,8 +18,11 @@ namespace MCFTAcademics.DAL
             var given = (DateTime)reader["given"];
             var hoursAttended = (decimal)reader["hoursAttended"];
             var grade = (decimal)reader["grade"];
-            // XXX: Switch query to a join and use CourseDAL
-            var course = Course.GetCourseById((int)reader["courseId"]);
+            if (course == null)
+            {
+                // XXX: the fact we're passing a lot of nulls here might mean that Course shouldn't be caching them
+                course = CourseDAL.CourseFromRow(reader, null, null, null);
+            }
             // XXX: Preserve the staff stuff too?
             return new Grade(studentId,grade, given, locked, hoursAttended, supplemental, course);
         }
@@ -93,8 +96,8 @@ namespace MCFTAcademics.DAL
                 //loop through the resultset
                 if (reader.Read())
                 {
-                    grade = GradeDAL.GradeFromRow(reader);
-                                    }
+                    grade = GradeDAL.GradeFromRow(reader, course);
+                }
             }
             return grade;//return the grade
         }
