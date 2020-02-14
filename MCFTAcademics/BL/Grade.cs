@@ -8,6 +8,7 @@ namespace MCFTAcademics.BL
 {
     public class Grade
     {
+        private int studentId;
         private decimal gradeAssigned;
         private DateTime given;
         private bool locked;
@@ -19,8 +20,9 @@ namespace MCFTAcademics.BL
         {
         }
 
-        public Grade(decimal gradeAssigned, DateTime given, bool locked, decimal hoursAttended, bool supplemental, Course subject)
+        public Grade(int studentId, decimal gradeAssigned, DateTime given, bool locked, decimal hoursAttended, bool supplemental, Course subject)
         {
+            this.studentId = studentId;
             this.gradeAssigned = gradeAssigned;
             this.given = given;
             this.locked = locked;
@@ -29,6 +31,7 @@ namespace MCFTAcademics.BL
             this.subject=subject;
         }
 
+        public int StudentId { get => studentId; }
         public decimal GradeAssigned { get => gradeAssigned;  }
         public DateTime Given { get => given;  }
         public bool Locked { get => locked;  }
@@ -55,5 +58,14 @@ namespace MCFTAcademics.BL
             Supplemental ? Math.Min(60, GradeAssigned) : GradeAssigned;
 
         public bool IsPassing() => CalculateFinalGrade() >= 60;
+        public static List<Grade> GetAllGrades()
+        {
+            return GradeDAL.GetAllGrades();
+        }
+
+        public static bool ToggleGradeLock(int studentId, int courseId)
+        {
+            return GradeDAL.ToggleGradeLock(studentId, courseId);
+        }
     }
 }

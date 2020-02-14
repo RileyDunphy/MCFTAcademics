@@ -83,7 +83,7 @@ namespace MCFTAcademics.DAL
             try
             {
                 conn.Open(); //open the connection
-                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectCourseByid", conn);
+                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectCourseById", conn);
                 selectCommand.CommandType = System.Data.CommandType.StoredProcedure;
                 selectCommand.Parameters.AddWithValue("@id", id);
                 //execute the sql statement

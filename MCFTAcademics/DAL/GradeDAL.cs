@@ -42,6 +42,7 @@ namespace MCFTAcademics.DAL
                 if (connection != null)
                     connection.Close();
             }
+            return grades;//return the list of grades;
         }
 
         // XXX: This is probably very wrong. CourseStaff is halfway a
@@ -68,6 +69,7 @@ namespace MCFTAcademics.DAL
                 if (connection != null)
                     connection.Close();
             }
+            return grades;//return the list of grades;
         }
 
         // moved from StudentDAL
@@ -117,7 +119,7 @@ namespace MCFTAcademics.DAL
                 if (reader.Read())
                 {
                     grade = GradeDAL.GradeFromRow(reader);
-                }
+                                    }
             }
             catch (Exception ex)
             {
@@ -128,6 +130,40 @@ namespace MCFTAcademics.DAL
                 conn.Close();//don't forget to close the connection
             }
             return grade;//return the grade
+        }
+
+        public static bool ToggleGradeLock(int studentId, int courseId)
+        {
+            SqlConnection conn = DbConn.GetConnection();
+            bool result;
+            try
+            {
+                conn.Open();
+                SqlCommand updateCommand = new SqlCommand("mcftacademics.dbo.ToggleGradeLock", conn);
+                updateCommand.CommandType = System.Data.CommandType.StoredProcedure;
+                updateCommand.Parameters.AddWithValue("@studentId", studentId);
+                updateCommand.Parameters.AddWithValue("@courseId", courseId);
+                int rows = updateCommand.ExecuteNonQuery();
+                if (rows > 0)
+                {
+                    result = true;
+                }
+                else
+                {
+                    result = false;
+
+                }
+            }
+            catch (Exception ex)
+            {
+
+                result = false;
+            }
+            finally
+            {
+                conn.Close();
+            }
+            return result;
         }
     }
 }

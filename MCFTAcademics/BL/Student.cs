@@ -82,5 +82,10 @@ namespace MCFTAcademics.BL
             }
             return studentCode;
         }
+
+        public static Student GetStudentByStudentId(int id)
+        {
+            return StudentDAL.GetStudentByStudentId(id);
+        }
     }
 }

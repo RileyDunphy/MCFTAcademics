@@ -52,7 +52,7 @@ namespace MCFTAcademics.DAL
         public static Student GetStudent(int id)
         {
             SqlConnection conn = DbConn.GetConnection();
-            
+            Student s = null;
             try
             {
                 conn.Open(); //open the connection
@@ -62,10 +62,9 @@ namespace MCFTAcademics.DAL
                 //execute the sql statement
                 SqlDataReader reader = selectCommand.ExecuteReader();
                 //loop through the resultset
-                while (reader.Read())
+                if (reader.Read())
                 {
-                    Student s = StudentFromRow(reader);
-                    return s;
+                    s = StudentFromRow(reader);
                 }
             }
             catch (Exception ex)
@@ -76,7 +75,7 @@ namespace MCFTAcademics.DAL
             {
                 conn.Close();
             }
-            return null;
+            return s;//return the student
         }
 
         public static Student GetStudent(string code)
