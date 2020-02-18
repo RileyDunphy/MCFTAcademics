@@ -68,6 +68,15 @@ namespace MCFTAcademics
             catch (Exception ex) { }
             return Page();
         }
+        public ActionResult OnGetAjax(int grade, int studentId, string comment, int courseId)
+        {
+
+
+
+            string path = "grade:"+grade;
+            return new JsonResult(path);
+        }
+
     }
 
 
