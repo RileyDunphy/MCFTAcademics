@@ -64,7 +64,7 @@
             if (g.Subject != null && g.Locked)
             {
                 <tr>
-                    <th scope="row">@rowCounter</th>
+                    <th scope="row">@code.Code</th>
                     <td>@g.Subject.Name</td>
                     <td>@g.Subject.LeadStaff.Name</td>
                     <td>@g.GradeAssigned</td>
@@ -75,15 +75,15 @@
             else if (g.Subject != null && !g.Locked)
             {
                 <tr>
-                    <th scope="row">@g.Subject.Id</th>
+                    <th scope="row">@code.Code</th>
 
                     <td>@g.Subject.Name</td>
                     <td>@g.Subject.LeadStaff.Name</td>
-                    <td><input id="grade#@g.Subject.Id" class="input-sm" onchange="method(this.value)" type="number" value="@g.GradeAssigned" /></td>
+                    <td><input id="grade#@g.Subject.Id" class="input-sm" onchange="method(this)" type="number" value="@g.GradeAssigned" /></td>
 
-                    <td><input class="input-sm" style="width:200px;padding-top: 6px;" placeholder="comment on changes" type="text" required name="commentField" id="comment#@g.Subject.Id">
+                    <td><input class="input-sm hidden" style="width:200px;padding-top: 6px;" placeholder="comment on changes" type="text" required name="commentField" id="comment#@g.Subject.Id">
                     
-                    <button id="btn#@g.Subject.Id" style="padding-right: 12px;margin-right: 37px;padding-top: 2px;margin-left: 2px; width:110px; float:right" class="btn btn-danger">Submit</button></td>
+                    <button id="btn#@g.Subject.Id" style="padding-right: 12px;margin-right: 37px;padding-top: 2px;margin-left: 2px; width:110px; float:right" class="btn btn-danger hidden">Submit</button></td>
                 </tr>
                 rowCounter++;
             }
@@ -98,14 +98,19 @@
 
     <script type="text/javascript">
         $(document).ready(function () {
-            $('commentBox').hide();
-                                    method = function (val) {
-                                       // alert(val);
-                                        console.log('hidden')
-                                        $('commentBox').hidden=true;
-                                        
-                                        
-                                    }
+            $("[name='commentField']").each(function () {
+                console.log(this.value);
+                console.log(this.name);
+            });
+            
+
+            method = function (val) {
+                //alert(val.value);
+                var elementList = val.parentElement.nextElementSibling.children;
+                elementList[0].classList.remove("hidden");
+                elementList[1].classList.remove("hidden");
+                
+                }
                                     
                                 //    $("form").submit(function (e) {
                                 //        alert("in fucnt");
