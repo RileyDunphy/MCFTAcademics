@@ -16,7 +16,7 @@
             <dd>Open management page for courses you are instructing</dd>
             <dt><a asp-page="/ViewCourses" asp-page-handler="all">View all courses</a></dt>
             <dd>Show a list of all courses</dd>
-            <dt><a asp-page="/ManageAllCourses">Manage all courses</a></dt>
+            <dt><a asp-page="/ManageCourses" asp-page-handler="all">Manage all courses</a></dt>
             <dd>Manage all courses</dd>
         </dl>
         @if (User.IsInRole("Admin")) //dummy check
