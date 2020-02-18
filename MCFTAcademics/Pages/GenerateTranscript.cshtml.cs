@@ -21,52 +21,17 @@ namespace MCFTAcademics
 {
     public class GenerateTranscript : PageModel
     {
-        
-        public async Task<IActionResult> OnPostAsync()
+
+        public ActionResult OnGetAjax(int studentId,bool official, string esig,string type)
         {
-            //can now name the report by passing in different arguments
-            //generateReport("reportName");
-            Grade math = new Grade(2, 95, DateTime.Now, false, 20, false, Course.GetCourseById(4));
-            Grade chainsaw = new Grade(2, 95, DateTime.Now, false, 20, false, Course.GetCourseById(5));
-            List<Grade> grades = new List<Grade>();
 
-            grades.Add(math);
-            grades.Add(chainsaw);
+            Student s = Student.GetStudent(studentId);
 
-            Student josh = new Student(2, "Josh", "Kleine-Deters", "1234", "TestProgran", DateTime.Now);
-
-            Transcript t = new Transcript(josh,false, "Riley Dunphy", DateTime.Now);
-
-            string document= t.generateReport();
-
-            // Send PDF to browser
-            //MemoryStream stream = new MemoryStream();
-            //document.Save(stream, false);
-            //Response.Clear();
-            //Response.ContentType = "application/pdf";
-            //Response.AddHeader("content-length", stream.Length.ToString());
-            //Response.BinaryWrite(stream.ToArray());
-            //Response.Flush();
-            //stream.Close();
-            //Response.End();
-            return null;
-            
-        }
-
-        public ActionResult OnGetAjax(int studentId)
-        {
-            Grade math = new Grade(95, DateTime.Now, false, 20, false, Course.GetCourseById(4));
-            Grade chainsaw = new Grade(95, DateTime.Now, false, 20, false, Course.GetCourseById(5));
-            List<Grade> grades = new List<Grade>();
-
-            grades.Add(math);
-            grades.Add(chainsaw);
-
-            Student josh = new Student(2, "Josh", "Kleine-Deters", "1234", "TestProgran", DateTime.Now);
-
-            Transcript t = new Transcript(josh, false, "Riley Dunphy", DateTime.Now);
+            Transcript t = new Transcript(s, official, esig, type, DateTime.Now);
 
             string path = t.generateReport();
+            path = path.Replace("./Reports/", "");
+            path =path.Replace(".pdf", "");
             return new JsonResult(path);
         }
 

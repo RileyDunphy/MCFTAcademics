@@ -19,13 +19,15 @@ namespace MCFTAcademics.BL
         private string signatureName;
         private DateTime creationDate;
         private string reportName;
+        private string type;
 
-        public Transcript(Student student, bool official, string signatureName, DateTime creationDate)
+        public Transcript(Student student, bool official, string signatureName, string type, DateTime creationDate)
         {
             this.student = student;
             this.official = official;
             this.signatureName = signatureName;
             this.creationDate = DateTime.Now;
+            this.type = type;
             reportName = student.StudentCode
                 + "_"
                 + creationDate.ToShortDateString()

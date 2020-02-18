@@ -10,15 +10,6 @@
     Response.Headers.Add("Content-Disposition",$"inline; filename=\"{file.Name}\"");
     return File(file.CreateReadStream(), "application/pdf", file.Name);*@
 
-<form method="post">
-    <input type="submit" value="ReportGenerate" />
-</form>
-
-@if (System.IO.File.Exists("./Reports/reportName.pdf"))
-{
-    <a href="/Reports/reportName.pdf" download>view report</a>
-}
-
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.css">
 
 <h2>Generate Transcripts</h2>
@@ -26,21 +17,32 @@
     <thead>
         <tr>
             <th scope="col">Student ID</th>
-            <th scope="col">First Name</th>
-            <th scope="col">Last Name</th>
+            <th scope="col">Name</th>
+            <th scope="col">Official</th>
+            <th scope="col">eSignature</th>
+            <th scope="col">Information For</th>
             <th scope="col">Generate Transcript</th>
         </tr>
     </thead>
     <tbody>
-        @foreach (Student s in Student.GetAllStudents()) {
-        <tr>
-            <th scope="row">@s.Id</th>
-            <td>@s.FirstName</td>
-            <td>@s.LastName</td>
-            <td>
-                <button type="button" id="@s.Id" class="generate btn btn-primary">Generate Transcript</button>
-            </td>
-        </tr>
+        @foreach (Student s in Student.GetAllStudents())
+        {
+            <tr>
+                <th scope="row">@s.Id</th>
+                <td>@s.FirstName @s.LastName</td>
+                <td><input type="checkbox" onclick="EnableEsig(@s.Id,this)" id="chkOfficial+@s.Id" name="official" value="official"></td>
+                <td><input type="text" disabled="disabled" id="txtEsig+@s.Id" name="esig" /></td>
+                <td>
+                    <select class="form-control" name="type" id="selType+@s.Id">
+                        <option>Program</option>
+                        <option>Year</option>
+                        <option>Semester</option>
+                    </select>
+                </td>
+                <td>
+                    <button type="button" id="@s.Id" class="generate btn btn-primary">Generate Transcript</button>
+                </td>
+            </tr>
         }
     </tbody>
 </table>
@@ -53,15 +55,21 @@
         });
         $("body").on("click", ".table .generate", function () {
             if (confirm("Do you want to generate this transcript?")) {
+                //Get all the attributes you will need to customize the transcript
                 var studentId = $(this).attr("id");
                 var row = $(this).closest("tr");
+                var official = $('input[id="chkOfficial+'+studentId+'"]').is(":checked");
+                var esig = $('input[id="txtEsig+'+studentId+'"]').val();
+                var type = $('select[id="selType+' + studentId + '"]').val();
+                //Pass them in the handler method via AJAX that will generate and save our transcript on the server
                 $.ajax({
                     type: "GET",
-                    url: "/GenerateTranscript?handler=Ajax&studentId=" + studentId,
+                    url: "/GenerateTranscript?handler=Ajax&studentId=" + studentId+"&official=" + official+"&esig=" + esig+"&type=" + type,
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",
                     success: function (response) {
-                        row.find("button").parent().html("<a href=\""+response+"\" download>View Report</a>");
+                        //Direct link to the transcript generated
+                        row.find("button").parent().html("<a href=\"../downloadtranscript/" + response + "\">View Report</a>");
                     },
                     failure: function (response) {
                         alert(response);
@@ -69,6 +77,15 @@
                 });
             }
         });
+        function EnableEsig(id, checkbox) {
+            //If they want to make the transcript official, require a signature
+            if($(checkbox).prop("checked") == true){
+                $('input[id="txtEsig+'+id+'"]').prop("disabled", false);
+            }
+            else if($(checkbox).prop("checked") == false){
+                $('input[id="txtEsig+'+id+'"]').prop("disabled", true);
+            }
+        }
     </script>
 
 } 
