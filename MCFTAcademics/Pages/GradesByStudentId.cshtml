@@ -31,6 +31,7 @@
 {
 
     <h2>@studentUser.StudentId @studentUser.FirstName @studentUser.LastName</h2>
+    <input id="studentIdHolder" type="hidden" value="@studentUser.StudentId">
     <table class="table">
 
         @foreach (Grade g in studentUser.Grades)
@@ -83,7 +84,7 @@
 
                     <td><input class="input-sm hidden" style="width:200px;padding-top: 6px;" placeholder="comment on changes" type="text" required name="commentField" id="comment#@g.Subject.Id">
                     
-                    <button id="btn#@g.Subject.Id" style="padding-right: 12px;margin-right: 37px;padding-top: 2px;margin-left: 2px; width:110px; float:right" class="btn btn-danger hidden">Submit</button></td>
+                    <button id="@g.Subject.Id"  onclick="submitGrade(this)" style="padding-right: 12px;margin-right:37px;padding-top: 2px;margin-left: 2px; width:110px; float:right" class="btn btn-danger hidden">Submit</button></td>
                 </tr>
                 rowCounter++;
             }
@@ -102,43 +103,46 @@
                 console.log(this.value);
                 console.log(this.name);
             });
+
+
+        });
             
+        submitGrade = function (buttonObj) {
+            var grade = $(buttonObj).parent().prev().children().val();
+            var comment = $(buttonObj).prev().val();
+            var courseId = $(buttonObj).attr('id');
+            var studentId = $("#studentIdHolder").val();   
+            console.log(studentId);
+            if (confirm("Do you want to submit this change?")) {
 
-            method = function (val) {
-                //alert(val.value);
-                var elementList = val.parentElement.nextElementSibling.children;
-                elementList[0].classList.remove("hidden");
-                elementList[1].classList.remove("hidden");
+                $.ajax({
+                    type: "GET",
+                    url: "/GradesByStudentId?handler=Ajax&grade=" + grade + "&studentId="+ studentId+ "&comment=" + comment + "&courseId=" + courseId,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        alert(response);
+                    },
+                    failure: function (response) {
+                        alert(response);
+                    }
+                });
+            }
+        }
+        method = function (val) {
+            //alert(val.value);
+            var elementList = val.parentElement.nextElementSibling.children;
+            elementList[0].classList.remove("hidden");
+            elementList[1].classList.remove("hidden");
+
+
+        };
                 
-                }
-                                    
-                                //    $("form").submit(function (e) {
-                                //        alert("in fucnt");
-                                //        if ($('studentId').val() == '') {
-                                //            alert("Please enter a student Id");
-                                //            e.preventDefault();
-                                //        }
-                                //        if ($('studentId').val().isNaN()) {
-                                //            alert("Please enter a student Id (numbers only)");
-                                //            e.preventDefault();
-                                //        }
-                                //        else {
-                                //            alert("in else");
-                                //            var xmlhttp = new XMLHttpRequest();
-                                //            xmlhttp.onreadystatechange = function() {
-                                //            if (this.readyState == 4 && this.status == 200) {
-                                //            alert(this.responseText);
-                                //            }
-                                //        };
-                                //        xmlhttp.open("GET", "gradesByStudentId?q=" + str, true);
-                                //        xmlhttp.send();
-                                //        }
-
-                                    });
+               
 
 
 
-                               // });
+                               
     </script>
 }
 
