@@ -82,5 +82,10 @@ namespace MCFTAcademics.BL
             return thisCourse.CompareTo(otherCourse);
  
         }
+
+        public static bool UpdateGrade(Grade grade, int studentId)
+        {
+            return GradeDAL.UpdateGrade(grade, studentId);
+        }
     }
 }
