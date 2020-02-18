@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace MCFTAcademics.BL
 {
-    public class Course
+    public class Course : IComparable<Course>
     {
         public Course()
         {
@@ -58,6 +58,7 @@ namespace MCFTAcademics.BL
             return CourseDAL.GetAllCourses();
         }
 
+
         public static Course GetCourseById(int id)
         {
             return CourseDAL.GetCourseById(id);
@@ -70,5 +71,40 @@ namespace MCFTAcademics.BL
         {
             return CourseDAL.AddCourse(c, leadStaff, supportStaff, prerequisites);
         }
+        public CourseCode GetCourseCode() {
+            return CourseCode.CourseCodesById(this.Id);
+        }
+        int IComparable<Course>.CompareTo(Course other)
+        {
+            CourseCode thisCourseCode = this.GetCourseCode();
+            CourseCode otherCourseCode = other.GetCourseCode();
+
+            if (otherCourseCode.Semester > thisCourseCode.Semester)
+            {
+                return 1;
+            }
+            if (otherCourseCode.Semester < thisCourseCode.Semester)
+            {
+                return -1;
+            }
+            return 0;
+        }
+        internal int CompareTo(Course otherCourse)
+        {
+            CourseCode thisCourseCode = this.GetCourseCode();
+            CourseCode otherCourseCode = otherCourse.GetCourseCode();
+
+            if (otherCourseCode.Semester > thisCourseCode.Semester)
+            {
+                return 1;
+            }
+            if (otherCourseCode.Semester < thisCourseCode.Semester)
+            {
+                return -1;
+            }
+            return 0;
+        }
+
+
     }
 }

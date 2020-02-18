@@ -11,8 +11,10 @@
     Student studentUser = null;
     if (Model.s != null) {
         studentUser = @Model.s;
+        studentUser.Grades.Sort();
     }
     int rowCounter = 1;
+    int semester = 0;
 }
 <h1>Grade By Student Id</h1>
 <br>
@@ -28,56 +30,65 @@
 @if (studentUser != null)
 {
 
-    <h3>@studentUser.StudentId @studentUser.FirstName @studentUser.LastName</h3>
+    <h2>@studentUser.StudentId @studentUser.FirstName @studentUser.LastName</h2>
     <table class="table">
-        <thead>
-            <tr>
-                <th scope="col" width="10%">Course Code</th>
-                <th scope="col" width="20%">Subject</th>
-                <th scope="col" width="20%">Instructor</th>
-                <th scope="col" width="10%">Grade</th>
-                <th scope="col" width="40%">Comment</th>
-            </tr>
-        </thead>
-        
+
         @foreach (Grade g in studentUser.Grades)
         {
+            CourseCode code = g.Subject.GetCourseCode();
+
+            if (semester != code.Semester)
+            {
+                semester = code.Semester;
+                
+                <tr>
+                    <td>
+                        <h3>Semester @semester</h3>
+                    </td>
+                    <!--Empty fields so the above and below fields have a hr-->
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th scope="col" width="15%">Course Code</th>
+                    <th scope="col" width="20%">Subject</th>
+                    <th scope="col" width="20%">Instructor</th>
+                    <th scope="col" width="10%">Grade</th>
+                    <th scope="col" width="35%">Comment</th>
+                </tr>
+            }
 
             if (g.Subject != null && g.Locked)
             {
-    <tr>
-        <th scope="row">@rowCounter</th>
-        <td>@g.Subject.Name</td>
-        <td>@g.Subject.LeadStaff.Name</td>
-        <td>@g.GradeAssigned</td>
-        <td></td>
-    </tr>
+                <tr>
+                    <th scope="row">@rowCounter</th>
+                    <td>@g.Subject.Name</td>
+                    <td>@g.Subject.LeadStaff.Name</td>
+                    <td>@g.GradeAssigned</td>
+                    <td>Grade is Locked</td>
+                </tr>
                 rowCounter++;
             }
             else if (g.Subject != null && !g.Locked)
             {
-    <tr>
-        <th scope="row">@g.Subject.Id</th>
+                <tr>
+                    <th scope="row">@g.Subject.Id</th>
 
-        <td>@g.Subject.Name</td>
-        <td>@g.Subject.LeadStaff.Name</td>
-        <td><input id="@g.Subject" class="input-sm" onchange="method(this.value)" type="number" value="@g.GradeAssigned" /></td>
+                    <td>@g.Subject.Name</td>
+                    <td>@g.Subject.LeadStaff.Name</td>
+                    <td><input id="grade#@g.Subject.Id" class="input-sm" onchange="method(this.value)" type="number" value="@g.GradeAssigned" /></td>
 
-        <td><input class="input-sm" style="width:200px" placeholder="comment on changes" type="text" required name="commentField" id="commentField"><button class="btn btn-danger">Submit</button></td>
-    </tr>
-    rowCounter++;
+                    <td><input class="input-sm" style="width:200px;padding-top: 10px;" placeholder="comment on changes" type="text" required name="commentField" id="comment#@g.Subject.Id">
+                    
+                    <button id="btn#@g.Subject.Id" style="padding-right: 12px;margin-right: 37px;padding-top: 2px;margin-left: 2px; width:110px; float:right" class="btn btn-danger">Submit</button></td>
+                </tr>
+                rowCounter++;
             }
         }
     </table>
-    <div id="commentBox">
-        <form class="form-inline" id="form" method="Post">
-            <div class="row">
-                <label>Please comment on changes: </label>
-                <input class="form-control" style="width:200px" type="text" required name="commentField" id="commentField">
-                <button class="btn" id="submitChanges" type="submit">Submit Changes</button>
-            </div>
-        </form>
-    </div>
     
 }
 

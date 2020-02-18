@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MCFTAcademics.BL
 {
-    public class Grade
+    public class Grade : IComparable<Grade> 
     {
         private int studentId;
         private decimal gradeAssigned;
@@ -30,6 +30,8 @@ namespace MCFTAcademics.BL
             this.hoursAttended = hoursAttended;
             this.supplemental = supplemental;
             this.subject=subject;
+
+            //should this be a parameter of the constructor?
             this.comment = comment;
         }
 
@@ -70,6 +72,15 @@ namespace MCFTAcademics.BL
         public static bool UpdateGrade(Grade grade, int studentId)
         {
             return GradeDAL.UpdateGrade(grade, studentId);
+        }
+
+        int IComparable<Grade>.CompareTo(Grade other)
+        {
+            Course thisCourse=this.subject;
+            Course otherCourse = other.subject;
+
+            return thisCourse.CompareTo(otherCourse);
+ 
         }
     }
 }
