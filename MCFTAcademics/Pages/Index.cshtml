@@ -14,7 +14,7 @@
             <dd>View courses you are instructing</dd>
             <dt><a asp-page="/ManageCourses">Manage courses</a></dt>
             <dd>Open management page for courses you are instructing</dd>
-            <dt><a asp-page="/ViewAllCourses">View all courses</a></dt>
+            <dt><a asp-page="/ViewCourses" asp-page-handler="all">View all courses</a></dt>
             <dd>Show a list of all courses</dd>
             <dt><a asp-page="/ManageAllCourses">Manage all courses</a></dt>
             <dd>Manage all courses</dd>
@@ -25,7 +25,7 @@
             <dl>
                 <dt><a asp-page="/ViewGrades">View grades</a></dt>
                 <dd>Show grades of students you're instructing</dd>
-                <dt><a asp-page="/ViewAllGrades">View all grades</a></dt>
+                <dt><a asp-page="/ViewGrades" asp-page-handler="all">View all grades</a></dt>
                 <dd>Shows the grades of all students</dd>
                 <dt><a href="#">Manage grades</a></dt>
                 <dd>Submit student pages</dd>

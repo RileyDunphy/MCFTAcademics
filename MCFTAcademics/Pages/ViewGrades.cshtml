@@ -2,11 +2,11 @@
 @model MCFTAcademics.ViewGradesModel
 @using BL;
 @{
-    ViewData["Title"] = "View Grades";
+    var courses = (IEnumerable<Course>)ViewData["ViewGrades_Courses"];
 }
 
-<h2>Instructor Grades</h2>
-@foreach (Course c in Course.GetCoursesByInstructor(Convert.ToInt32(HttpContext.User.FindFirst(x => x.Type == System.Security.Claims.ClaimTypes.NameIdentifier).Value)))
+<h2>@ViewData["Title"]</h2>
+@foreach (Course c in courses)
 {
     <h4>@c.Name - @CourseCode.GetNewestCourseCodeById(c.Id).Code</h4>
     <table class="table">
