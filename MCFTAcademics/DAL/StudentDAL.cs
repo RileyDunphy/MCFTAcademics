@@ -21,12 +21,11 @@ namespace MCFTAcademics.DAL
 
         public static List<Student> GetStudentsInCourse(Course course)
         {
-            SqlConnection conn = DbConn.GetConnection();
             List<Student> students = new List<Student>();
-            try
+            using (var connection = DbConn.GetConnection())
             {
-                conn.Open(); //open the connection
-                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectStudentsByCourseId", conn);
+                connection.Open();
+                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectStudentsByCourseId", connection);
                 selectCommand.CommandType = System.Data.CommandType.StoredProcedure;
                 selectCommand.Parameters.AddWithValue("@courseId", course.Id);
                 //execute the sql statement
@@ -38,25 +37,15 @@ namespace MCFTAcademics.DAL
                     students.Add(s);
                 }
             }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            finally
-            {
-                conn.Close();
-            }
             return students;//return the list of students
         }
 
         public static Student GetStudent(int id)
         {
-            SqlConnection conn = DbConn.GetConnection();
-            Student s = null;
-            try
+            using (var connection = DbConn.GetConnection())
             {
-                conn.Open(); //open the connection
-                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.[SelectStudentsByStudentId]", conn);
+                connection.Open();
+                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.[SelectStudentsByStudentId]", connection);
                 selectCommand.CommandType = System.Data.CommandType.StoredProcedure;
                 selectCommand.Parameters.AddWithValue("@studentId", id);
                 //execute the sql statement
@@ -64,28 +53,18 @@ namespace MCFTAcademics.DAL
                 //loop through the resultset
                 if (reader.Read())
                 {
-                    s = StudentFromRow(reader);
+                    return StudentFromRow(reader);
                 }
             }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            finally
-            {
-                conn.Close();
-            }
-            return s;//return the student
+            return null;
         }
 
         public static Student GetStudent(string code)
         {
-            SqlConnection conn = DbConn.GetConnection();
-
-            try
+            using (var connection = DbConn.GetConnection())
             {
-                conn.Open(); //open the connection
-                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.[SelectStudentsByStudentId]", conn);
+                connection.Open();
+                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.[SelectStudentsByStudentId]", connection);
                 selectCommand.CommandType = System.Data.CommandType.StoredProcedure;
                 selectCommand.Parameters.AddWithValue("@studentCode", code);
                 //execute the sql statement
@@ -96,10 +75,6 @@ namespace MCFTAcademics.DAL
                     Student s = StudentFromRow(reader);
                     return s;
                 }
-            }
-            finally
-            {
-                conn.Close();
             }
             return null;
         }

@@ -10,18 +10,17 @@ namespace MCFTAcademics.DAL
 {
     public class CourseDAL
     {
-        static Course CourseFromRow(IDataReader reader, List<Prerequisite> prereqs, Staff leadStaff, Staff supportStaff)
+        internal static Course CourseFromRow(IDataReader reader, List<Prerequisite> prereqs, Staff leadStaff, Staff supportStaff)
         {
             return new Course(Convert.ToInt32(reader["courseId"]), reader["name"].ToString(), Convert.ToDecimal(reader["credit"]), reader["Description"].ToString(), Convert.ToInt32(reader["lectureHours"]), Convert.ToInt32(reader["labHours"]), Convert.ToInt32(reader["examHours"]), Convert.ToInt32(reader["totalHours"]), Convert.ToDecimal(reader["revisionNumber"]), reader["program"].ToString(), Convert.ToBoolean(reader["accreditation"]), prereqs, leadStaff, supportStaff);
         }
         public static List<Course> GetAllCourses()
         {
-            SqlConnection conn = DbConn.GetConnection();
             List<Course> courses = new List<Course>();
-            try
+            using (var connection = DbConn.GetConnection())
             {
-                conn.Open(); //open the connection
-                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.Get_AllCoursesANDCourseCodes", conn);
+                connection.Open();
+                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.Get_AllCoursesANDCourseCodes", connection);
                 selectCommand.CommandType = System.Data.CommandType.StoredProcedure;
                 //execute the sql statement
                 SqlDataReader reader = selectCommand.ExecuteReader();
@@ -35,25 +34,16 @@ namespace MCFTAcademics.DAL
                     courses.Add(c);
                 }
             }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            finally
-            {
-                conn.Close();//don't forget to close the connection
-            }
             return courses;//return the list of courses
         }
 
         public static List<Course> GetCoursesByInstructor(int userid)
         {
-            SqlConnection conn = DbConn.GetConnection();
             List<Course> courses = new List<Course>();
-            try
+            using (var connection = DbConn.GetConnection())
             {
-                conn.Open(); //open the connection
-                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectCoursesByInstructor", conn);
+                connection.Open();
+                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectCoursesByInstructor", connection);
                 selectCommand.CommandType = System.Data.CommandType.StoredProcedure;
                 selectCommand.Parameters.AddWithValue("@userid", userid);
                 //execute the sql statement
@@ -66,24 +56,15 @@ namespace MCFTAcademics.DAL
 
                 }
             }
-            catch(Exception ex)
-            {
-                throw ex;
-            }
-            finally
-            {
-                conn.Close();
-            }
             return courses;//return the list of courses
         }
         public static Course GetCourseById(int id)
         {
-            SqlConnection conn = DbConn.GetConnection();
             Course course = null;
-            try
+            using (var connection = DbConn.GetConnection())
             {
-                conn.Open(); //open the connection
-                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectCourseById", conn);
+                connection.Open();
+                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectCourseByid", connection);
                 selectCommand.CommandType = System.Data.CommandType.StoredProcedure;
                 selectCommand.Parameters.AddWithValue("@id", id);
                 //execute the sql statement
@@ -97,120 +78,129 @@ namespace MCFTAcademics.DAL
                     course = CourseFromRow(reader, prereqs, leadStaff, supportStaff);
                 }
             }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            finally
-            {
-                conn.Close();//don't forget to close the connection
-            }
             return course;//return the course
         }
 
         public static bool UpdateCourse(Course c)
         {
-            SqlConnection conn = DbConn.GetConnection();
-            bool result;
-            try
+            bool result = false;
+            using (var connection = DbConn.GetConnection())
             {
-                conn.Open();
-                SqlCommand updateCommand = new SqlCommand("mcftacademics.dbo.UpdateCourseById", conn);
-                updateCommand.CommandType = System.Data.CommandType.StoredProcedure;
-                updateCommand.Parameters.AddWithValue("@id", c.Id);
-                updateCommand.Parameters.AddWithValue("@name", c.Name);
-                updateCommand.Parameters.AddWithValue("@credit", c.Credit);
-                updateCommand.Parameters.AddWithValue("@description", c.Description);
-                updateCommand.Parameters.AddWithValue("@lectureHours", c.LectureHours);
-                updateCommand.Parameters.AddWithValue("@labHours", c.LabHours);
-                updateCommand.Parameters.AddWithValue("@examHours", c.ExamHours);
-                updateCommand.Parameters.AddWithValue("@revisionNumber", c.RevisionNumber);
-                updateCommand.Parameters.AddWithValue("@program", c.Program);
-                updateCommand.Parameters.AddWithValue("@accreditation", c.Accreditation);
-                int rows = updateCommand.ExecuteNonQuery();
-                if (rows > 0)
+                connection.Open();
+                var transaction = connection.BeginTransaction("UpdateCourse for " + c.Id);
+                try
                 {
-                    //Drop existing staff (so they're not multiple instructors) 
-                    //and add back the lead staff and support if there is one
-                    StaffDAL.DropStaff(c.Id);
-                    StaffDAL.AddStaff(c.Id, c.LeadStaff);
-                    if (c.SupportStaff != null)
+                    SqlCommand updateCommand = new SqlCommand("mcftacademics.dbo.UpdateCourseById", connection);
+                    updateCommand.Transaction = transaction;
+                    updateCommand.CommandType = System.Data.CommandType.StoredProcedure;
+                    updateCommand.Parameters.AddWithValue("@id", c.Id);
+                    updateCommand.Parameters.AddWithValue("@name", c.Name);
+                    updateCommand.Parameters.AddWithValue("@credit", c.Credit);
+                    updateCommand.Parameters.AddWithValue("@description", c.Description);
+                    updateCommand.Parameters.AddWithValue("@lectureHours", c.LectureHours);
+                    updateCommand.Parameters.AddWithValue("@labHours", c.LabHours);
+                    updateCommand.Parameters.AddWithValue("@examHours", c.ExamHours);
+                    updateCommand.Parameters.AddWithValue("@revisionNumber", c.RevisionNumber);
+                    updateCommand.Parameters.AddWithValue("@program", c.Program);
+                    updateCommand.Parameters.AddWithValue("@accreditation", c.Accreditation);
+                    int rows = updateCommand.ExecuteNonQuery();
+                    if (rows > 0)
                     {
-                        StaffDAL.AddStaff(c.Id, c.SupportStaff);
+                        //Drop existing staff (so they're not multiple instructors) 
+                        //and add back the lead staff and support if there is one
+                        StaffDAL.DropStaff(connection, c.Id, transaction);
+                        StaffDAL.AddStaff(connection, c.Id, c.LeadStaff, transaction);
+                        if (c.SupportStaff != null)
+                        {
+                            StaffDAL.AddStaff(connection, c.Id, c.SupportStaff, transaction);
+                        }
+                        PrerequisiteDAL.DropPrereqs(connection, c.Id, transaction);
+                        foreach (Prerequisite prereq in c.Prerequisites)
+                        {
+                            PrerequisiteDAL.AddPrereq(connection, prereq, transaction);
+                        }
+                        transaction.Commit();
+                        result = true;
                     }
-                    PrerequisiteDAL.DropPrereqs(c.Id);
-                    foreach (Prerequisite prereq in c.Prerequisites)
-                    {
-                        PrerequisiteDAL.AddPrereq(prereq);
-                    }
-                    result= true;
                 }
-                else
+                catch (Exception)
                 {
-                    result= false;
+                    try
+                    {
+                        transaction.Rollback();
+                    }
+                    catch
+                    {
+                        // if THAT fails
+                        throw;
+                    }
+                    throw;
                 }
-            }
-            catch(Exception ex)
-            {
-                result = false;
-            }
-            finally
-            {
-                conn.Close();
             }
             return result;
         }
 
         public static int AddCourse(Course c)
         {
-            SqlConnection conn = DbConn.GetConnection();
             int id;
-            try
+            using (var connection = DbConn.GetConnection())
             {
-                conn.Open();
-                SqlCommand insertCommand = new SqlCommand("mcftacademics.dbo.InsertCourse", conn);
-                insertCommand.CommandType = System.Data.CommandType.StoredProcedure;
-                insertCommand.Parameters.AddWithValue("@name", c.Name);
-                insertCommand.Parameters.AddWithValue("@credit", c.Credit);
-                insertCommand.Parameters.AddWithValue("@description", c.Description);
-                insertCommand.Parameters.AddWithValue("@lectureHours", c.LectureHours);
-                insertCommand.Parameters.AddWithValue("@labHours", c.LabHours);
-                insertCommand.Parameters.AddWithValue("@examHours", c.ExamHours);
-                insertCommand.Parameters.AddWithValue("@revisionNumber", c.RevisionNumber);
-                insertCommand.Parameters.AddWithValue("@program", c.Program);
-                insertCommand.Parameters.AddWithValue("@accreditation", c.Accreditation);
-                int rows = insertCommand.ExecuteNonQuery();
-                if (rows > 0)
+                connection.Open();
+                var transaction = connection.BeginTransaction("AddCourse");
+                try
                 {
-                    SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectLastCourseInsert", conn);
-                    id = Convert.ToInt32(selectCommand.ExecuteScalar());
-                    //Drop existing staff (so they're not multiple instructors) 
-                    //and add back the lead staff and support if there is one
-                    StaffDAL.DropStaff(id);
-                    StaffDAL.AddStaff(id, c.LeadStaff);
-                    if(c.SupportStaff != null)
+                    SqlCommand insertCommand = new SqlCommand("mcftacademics.dbo.InsertCourse", connection);
+                    insertCommand.Transaction = transaction;
+                    insertCommand.CommandType = System.Data.CommandType.StoredProcedure;
+                    insertCommand.Parameters.AddWithValue("@name", c.Name);
+                    insertCommand.Parameters.AddWithValue("@credit", c.Credit);
+                    insertCommand.Parameters.AddWithValue("@description", c.Description);
+                    insertCommand.Parameters.AddWithValue("@lectureHours", c.LectureHours);
+                    insertCommand.Parameters.AddWithValue("@labHours", c.LabHours);
+                    insertCommand.Parameters.AddWithValue("@examHours", c.ExamHours);
+                    insertCommand.Parameters.AddWithValue("@revisionNumber", c.RevisionNumber);
+                    insertCommand.Parameters.AddWithValue("@program", c.Program);
+                    insertCommand.Parameters.AddWithValue("@accreditation", c.Accreditation);
+                    int rows = insertCommand.ExecuteNonQuery();
+                    if (rows > 0)
                     {
-                        StaffDAL.AddStaff(id, c.SupportStaff);
+                        SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectLastCourseInsert", connection);
+                        selectCommand.Transaction = transaction;
+                        id = Convert.ToInt32(selectCommand.ExecuteScalar());
+                        //Drop existing staff (so they're not multiple instructors) 
+                        //and add back the lead staff and support if there is one
+                        StaffDAL.DropStaff(connection, id, transaction);
+                        StaffDAL.AddStaff(connection, id, c.LeadStaff, transaction);
+                        if (c.SupportStaff != null)
+                        {
+                            StaffDAL.AddStaff(connection, id, c.SupportStaff, transaction);
+                        }
+                        PrerequisiteDAL.DropPrereqs(connection, id, transaction);
+                        foreach (Prerequisite prereq in c.Prerequisites)
+                        {
+                            prereq.CourseId = id;
+                            PrerequisiteDAL.AddPrereq(connection, prereq, transaction);
+                        }
+                        transaction.Commit();
                     }
-                    PrerequisiteDAL.DropPrereqs(id);
-                    foreach (Prerequisite prereq in c.Prerequisites)
+                    else
                     {
-                        prereq.CourseId = id;
-                        PrerequisiteDAL.AddPrereq(prereq);
+                        throw new Exception();
                     }
                 }
-                else
+                catch (Exception)
                 {
-                    throw new Exception();
+                    try
+                    {
+                        transaction.Rollback();
+                    }
+                    catch
+                    {
+                        // if THAT fails
+                        throw;
+                    }
+                    throw;
                 }
-            }
-            catch(Exception ex)
-            {
-                throw ex;
-            }
-            finally
-            {
-                conn.Close();
             }
             return id;
         }

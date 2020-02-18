@@ -50,8 +50,7 @@ namespace MCFTAcademics
 
             // While we're here, init non-ASP.NET Core stuff that needs
             // IConfiguration and friends. Clumsy, but should work.
-            DAL.DbConn.Configuration = Configuration;
-            DAL.DbConn.ConnectionStringName = "DefaultConnection";
+            DAL.DbConn.InitializeConnectionString(Configuration, "DefaultConnection");
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

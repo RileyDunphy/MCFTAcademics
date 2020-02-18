@@ -17,11 +17,10 @@ namespace MCFTAcademics.DAL
         public static CourseCode GetNewestCourseCodeById(int id)
         {
             CourseCode courseCode = null;
-            SqlConnection conn = DbConn.GetConnection();
-            try
+            using (var connection = DbConn.GetConnection())
             {
-                conn.Open(); //open the connection
-                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectNewestCourseCodeById", conn);
+                connection.Open();
+                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectNewestCourseCodeById", connection);
                 selectCommand.CommandType = System.Data.CommandType.StoredProcedure;
                 selectCommand.Parameters.AddWithValue("@id", id);
                 //execute the sql statement
@@ -32,49 +31,31 @@ namespace MCFTAcademics.DAL
                     courseCode = CourseCodeFromRow(reader);
                 }
             }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            finally
-            {
-                conn.Close();//don't forget to close the connection
-            }
             return courseCode;//return the coursecode
         }
 
         public static int GetIdByCourseCode(string code)
         {
-            SqlConnection conn = DbConn.GetConnection();
             int id;
-            try
+            using (var connection = DbConn.GetConnection())
             {
-                conn.Open(); //open the connection
-                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectIdByCourseCode", conn);
+                connection.Open();
+                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectIdByCourseCode", connection);
                 selectCommand.CommandType = System.Data.CommandType.StoredProcedure;
                 selectCommand.Parameters.AddWithValue("@code", code);
                 //execute the sql statement
                 id = Convert.ToInt32(selectCommand.ExecuteScalar());
-            }
-            catch (Exception ex)
-            {
-                return 0;
-            }
-            finally
-            {
-                conn.Close();
             }
             return id;
         }
 
         public static bool AddCourseCode(int id, CourseCode c)
         {
-            SqlConnection conn = DbConn.GetConnection();
             bool result;
-            try
+            using (var connection = DbConn.GetConnection())
             {
-                conn.Open();
-                SqlCommand insertCommand = new SqlCommand("mcftacademics.dbo.AddCourseCode", conn);
+                connection.Open();
+                SqlCommand insertCommand = new SqlCommand("mcftacademics.dbo.AddCourseCode", connection);
                 insertCommand.CommandType = System.Data.CommandType.StoredProcedure;
                 insertCommand.Parameters.AddWithValue("@id", id);
                 insertCommand.Parameters.AddWithValue("@code", c.Code);
@@ -82,7 +63,6 @@ namespace MCFTAcademics.DAL
                 insertCommand.Parameters.AddWithValue("@endDate", c.To);
                 insertCommand.Parameters.AddWithValue("@semester", c.Semester);
                 int rows = insertCommand.ExecuteNonQuery();
-                conn.Close();
                 if (rows > 0)
                 {
                     result= true;
@@ -92,24 +72,15 @@ namespace MCFTAcademics.DAL
                     result= false;
                 }
             }
-            catch(Exception ex)
-            {
-                result= false;
-            }
-            finally
-            {
-                conn.Close();
-            }
             return result;
         }
         public static List<CourseCode> GetAllCourseCodesById(int id)
         {
-            SqlConnection conn = DbConn.GetConnection();
             List<CourseCode> courseCodes = new List<CourseCode>();
-            try
+            using (var connection = DbConn.GetConnection())
             {
-                conn.Open(); //open the connection
-                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectCourseCodesById", conn);
+                connection.Open();
+                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectCourseCodesById", connection);
                 selectCommand.CommandType = System.Data.CommandType.StoredProcedure;
                 selectCommand.Parameters.AddWithValue("@courseId", id);
                 //execute the sql statement
@@ -121,14 +92,6 @@ namespace MCFTAcademics.DAL
                     courseCodes.Add(c);
 
                 }
-            }
-            catch(Exception ex)
-            {
-                throw ex;
-            }
-            finally
-            {
-                conn.Close();
             }
             return courseCodes;//return the list of coursecodes
         }

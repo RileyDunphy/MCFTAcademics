@@ -20,10 +20,8 @@ namespace MCFTAcademics.DAL
 
         public static Role Grant(Role role)
         {
-            SqlConnection connection = null;
-            try
+            using (var connection = DbConn.GetConnection())
             {
-                connection = DAL.DbConn.GetConnection();
                 connection.Open();
                 var sql = "[mcftacademics].dbo.[Grant_UserRole]";
                 var query = connection.CreateCommand();
@@ -37,19 +35,12 @@ namespace MCFTAcademics.DAL
                     return null;
                 return RoleFromRow(reader, role.User);
             }
-            finally
-            {
-                if (connection != null)
-                    connection.Close();
-            }
         }
 
         public static bool Revoke(Role role)
         {
-            SqlConnection connection = null;
-            try
+            using (var connection = DbConn.GetConnection())
             {
-                connection = DAL.DbConn.GetConnection();
                 connection.Open();
                 var sql = "[mcftacademics].dbo.[Revoke_UserRole_ById]";
                 var query = connection.CreateCommand();
@@ -60,19 +51,12 @@ namespace MCFTAcademics.DAL
                 // depends on set nocount off being in the procedure
                 return (query.ExecuteNonQuery() > 0);
             }
-            finally
-            {
-                if (connection != null)
-                    connection.Close();
-            }
         }
 
         public static Role GetRole(User user, int roleId)
         {
-            SqlConnection connection = null;
-            try
+            using (var connection = DbConn.GetConnection())
             {
-                connection = DbConn.GetConnection();
                 connection.Open();
                 var command = connection.CreateCommand();
                 command.CommandText = "mcftacademics.dbo.Get_UserRole_ById";
@@ -84,20 +68,13 @@ namespace MCFTAcademics.DAL
                     return null;
                 return RoleFromRow(reader, user);
             }
-            finally
-            {
-                if (connection != null)
-                    connection.Close();
-            }
         }
 
         public static IEnumerable<Role> GetRolesForUser(User user)
         {
             var roles = new List<Role>();
-            SqlConnection connection = null;
-            try
+            using (var connection = DbConn.GetConnection())
             {
-                connection = DbConn.GetConnection();
                 connection.Open();
                 var command = connection.CreateCommand();
                 // without _ById, this accepts Username instead
@@ -107,11 +84,6 @@ namespace MCFTAcademics.DAL
                 var reader = command.ExecuteReader();
                 while (reader.Read())
                     roles.Add(RoleFromRow(reader, user));
-            }
-            finally
-            {
-                if (connection != null)
-                    connection.Close();
             }
             return roles;
         }

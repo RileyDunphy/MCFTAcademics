@@ -21,10 +21,8 @@ namespace MCFTAcademics.DAL
 
         public static IEnumerable<User> GetAllUsers()
         {
-            SqlConnection connection = null;
-            try
+            using (var connection = DbConn.GetConnection())
             {
-                connection = DbConn.GetConnection();
                 connection.Open();
                 var command = connection.CreateCommand();
                 command.CommandText = "mcftacademics.dbo.Get_All_Users";
@@ -33,19 +31,12 @@ namespace MCFTAcademics.DAL
                 while (reader.Read())
                     yield return UserFromRow(reader);
             }
-            finally
-            {
-                if (connection != null)
-                    connection.Close();
-            }
         }
 
         public static User GetUser(int id)
         {
-            SqlConnection connection = null;
-            try
+            using (var connection = DbConn.GetConnection())
             {
-                connection = DbConn.GetConnection();
                 connection.Open();
                 var command = connection.CreateCommand();
                 command.CommandText = "mcftacademics.dbo.Get_User_ById";
@@ -56,19 +47,12 @@ namespace MCFTAcademics.DAL
                     return null;
                 return UserFromRow(reader);
             }
-            finally
-            {
-                if (connection != null)
-                    connection.Close();
-            }
         }
 
         public static User GetUser(string username)
         {
-            SqlConnection connection = null;
-            try
+            using (var connection = DbConn.GetConnection())
             {
-                connection = DbConn.GetConnection();
                 connection.Open();
                 var command = connection.CreateCommand();
                 command.CommandText = "mcftacademics.dbo.Get_User_ByName";
@@ -79,19 +63,12 @@ namespace MCFTAcademics.DAL
                     return null;
                 return UserFromRow(reader);
             }
-            finally
-            {
-                if (connection != null)
-                    connection.Close();
-            }
         }
 
         public static User CreateUser(User user)
         {
-            SqlConnection connection = null;
-            try
+            using (var connection = DbConn.GetConnection())
             {
-                connection = DAL.DbConn.GetConnection();
                 connection.Open();
                 var sql = "[mcftacademics].dbo.Create_User";
                 var query = connection.CreateCommand();
@@ -105,19 +82,12 @@ namespace MCFTAcademics.DAL
                     return null;
                 return UserFromRow(reader);
             }
-            finally
-            {
-                if (connection != null)
-                    connection.Close();
-            }
         }
 
         public static bool ChangePassword(User user, string newPasswordHashed)
         {
-            SqlConnection connection = null;
-            try
+            using (var connection = DbConn.GetConnection())
             {
-                connection = DAL.DbConn.GetConnection();
                 connection.Open();
                 var sql = "[mcftacademics].dbo.Update_Password";
                 var query = connection.CreateCommand();
@@ -128,19 +98,12 @@ namespace MCFTAcademics.DAL
                 // depends on set nocount off being in the procedure
                 return (query.ExecuteNonQuery() > 0);
             }
-            finally
-            {
-                if (connection != null)
-                    connection.Close();
-            }
         }
 
         public static bool ChangeProfile(User user, string newRealName, string newUserName)
         {
-            SqlConnection connection = null;
-            try
+            using (var connection = DbConn.GetConnection())
             {
-                connection = DAL.DbConn.GetConnection();
                 connection.Open();
                 var sql = "[mcftacademics].dbo.Update_Profile";
                 var query = connection.CreateCommand();
@@ -151,11 +114,6 @@ namespace MCFTAcademics.DAL
                 query.Parameters.AddWithValue("@userName", newUserName);
                 // depends on set nocount off being in the procedure
                 return (query.ExecuteNonQuery() > 0);
-            }
-            finally
-            {
-                if (connection != null)
-                    connection.Close();
             }
         }
     }

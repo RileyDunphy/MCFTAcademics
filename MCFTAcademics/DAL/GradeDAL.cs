@@ -10,7 +10,7 @@ namespace MCFTAcademics.DAL
 {
     public static class GradeDAL
     {
-        static Grade GradeFromRow(IDataReader reader)
+        static Grade GradeFromRow(IDataReader reader, Course course = null)
         {
             var studentId = (int)reader["studentId"];
             var locked = (bool)reader["lock"];
@@ -18,18 +18,19 @@ namespace MCFTAcademics.DAL
             var given = (DateTime)reader["given"];
             var hoursAttended = (decimal)reader["hoursAttended"];
             var grade = (decimal)reader["grade"];
-            // XXX: Switch query to a join and use CourseDAL
-            var course = Course.GetCourseById((int)reader["courseId"]);
+            if (course == null)
+            {
+                // XXX: the fact we're passing a lot of nulls here might mean that Course shouldn't be caching them
+                course = CourseDAL.CourseFromRow(reader, null, null, null);
+            }
             // XXX: Preserve the staff stuff too?
             return new Grade(studentId,grade, given, locked, hoursAttended, supplemental, course);
         }
 
         public static IEnumerable<Grade> GetAllGrades()
         {
-            SqlConnection connection = null;
-            try
+            using (var connection = DbConn.GetConnection())
             {
-                connection = DbConn.GetConnection();
                 connection.Open();
                 var command = connection.CreateCommand();
                 command.CommandText = "mcftacademics.dbo.Get_All_Grades";
@@ -37,11 +38,6 @@ namespace MCFTAcademics.DAL
                 var reader = command.ExecuteReader();
                 while (reader.Read())
                     yield return GradeFromRow(reader);
-            }
-            finally
-            {
-                if (connection != null)
-                    connection.Close();
             }
         }
 
@@ -52,10 +48,8 @@ namespace MCFTAcademics.DAL
         // (This should really be changed.)
         public static IEnumerable<Grade> GetGradesForInstructor(User staff)
         {
-            SqlConnection connection = null;
-            try
+            using (var connection = DbConn.GetConnection())
             {
-                connection = DbConn.GetConnection();
                 connection.Open();
                 var command = connection.CreateCommand();
                 command.CommandText = "mcftacademics.dbo.Get_Grades_ByStaff";
@@ -64,23 +58,17 @@ namespace MCFTAcademics.DAL
                 while (reader.Read())
                     yield return GradeFromRow(reader);
             }
-            finally
-            {
-                if (connection != null)
-                    connection.Close();
-            }
         }
 
         // moved from StudentDAL
         internal static List<Grade> GetGradesForStudent(Student student)
         {
-            SqlConnection conn = DbConn.GetConnection();
             List<Grade> grades = new List<Grade>();
             Grade grade = null;
-            try
+            using (var connection = DbConn.GetConnection())
             {
-                conn.Open(); //open the connection
-                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectStudentGradeById2", conn);
+                connection.Open();
+                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectStudentGradeById2", connection);
                 selectCommand.CommandType = System.Data.CommandType.StoredProcedure;
                 selectCommand.Parameters.AddWithValue("@studentId", student.Id);
                 SqlDataReader reader = selectCommand.ExecuteReader();
@@ -90,25 +78,16 @@ namespace MCFTAcademics.DAL
                     grades.Add(grade);
                 }
             }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            finally
-            {
-                conn.Close();//don't forget to close the connection
-            }
             return grades;
         }
 
         internal static Grade GetGradesForStudentInCourse(Course course, Student student)
         {
-            SqlConnection conn = DbConn.GetConnection();
             Grade grade = null;
-            try
+            using (var connection = DbConn.GetConnection())
             {
-                conn.Open(); //open the connection
-                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectGradeByCourseAndStudent", conn);
+                connection.Open();
+                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectGradeByCourseAndStudent", connection);
                 selectCommand.CommandType = System.Data.CommandType.StoredProcedure;
                 selectCommand.Parameters.AddWithValue("@courseId", course.Id);
                 selectCommand.Parameters.AddWithValue("@studentId", student.Id);
@@ -117,16 +96,8 @@ namespace MCFTAcademics.DAL
                 //loop through the resultset
                 if (reader.Read())
                 {
-                    grade = GradeDAL.GradeFromRow(reader);
-                                    }
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            finally
-            {
-                conn.Close();//don't forget to close the connection
+                    grade = GradeDAL.GradeFromRow(reader, course);
+                }
             }
             return grade;//return the grade
         }
