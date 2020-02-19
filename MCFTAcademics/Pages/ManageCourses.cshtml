@@ -1,14 +1,7 @@
 ﻿@page
 @model MCFTAcademics.ManageCoursesModel
-@{
-    ViewData["Title"] = "Manage Courses";
-}
-
-@using System.Collections;
 @using BL;
 @{
-
-    List<Course> courses = Course.GetCoursesByInstructor(Convert.ToInt32(HttpContext.User.FindFirst(x => x.Type == System.Security.Claims.ClaimTypes.NameIdentifier).Value));
     int count = 0;
 }
 @if (!string.IsNullOrEmpty(Model.alertMessage))
@@ -19,10 +12,12 @@
 <div class="container">
     <div class="row">
         <div class="col">
-            <h2>Manage Courses you are Instructing</h2>
+            <h2>@ViewData["Title"]</h2>
         </div>
     </div>
     <form method="post">
+        <!-- handles one version of the case, at least -->
+        <input asp-for="ShowAllCourses" />
         <div class="row">
             <div class="col-lg-1">
                 <span class="label label-default">Course Code</span>
@@ -39,9 +34,9 @@
                     </button>
                     <ul class="dropdown-menu" aria-labelledby="dropdownMenuCourses">
                         <li> <a asp-page-handler="AddCourse">Add new course</a></li>
-                        @foreach (Course c in courses)
+                        @foreach (Course c in Model.ShownCourses)
                         {
-                            <li> <a asp-page-handler="SelectCourse" asp-route-id="@c.Id">@c.Name</a> </li>
+                            <li> <a asp-page-handler="SelectCourse" asp-route-id="@c.Id" asp-route-forAll="@Model.ShowAllCourses">@c.Name</a> </li>
                         }
                     </ul>
                 </div>

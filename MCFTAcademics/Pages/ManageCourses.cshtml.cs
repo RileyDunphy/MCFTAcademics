@@ -30,10 +30,22 @@ namespace MCFTAcademics
         //Flag to tell whether to add course or update course on submit, or if null then no menu item selected
         public static bool? add { get; set; }
 
+        // XXX: Ugly
+        // Used for persisting the list of courses between states.
+        public IEnumerable<Course> ShownCourses { get; set; }
+        // Used for reloading the page. Each new page load needs to reload the
+        // list of courses due to the stateless nature of HTTP.
+        [BindProperty]
+        [HiddenInput]
+        public bool ShowAllCourses { get; set; }
+
         public IActionResult OnPost()
         {
             try
             {
+                // in case we have to be on the same page again?
+                Init();
+                RefreshShownCourses();
                 if (!ModelState.IsValid)
                 {
                     return Page();
@@ -97,7 +109,7 @@ namespace MCFTAcademics
                 {
                     CourseCode.AddCourseCode(id, new CourseCode(courseCode, startDate, endDate, semester));
                 }
-                return RedirectToPage("ManageCourses");
+                return ShowAllCourses ? RedirectToPage("ManageCourses", "all") : RedirectToPage("ManageCourses");
             }
             catch (Exception ex)
             {
@@ -106,13 +118,51 @@ namespace MCFTAcademics
                 return Page();
             }
         }
-        public void OnGet()
+
+        void RefreshShownCourses()
+        {
+            // XXX: Check if the user is allowed to do this.
+            if (ShowAllCourses)
+            {
+                ViewData["Title"] = "Manage courses";
+                var courses = Course.GetAllCourses();
+                ShownCourses = courses;
+            }
+            else
+            {
+                ViewData["Title"] = "Manage courses you are instructing";
+                var courses = Course.GetCoursesByInstructor(User.IdAsInt());
+                ShownCourses = courses;
+            }
+        }
+
+        void Init()
         {
             this.alertMessage = "";
             this.dropdownText = "Please select a course to change";
         }
-        public IActionResult OnGetSelectCourse(int id)
+
+        public void OnGet()
         {
+            ShowAllCourses = false;
+            RefreshShownCourses();
+            Init();
+        }
+
+        // consistent, but awkward since we refresh a lot
+        public void OnGetAll()
+        {
+            ShowAllCourses = true;
+            RefreshShownCourses();
+            Init();
+        }
+
+        public IActionResult OnGetSelectCourse(int id, bool forAll)
+        {
+            // XXX: We could consider AJAX. Refresh will handle if all needs auth.
+            ShowAllCourses = forAll;
+            RefreshShownCourses();
+            // XXX: We don't check if the user is allowed to use the course
             this.course = Course.GetCourseById(id);
             this.courseCode = CourseCode.GetNewestCourseCodeById(id);
             code = courseCode.Code;
@@ -121,8 +171,12 @@ namespace MCFTAcademics
             return Page();
         }
 
-        public IActionResult OnGetAddCourse(int id)
+        public IActionResult OnGetAddCourse(int id, bool forAll)
         {
+            // XXX: We could consider AJAX. Refresh will handle if all needs auth.
+            ShowAllCourses = forAll;
+            RefreshShownCourses();
+            // XXX: We don't check if the user is allowed to use the course
             this.course = new Course();
             this.courseCode = new CourseCode();
             code = courseCode.Code;

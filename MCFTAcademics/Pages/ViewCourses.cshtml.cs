@@ -11,7 +11,16 @@ namespace MCFTAcademics
     {
         public void OnGet()
         {
+            ViewData["Title"] = "Courses you are instructing";
+            var courses = BL.Course.GetCoursesByInstructor(User.IdAsInt());
+            ViewData["ViewData_Courses"] = courses;
+        }
 
+        public void OnGetAll()
+        {
+            ViewData["Title"] = "All Courses";
+            var courses = BL.Course.GetAllCourses();
+            ViewData["ViewData_Courses"] = courses;
         }
     }
 }

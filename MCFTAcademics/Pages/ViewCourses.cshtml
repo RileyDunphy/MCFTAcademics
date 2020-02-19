@@ -1,18 +1,11 @@
 ﻿@page
 @model MCFTAcademics.ViewCoursesModel
-@{
-    ViewData["Title"] = "View Courses";
-}
-
-@using System.Collections;
 @using BL;
-
 @{
-
-    List<Course> courses = Course.GetCoursesByInstructor(Convert.ToInt32(HttpContext.User.FindFirst(x => x.Type == System.Security.Claims.ClaimTypes.NameIdentifier).Value));
+    var courses = (IEnumerable<Course>)ViewData["ViewData_Courses"];
 }
 
-<h2>Courses you are Instructing</h2>
+<h2>@ViewData["Title"]</h2>
 
 <table class="table">
     <thead>
