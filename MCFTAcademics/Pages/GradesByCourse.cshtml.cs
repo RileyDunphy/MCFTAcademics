@@ -20,7 +20,7 @@ using System.Data;
 
 namespace MCFTAcademics
 {
-    public class GradeByStudentId : PageModel
+    public class GradeByCourse : PageModel
     {
         [BindProperty]
         [Required(ErrorMessage = "Please enter a StudentId")]

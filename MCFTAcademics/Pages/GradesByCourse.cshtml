@@ -1,5 +1,5 @@
 ﻿@page
-@model MCFTAcademics.GradeByStudentId
+@model MCFTAcademics.GradeByCourse
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
     ViewData["Title"] = "GradesByCourse";
@@ -16,7 +16,7 @@
     int rowCounter = 1;
     int semester = 0;
 }
-<h1>Grade By Student Id</h1>
+<h1>Student Grades</h1>
 <br>
 <form class="form-inline" id="form" method="post">
     <div class="row">
@@ -24,7 +24,6 @@
         <input class="form-control" style="width:200px" type="text" required name="studentId" id="studentId">
         <button class="btn btn-primary" id="searchById" type="submit">Search</button>
     </div>
-
 
 </form>
 @if (studentUser != null)
