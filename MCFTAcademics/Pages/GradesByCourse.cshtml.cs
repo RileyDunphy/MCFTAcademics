@@ -49,6 +49,7 @@ namespace MCFTAcademics
         }
         public IActionResult OnPost()
         {
+            try
             {
                 if (!ModelState.IsValid)
                 {
