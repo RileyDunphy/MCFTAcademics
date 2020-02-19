@@ -26,6 +26,7 @@ namespace MCFTAcademics
         [Required(ErrorMessage = "Please enter a StudentId")]
         [Display(Name = "Student")]
         public Student s { get; set; }
+        public List<Course> courseList { get; set; }
 
 
         public void SubmitBtn_Click()
