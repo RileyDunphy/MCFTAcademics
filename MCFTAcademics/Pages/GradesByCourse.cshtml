@@ -8,92 +8,90 @@
 @using System.Collections;
 @using BL;
 @{
-    Student studentUser = null;
+    List<Course> courses = Course.GetCoursesByInstructor(Convert.ToInt32(HttpContext.User.FindFirst(x => x.Type == System.Security.Claims.ClaimTypes.NameIdentifier).Value));
     if (Model.s != null) {
-        studentUser = @Model.s;
-        studentUser.Grades.Sort();
+        
     }
-    int rowCounter = 1;
+    
     int semester = 0;
 }
 <h1>Student Grades</h1>
-<br>
-<form class="form-inline" id="form" method="post">
-    <div class="row">
-        <label>Please Enter Student ID: </label>
-        <input class="form-control" style="width:200px" type="text" required name="studentId" id="studentId">
-        <button class="btn btn-primary" id="searchById" type="submit">Search</button>
-    </div>
 
-</form>
-@if (studentUser != null)
+
+@if (courses != null)
 {
 
-    <h2>@studentUser.StudentId @studentUser.FirstName @studentUser.LastName</h2>
-    <input id="studentIdHolder" type="hidden" value="@studentUser.StudentId">
-    <table class="table">
+<table class="table">
 
-        @foreach (Grade g in studentUser.Grades)
+    @foreach (Course c in courses)
+    {
+        CourseCode code = c.GetCourseCode();
+        List<Student> students = Student.GetStudentsByCourseId(c.Id);
+
+
+        if (semester != code.Semester)
         {
-            CourseCode code = g.Subject.GetCourseCode();
+            semester = code.Semester;
 
-            if (semester != code.Semester)
+            <h2>@c.Name - @code.Code</h2>
+            <tr>
+                <td>
+                    <h3>Semester @semester</h3>
+                </td>
+                <!--Empty fields so the above and below fields have a hr-->
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <th scope="col" width="15%">Student Id</th>
+                <th scope="col" width="20%">First Name</th>
+                <th scope="col" width="20%">Last Name</th>
+                <th scope="col" width="10%">Grade</th>
+                <th scope="col" width="35%">Comment</th>
+            </tr>
+        }
+        @foreach (Student s in students)
+        {
+            Grade g = s.GetGradeByCourseId(c.Id);
+            if (g.Locked)
             {
-                semester = code.Semester;
-                
                 <tr>
-                    <td>
-                        <h3>Semester @semester</h3>
-                    </td>
-                    <!--Empty fields so the above and below fields have a hr-->
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <th scope="col" width="15%">Course Code</th>
-                    <th scope="col" width="20%">Subject</th>
-                    <th scope="col" width="20%">Instructor</th>
-                    <th scope="col" width="10%">Grade</th>
-                    <th scope="col" width="35%">Comment</th>
-                </tr>
-            }
-
-            if (g.Subject != null && g.Locked)
-            {
-                <tr>
-                    <th scope="row">@code.Code</th>
-                    <td>@g.Subject.Name</td>
-                    <td>@g.Subject.LeadStaff.Name</td>
-                    <td>@g.GradeAssigned</td>
+                    <td>@s.StudentId</td>
+                    <td>@s.FirstName</td>
+                    <td>@s.LastName</td>
+                    <td>@s.GetGradeByCourseId(c.Id).GradeAssigned</td>
                     <td>Grade is Locked</td>
                 </tr>
-                rowCounter++;
             }
-            else if (g.Subject != null && !g.Locked)
+            else if (!g.Locked)
             {
-                <tr>
-                    <th scope="row">@code.Code</th>
+<tr>
+    <td>@s.StudentId</td>
+    <td>@s.FirstName</td>
+    <td>@s.LastName</td>
+    <td><input id="grade#@g.Subject.Id" class="input-sm" onchange="method(this)" type="number" value="@g.GradeAssigned" /></td>
 
-                    <td>@g.Subject.Name</td>
-                    <td>@g.Subject.LeadStaff.Name</td>
-                    <td><input id="grade#@g.Subject.Id" class="input-sm" onchange="method(this)" type="number" value="@g.GradeAssigned" /></td>
+    <td>
+        <input class="input-sm hidden" style="width:200px;padding-top: 6px;" placeholder="comment on changes" type="text" required name="commentField" id="comment#@g.Subject.Id">
 
-                    <td><input class="input-sm hidden" style="width:200px;padding-top: 6px;" placeholder="comment on changes" type="text" required name="commentField" id="comment#@g.Subject.Id">
-                    
-                    <button id="@g.Subject.Id"  onclick="submitGrade(this)" style="padding-right: 12px;margin-right:37px;padding-top: 2px;margin-left: 2px; width:110px; float:right" class="btn btn-danger hidden">Submit</button></td>
+        <button id="@g.Subject.Id" onclick="submitGrade(this)" style="padding-right: 12px;margin-right:37px;padding-top: 2px;margin-left: 2px; width:110px; float:right" class="btn btn-danger hidden">Submit</button>
+    </td>
+</tr>
                 </tr>
-                rowCounter++;
             }
+
+
+
+
         }
-    </table>
+
+    }
+</table>
     
 }
-
-
-
 @section scripts{
 
     <script type="text/javascript">
@@ -132,14 +130,7 @@
             elementList[0].classList.remove("hidden");
             elementList[1].classList.remove("hidden");
 
-
-        };
-                
-               
-
-
-
-                               
+        };         
     </script>
 }
 

@@ -83,6 +83,17 @@ namespace MCFTAcademics.BL
             return studentCode;
         }
 
+        public Grade GetGradeFromListByCourseId(int id)
+        {
+            foreach (Grade g in grades) {
+                if (g.Subject.Id == id) {
+                    return g;
+                }
+            }
+            return null;
+            
+        }
+
         public static Student GetStudentByStudentId(int id)
         {
             return StudentDAL.GetStudent(id);
