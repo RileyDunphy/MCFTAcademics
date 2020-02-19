@@ -30,8 +30,6 @@ namespace MCFTAcademics.BL
             this.hoursAttended = hoursAttended;
             this.supplemental = supplemental;
             this.subject=subject;
-
-            //should this be a parameter of the constructor?
             this.comment = comment;
         }
 
