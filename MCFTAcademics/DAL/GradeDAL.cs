@@ -20,8 +20,7 @@ namespace MCFTAcademics.DAL
             var grade = (decimal)reader["grade"];
             if (course == null)
             {
-                // XXX: the fact we're passing a lot of nulls here might mean that Course shouldn't be caching them
-                course = CourseDAL.CourseFromRow(reader, null, null, null);
+                course = CourseDAL.CourseFromRow(reader);
             }
             // XXX: Preserve the staff stuff too?
             return new Grade(studentId,grade, given, locked, hoursAttended, supplemental, course);
