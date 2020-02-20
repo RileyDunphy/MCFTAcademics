@@ -48,17 +48,17 @@ namespace MCFTAcademics
 
         }
         public IActionResult OnPost()
-        {
+        {   try
             {
                 if (!ModelState.IsValid)
                 {
                     return Page();
                 }
                 int id = Convert.ToInt32(Request.Form["studentId"]);
-
-                this.s = new Student(id);
+                this.s = null;
+                this.s = Student.GetStudentByStudentId(id);
                 //List<Grade> grades=StudentDAL.GetGradeByStudentId(id);
-                List<Grade> grades = s.Grades;
+                IEnumerable<Grade> grades = s.GetGrades();
 
                 foreach (Grade g in grades) {
                     Console.WriteLine(g.ToString());
@@ -72,7 +72,7 @@ namespace MCFTAcademics
         {   //almost empty course object
             Course c=new Course(courseId, null,0,null,0,0,0,0,0,"",false,null,null,null);
 
-            Grade update = new Grade(studentId,grade,DateTime.Now,false,0m,false,c,comment);
+            Grade update = new Grade(grade,DateTime.Now,false,0m,false,c,comment);
 
             bool response=Grade.UpdateGrade(update, studentId);
 

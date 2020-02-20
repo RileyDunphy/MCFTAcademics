@@ -8,6 +8,7 @@ namespace MCFTAcademics.BL
 {
     public class Student
     {
+        public Student() { }
         public Student(int id, string firstName, string lastName, string studentCode, string program, DateTime? admissionDate)
         {
             Id = id;
@@ -83,7 +84,7 @@ namespace MCFTAcademics.BL
             return studentCode;
         }
 
-        public Grade GetGradeFromListByCourseId(int id)
+        public Grade GetGradeFromListByCourseId(int id,IEnumerable<Grade> grades)
         {
             foreach (Grade g in grades) {
                 if (g.Subject.Id == id) {
