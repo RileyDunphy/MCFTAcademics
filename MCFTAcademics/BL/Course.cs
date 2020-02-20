@@ -8,10 +8,9 @@ namespace MCFTAcademics.BL
     {
         public Course()
         {
-            this.Prerequisites = new List<Prerequisite>();
         }
 
-        public Course(int id, string name, decimal credit, string description, int lectureHours, int labHours, int examHours, int totalHours, decimal revisionNumber,string program, bool accreditation, List<Prerequisite> prerequisites, Staff lead, Staff support)
+        public Course(int id, string name, decimal credit, string description, int lectureHours, int labHours, int examHours, int totalHours, decimal revisionNumber,string program, bool accreditation)
         {
             this.Id = id;
             this.Name = name;
@@ -21,12 +20,9 @@ namespace MCFTAcademics.BL
             this.LabHours = labHours;
             this.ExamHours = examHours;
             this.TotalHours = totalHours;
-            this.Prerequisites = prerequisites;
             this.RevisionNumber = revisionNumber;
             this.Program = program;
             this.Accreditation = accreditation;
-            this.LeadStaff = lead;
-            this.SupportStaff = support;
         }
 
         public string Name { get; }
@@ -36,13 +32,17 @@ namespace MCFTAcademics.BL
         public int LectureHours { get; }
         public int LabHours { get; }
         public int ExamHours { get; }
-        public List<Prerequisite> Prerequisites { get; }
         public int TotalHours { get;  }
         public decimal RevisionNumber { get; }
         public string Program { get; }
         public bool Accreditation { get; }
-        public Staff LeadStaff { get; }
-        public Staff SupportStaff { get; }
+
+        // These were previously cached unconditionally, but led a lot of logic issues and performance issues.
+        public IEnumerable<Prerequisite> GetPrerequisites() => PrerequisiteDAL.GetPrereqs(Id);
+
+        public Staff GetLeadStaff() => StaffDAL.GetStaffByCourseIdAndType(Id, "lead");
+
+        public Staff GetSupportStaff() => StaffDAL.GetStaffByCourseIdAndType(Id, "support");
 
         public bool IsEligible(User u)
         {
@@ -62,13 +62,13 @@ namespace MCFTAcademics.BL
         {
             return CourseDAL.GetCourseById(id);
         }
-        public bool UpdateCourse()
+        public bool UpdateCourse(Staff leadStaff, Staff supportStaff, IEnumerable<Prerequisite> prerequisites)
         {
-            return CourseDAL.UpdateCourse(this);
+            return CourseDAL.UpdateCourse(this, leadStaff, supportStaff, prerequisites);
         }
-        public static int AddCourse(Course c)
+        public static int AddCourse(Course c, Staff leadStaff, Staff supportStaff, IEnumerable<Prerequisite> prerequisites)
         {
-            return CourseDAL.AddCourse(c);
+            return CourseDAL.AddCourse(c, leadStaff, supportStaff, prerequisites);
         }
     }
 }

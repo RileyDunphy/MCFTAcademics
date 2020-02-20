@@ -3,6 +3,8 @@
 @using BL;
 @{
     int count = 0;
+    // we use this twice later
+    var allStaff = Staff.GetAllStaff();
 }
 @if (!string.IsNullOrEmpty(Model.alertMessage))
 {
@@ -66,10 +68,14 @@
                 <span class="label label-default"> Lead Instructor</span>
             </div>
             <div class="col-lg-2">
-                <select class="form-control" asp-for="course.LeadStaff.UserId" name="leadStaff" id="selLeadStaff">
-                    @foreach (Staff s in Staff.GetAllStaff())
+                <select class="form-control" name="leadStaff" id="selLeadStaff">
+                    @{ 
+                        var leadStaff = Model.course?.GetLeadStaff();
+                    }
+                    @foreach (Staff s in allStaff)
                     {
-                        <option value=@s.UserId>@s.Name</option>
+                        // XXX: Wrong comparison? This should check the course ID (which isn't in this?)
+                        <option selected="@(s.UserId == (leadStaff?.UserId ?? -1))" value=@s.UserId>@s.Name</option>
                     }
                 </select>
             </div>
@@ -79,11 +85,15 @@
                 <span class="label label-default"> Support Staff</span>
             </div>
             <div class="col-lg-2">
-                <select class="form-control" asp-for="course.SupportStaff.UserId" name="supportStaff" id="selSupportStaff">
+                <select class="form-control" name="supportStaff" id="selSupportStaff">
                     <option value="">None</option>
-                    @foreach (Staff s in Staff.GetAllStaff())
+                    @{
+                        var supportStaff = Model.course?.GetSupportStaff();
+                    }
+                    @foreach (Staff s in allStaff)
                     {
-                        <option value=@s.UserId>@s.Name</option>
+                        // XXX: Wrong comparison? This should check the course ID (which isn't in this?)
+                        <option selected="@(s.UserId == (supportStaff?.UserId ?? -1))" value=@s.UserId>@s.Name</option>
                     }
                 </select>
             </div>
@@ -197,20 +207,22 @@
                         {
                             count = 0;
 
-                            @for (var i = 0; i < Model.course.Prerequisites.Count; i++)
+                            var prereqs = Model.course?.GetPrerequisites()?.ToList() ?? new List<Prerequisite>();
+
+                            @for (var i = 0; i < prereqs.Count; i++)
                             {
                                 <tr id="Prereq-@i">
-                                    @if (Model.course.Prerequisites[i].IsPrereq == true)
+                                    @if (prereqs[i].IsPrereq == true)
                                     {
-                                        <td><input class="form-check-input" asp-for="course.Prerequisites[i].IsPrereq" type="radio" name="reqRadio+@count" checked value="prereq"></td>
-                                        <td><input class="form-check-input" asp-for="course.Prerequisites[i].IsCoreq" type="radio" name="reqRadio+@count" value="coreq"></td>
+                                        <td><input class="form-check-input" checked=@(prereqs[i].IsPrereq) type="radio" name="reqRadio+@count" value="prereq"></td>
+                                        <td><input class="form-check-input" checked=@(prereqs[i].IsCoreq) type="radio" name="reqRadio+@count" value="coreq"></td>
                                     }
-                                    else if (Model.course.Prerequisites[i].IsCoreq == true)
+                                    else if (prereqs[i].IsCoreq == true)
                                     {
-                                        <td><input class="form-check-input" asp-for="course.Prerequisites[i].IsPrereq" type="radio" name="reqRadio+@count" value="prereq"></td>
-                                        <td><input class="form-check-input" asp-for="course.Prerequisites[i].IsCoreq" type="radio" name="reqRadio+@count" checked value="coreq"></td>
+                                        <td><input class="form-check-input" checked=@(prereqs[i].IsPrereq) type="radio" name="reqRadio+@count" value="prereq"></td>
+                                        <td><input class="form-check-input" checked=@(prereqs[i].IsCoreq) type="radio" name="reqRadio+@count" value="coreq"></td>
                                     }
-                                    <td><input class="form-control" type="text" name="prereqCode+@count" asp-for="course.Prerequisites[i].PrereqId" id="txtCourseCode" value="@BL.CourseCode.GetNewestCourseCodeById(Model.course.Prerequisites[i].PrereqId).Code"></td>
+                                    <td><input class="form-control" type="text" name="prereqCode+@count" id="txtCourseCode" value="@BL.CourseCode.GetNewestCourseCodeById(prereqs[i].PrereqId).Code"></td>
                                     <td>
                                         <button type="button" data-id="Prereq-@i" class="Delete btn btn-sm btn-danger d-none d-md-inline-block">
                                             Delete
