@@ -26,7 +26,8 @@
     @foreach (Course c in courses)
     {
         CourseCode code = c.GetCourseCode();
-        List<Student> students = Student.GetStudentsByCourseId(c.Id);
+        
+        List<Student> students = Student.GetStudentsByCourse(c);
 
 
         if (semester != code.Semester)
@@ -55,21 +56,21 @@
         }
         @foreach (Student s in students)
         {
-            Grade g = s.GetGradeByCourseId(c.Id);
+            Grade g = s.GetGradeFromListByCourseId(c.Id,s.GetGrades());
             if (g.Locked)
             {
                 <tr>
-                    <td>@s.StudentId</td>
+                    <td>@s.Id</td>
                     <td>@s.FirstName</td>
                     <td>@s.LastName</td>
-                    <td>@s.GetGradeByCourseId(c.Id).GradeAssigned</td>
+                    <td>@g.GradeAssigned</td>
                     <td>Grade is Locked</td>
                 </tr>
             }
             else if (!g.Locked)
             {
 <tr>
-    <td>@s.StudentId</td>
+    <td>@s.Id</td>
     <td>@s.FirstName</td>
     <td>@s.LastName</td>
     <td><input id="grade#@g.Subject.Id" class="input-sm" onchange="method(this)" type="number" value="@g.GradeAssigned" /></td>
@@ -80,7 +81,7 @@
         <button id="@g.Subject.Id" onclick="submitGrade(this)" style="padding-right: 12px;margin-right:37px;padding-top: 2px;margin-left: 2px; width:110px; float:right" class="btn btn-danger hidden">Submit</button>
     </td>
 </tr>
-                </tr>
+                
             }
 
 
