@@ -82,12 +82,10 @@ namespace MCFTAcademics.DAL
 
         public static List<Student> GetAllStudents()
         {
-            SqlConnection conn = DbConn.GetConnection();
             List<Student> students = new List<Student>();
-            try
+            using (var connection = DbConn.GetConnection())
             {
-                conn.Open(); //open the connection
-                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectAllStudents", conn);
+                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectAllStudents", connection);
                 selectCommand.CommandType = System.Data.CommandType.StoredProcedure;
                 //execute the sql statement
                 SqlDataReader reader = selectCommand.ExecuteReader();
@@ -97,16 +95,9 @@ namespace MCFTAcademics.DAL
                     Student s = StudentFromRow(reader);
                     students.Add(s);
                 }
+                return students;//return the list of students
             }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            finally
-            {
-                conn.Close();//don't forget to close the connection
-            }
-            return students;//return the list of students
+            return null;
         }
 
         public static string GetClassRank(Student s)
