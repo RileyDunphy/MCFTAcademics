@@ -21,7 +21,7 @@
     <tbody>
         @foreach (Grade g in Grade.GetAllGrades())
         {
-            Student s = Student.GetStudentByStudentId(g.StudentId);
+            Student s = Student.GetStudent(g.StudentId);
             <tr>
                 <th scope="row">@g.StudentId</th>
                 <td>@s.FirstName @s.LastName</td>

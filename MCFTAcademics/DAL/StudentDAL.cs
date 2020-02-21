@@ -16,7 +16,8 @@ namespace MCFTAcademics.DAL
             var studentCode = reader["studentCode"].ToString();
             var program = reader["program"].ToString();
             var admissionDate = reader["admissionDate"] is DateTime ? (DateTime?)reader["admissionDate"] : null;
-            return new Student(id, firstName, lastName, studentCode, program, admissionDate);
+            var graduationDate = reader["graduationDate"] is DateTime ? (DateTime?)reader["graduationDate"] : null;
+            return new Student(id, firstName, lastName, studentCode, program, admissionDate,graduationDate);
         } 
 
         public static List<Student> GetStudentsInCourse(Course course)
@@ -107,5 +108,50 @@ namespace MCFTAcademics.DAL
             }
             return null;
         }
+
+        public static List<Student> GetAllStudents()
+        {
+            List<Student> students = new List<Student>();
+            using (var connection = DbConn.GetConnection())
+            {
+                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectAllStudents", connection);
+                selectCommand.CommandType = System.Data.CommandType.StoredProcedure;
+                //execute the sql statement
+                SqlDataReader reader = selectCommand.ExecuteReader();
+                //loop through the resultset
+                while (reader.Read())
+                {
+                    Student s = StudentFromRow(reader);
+                    students.Add(s);
+                }
+                return students;//return the list of students
+            }
+            return null;
+        }
+
+        public static string GetClassRank(Student s)
+        {
+            SortedList<int, decimal> ranks = new SortedList<int, decimal>();
+            using (var connection = DbConn.GetConnection())
+            {
+                connection.Open();
+                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.[GetClassRanks]", connection);
+                selectCommand.CommandType = System.Data.CommandType.StoredProcedure;
+                selectCommand.Parameters.AddWithValue("@program", s.Program);
+                selectCommand.Parameters.AddWithValue("@graduationDate", s.GraduationDate);
+                //execute the sql statement
+                SqlDataReader reader = selectCommand.ExecuteReader();
+                //loop through the resultset
+                while (reader.Read())
+                {
+                    ranks.Add(Convert.ToInt32(reader["id"]), Convert.ToDecimal(reader["average"]));
+                }
+                int rank = ranks.IndexOfKey(s.Id) + 1;
+                int total = ranks.Count;
+                return rank + " of " + total;
+            }
+            return null;
+        }
+
     }
 }
