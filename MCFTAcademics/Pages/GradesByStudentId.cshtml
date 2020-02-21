@@ -70,7 +70,7 @@
                             <tr>
                                 <th scope="row">@code.Code</th>
                                 <td>@g.Subject.Name</td>
-                                <td>@g.Subject.GetLeadStaff()</td>
+                                <td>@g.Subject.GetLeadStaff().Name</td>
                                 <td>@g.GradeAssigned</td>
                                 <td>Grade is Locked</td>
                             </tr>
@@ -82,7 +82,7 @@
                                 <th scope="row">@code.Code</th>
 
                                 <td>@g.Subject.Name</td>
-                                <td>@g.Subject.GetLeadStaff()</td>
+                                <td>@g.Subject.GetLeadStaff().Name</td>
                                 <td><input id="grade#@g.Subject.Id" class="input-sm" onchange="method(this)" type="number" value="@g.GradeAssigned" /></td>
 
                                 <td>

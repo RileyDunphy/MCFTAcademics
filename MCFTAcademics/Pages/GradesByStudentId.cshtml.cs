@@ -70,7 +70,7 @@ namespace MCFTAcademics
         }
         public ActionResult OnGetAjax(int grade, int studentId, string comment, int courseId)
         {   //almost empty course object
-            Course c=new Course(courseId, null,0,null,0,0,0,0,0,"",false,null,null,null);
+            Course c=new Course(courseId,"",1,1,"",1,1,1,1,12,"",true);
 
             Grade update = new Grade(grade,DateTime.Now,false,0m,false,c,comment);
 

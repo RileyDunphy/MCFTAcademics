@@ -10,7 +10,7 @@ namespace MCFTAcademics.BL
         {
         }
 
-        public Course(int id, string name, decimal credit, string description, int lectureHours, int labHours, int examHours, int totalHours, decimal revisionNumber,string program, bool accreditation)
+        public Course(int id, string name, int v, decimal credit, string description, int lectureHours, int labHours, int examHours, int totalHours, decimal revisionNumber,string program, bool accreditation)
         {
             this.Id = id;
             this.Name = name;
@@ -74,15 +74,7 @@ namespace MCFTAcademics.BL
         public CourseCode GetCourseCode() {
             return CourseCode.CourseCodesById(this.Id);
         }
-        public string GetLeadStaff()
-        {
-            try
-            {
-                return this.LeadStaff.Name;
-            }
-            catch (Exception ex) { return "no lead instructor"; }
-            
-        }
+        
         int IComparable<Course>.CompareTo(Course other)
         {
             CourseCode thisCourseCode = this.GetCourseCode();

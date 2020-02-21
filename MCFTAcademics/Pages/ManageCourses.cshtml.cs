@@ -98,12 +98,12 @@ namespace MCFTAcademics
                 }
                 if (add == false)
                 {
-                    Course c = new Course(id, name, credit, description, lectureHours, labHours, examHours, totalHours, revisionNumber, program, accreditation);
+                    Course c = new Course(id, name,1, credit, description, lectureHours, labHours, examHours, totalHours, revisionNumber, program, accreditation);
                     c.UpdateCourse(leadStaff, supportStaff, prereqs);
                 }
                 else if (add == true)
                 {
-                    id = Course.AddCourse(new Course(id, name, credit, description, lectureHours, labHours, examHours, totalHours, revisionNumber, program, accreditation), leadStaff, supportStaff, prereqs);
+                    id = Course.AddCourse(new Course(id, name,1, credit, description, lectureHours, labHours, examHours, totalHours, revisionNumber, program, accreditation), leadStaff, supportStaff, prereqs);
                 }
                 if (courseCode != code)
                 {
