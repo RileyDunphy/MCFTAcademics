@@ -56,7 +56,7 @@ namespace MCFTAcademics
                 }
                 int id = Convert.ToInt32(Request.Form["studentId"]);
                 this.s = null;
-                this.s = Student.GetStudentByStudentId(id);
+                this.s = Student.GetStudent(id);
                 //List<Grade> grades=StudentDAL.GetGradeByStudentId(id);
                 IEnumerable<Grade> grades = s.GetGrades();
 

@@ -114,6 +114,7 @@ namespace MCFTAcademics.DAL
             List<Student> students = new List<Student>();
             using (var connection = DbConn.GetConnection())
             {
+                connection.Open();
                 SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectAllStudents", connection);
                 selectCommand.CommandType = System.Data.CommandType.StoredProcedure;
                 //execute the sql statement
