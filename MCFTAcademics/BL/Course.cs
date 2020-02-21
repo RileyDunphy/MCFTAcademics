@@ -74,15 +74,7 @@ namespace MCFTAcademics.BL
         public CourseCode GetCourseCode() {
             return CourseCode.CourseCodesById(this.Id);
         }
-        public string GetLeadStaff()
-        {
-            try
-            {
-                return this.LeadStaff.Name;
-            }
-            catch (Exception ex) { return "no lead instructor"; }
-            
-        }
+
         int IComparable<Course>.CompareTo(Course other)
         {
             CourseCode thisCourseCode = this.GetCourseCode();
