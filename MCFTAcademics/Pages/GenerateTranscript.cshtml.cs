@@ -29,7 +29,7 @@ namespace MCFTAcademics
 
             Transcript t = new Transcript(s, official, esig, type, DateTime.Now);
 
-            string path = t.generateReport();
+            string path = t.GenerateTranscript();
             path = path.Replace("./Reports/", "");
             path =path.Replace(".pdf", "");
             return new JsonResult(path);

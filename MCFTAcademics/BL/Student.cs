@@ -8,7 +8,7 @@ namespace MCFTAcademics.BL
 {
     public class Student
     {
-        public Student(int id, string firstName, string lastName, string studentCode, string program, DateTime? admissionDate)
+        public Student(int id, string firstName, string lastName, string studentCode, string program, DateTime? admissionDate, DateTime? graduationDate)
         {
             Id = id;
             FirstName = firstName;
@@ -16,6 +16,7 @@ namespace MCFTAcademics.BL
             StudentCode = studentCode;
             Program = program;
             AdmissionDate = admissionDate;
+            GraduationDate = graduationDate;
         }
 
         /// <summary>
@@ -24,6 +25,7 @@ namespace MCFTAcademics.BL
         public int Id { get; }
         // XXX: This can be nullable in the DB, is that right?
         public DateTime? AdmissionDate { get; }
+        public DateTime? GraduationDate { get; }
         /// <summary>
         /// This is the student ID that MCFT uses for display.
         /// (not the database PK)
@@ -86,6 +88,16 @@ namespace MCFTAcademics.BL
         public static List<Student> GetAllStudents()
         {
             return StudentDAL.GetAllStudents();
+        }
+
+        public string GetClassRank()
+        {
+            return StudentDAL.GetClassRank(this);
+        }
+
+        public IEnumerable<Grade> GetGradesForSemester(int semester)
+        {
+            return GradeDAL.GetGradesForStudentSemester(this,semester);
         }
     }
 }

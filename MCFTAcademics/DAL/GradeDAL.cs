@@ -134,5 +134,26 @@ namespace MCFTAcademics.DAL
             }
             return result;
         }
+
+        internal static List<Grade> GetGradesForStudentSemester(Student student, int semester)
+        {
+            List<Grade> grades = new List<Grade>();
+            Grade grade = null;
+            using (var connection = DbConn.GetConnection())
+            {
+                connection.Open();
+                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectStudentGradeByIdAndSemester", connection);
+                selectCommand.CommandType = System.Data.CommandType.StoredProcedure;
+                selectCommand.Parameters.AddWithValue("@id", student.Id);
+                selectCommand.Parameters.AddWithValue("@semester", semester);
+                SqlDataReader reader = selectCommand.ExecuteReader();
+                while (reader.Read())
+                {
+                    grade = GradeDAL.GradeFromRow(reader);
+                    grades.Add(grade);
+                }
+            }
+            return grades;
+        }
     }
 }
