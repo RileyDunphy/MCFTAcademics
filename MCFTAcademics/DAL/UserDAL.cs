@@ -21,10 +21,8 @@ namespace MCFTAcademics.DAL
 
         public static IEnumerable<User> GetAllUsers()
         {
-            SqlConnection connection = null;
-            try
+            using (var connection = DbConn.GetConnection())
             {
-                connection = DbConn.GetConnection();
                 connection.Open();
                 var command = connection.CreateCommand();
                 command.CommandText = "mcftacademics.dbo.Get_All_Users";
@@ -33,19 +31,12 @@ namespace MCFTAcademics.DAL
                 while (reader.Read())
                     yield return UserFromRow(reader);
             }
-            finally
-            {
-                if (connection != null)
-                    connection.Close();
-            }
         }
 
         public static User GetUser(int id)
         {
-            SqlConnection connection = null;
-            try
+            using (var connection = DbConn.GetConnection())
             {
-                connection = DbConn.GetConnection();
                 connection.Open();
                 var command = connection.CreateCommand();
                 command.CommandText = "mcftacademics.dbo.Get_User_ById";
@@ -56,19 +47,12 @@ namespace MCFTAcademics.DAL
                     return null;
                 return UserFromRow(reader);
             }
-            finally
-            {
-                if (connection != null)
-                    connection.Close();
-            }
         }
 
         public static User GetUser(string username)
         {
-            SqlConnection connection = null;
-            try
+            using (var connection = DbConn.GetConnection())
             {
-                connection = DbConn.GetConnection();
                 connection.Open();
                 var command = connection.CreateCommand();
                 command.CommandText = "mcftacademics.dbo.Get_User_ByName";
@@ -79,19 +63,31 @@ namespace MCFTAcademics.DAL
                     return null;
                 return UserFromRow(reader);
             }
-            finally
+        }
+
+        public static User CreateUser(User user)
+        {
+            using (var connection = DbConn.GetConnection())
             {
-                if (connection != null)
-                    connection.Close();
+                connection.Open();
+                var sql = "[mcftacademics].dbo.Create_User";
+                var query = connection.CreateCommand();
+                query.CommandType = CommandType.StoredProcedure;
+                query.CommandText = sql;
+                query.Parameters.AddWithValue("@userPassword", user.Password);
+                query.Parameters.AddWithValue("@userRealName", user.Name);
+                query.Parameters.AddWithValue("@userName", user.Username);
+                var reader = query.ExecuteReader();
+                if (!reader.Read())
+                    return null;
+                return UserFromRow(reader);
             }
         }
 
         public static bool ChangePassword(User user, string newPasswordHashed)
         {
-            SqlConnection connection = null;
-            try
+            using (var connection = DbConn.GetConnection())
             {
-                connection = DAL.DbConn.GetConnection();
                 connection.Open();
                 var sql = "[mcftacademics].dbo.Update_Password";
                 var query = connection.CreateCommand();
@@ -102,10 +98,22 @@ namespace MCFTAcademics.DAL
                 // depends on set nocount off being in the procedure
                 return (query.ExecuteNonQuery() > 0);
             }
-            finally
+        }
+
+        public static bool ChangeProfile(User user, string newRealName, string newUserName)
+        {
+            using (var connection = DbConn.GetConnection())
             {
-                if (connection != null)
-                    connection.Close();
+                connection.Open();
+                var sql = "[mcftacademics].dbo.Update_Profile";
+                var query = connection.CreateCommand();
+                query.CommandType = CommandType.StoredProcedure;
+                query.CommandText = sql;
+                query.Parameters.AddWithValue("@userIdentity", user.Id);
+                query.Parameters.AddWithValue("@userRealName", newRealName);
+                query.Parameters.AddWithValue("@userName", newUserName);
+                // depends on set nocount off being in the procedure
+                return (query.ExecuteNonQuery() > 0);
             }
         }
     }

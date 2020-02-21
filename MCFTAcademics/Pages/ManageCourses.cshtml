@@ -1,0 +1,291 @@
+﻿@page
+@model MCFTAcademics.ManageCoursesModel
+@using BL;
+@{
+    int count = 0;
+    // we use this twice later
+    var allStaff = Staff.GetAllStaff();
+}
+@if (!string.IsNullOrEmpty(Model.alertMessage))
+{
+    <script>alert("@Model.alertMessage");</script>
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <h2>@ViewData["Title"]</h2>
+        </div>
+    </div>
+    <form method="post">
+        <!-- handles one version of the case, at least -->
+        <input asp-for="ShowAllCourses" />
+        <div class="row">
+            <div class="col-lg-1">
+                <span class="label label-default">Course Code</span>
+            </div>
+            <div class="col-lg-2">
+                <input class="form-control" type="hidden" name="courseId" asp-for="course.Id" id="hdnCourseId">
+                <input class="form-control" type="text" name="courseCode" required asp-for="courseCode.Code" id="txtCourseCode">
+            </div>
+            <div class="col-md-4 col-md-offset-4">
+                <div class="dropdown">
+                    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenuCourses" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                        @Model.dropdownText
+                        <span class="caret"> </span>
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuCourses">
+                        <li> <a asp-page-handler="AddCourse">Add new course</a></li>
+                        @foreach (Course c in Model.ShownCourses)
+                        {
+                            <li> <a asp-page-handler="SelectCourse" asp-route-id="@c.Id" asp-route-forAll="@Model.ShowAllCourses">@c.Name</a> </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div> <br />
+        <div class="row">
+            <div class="col-lg-1">
+                <span class="label label-default">Course Title</span>
+            </div>
+            <div class="col-lg-2">
+                <input class="form-control" type="text" asp-for="course.Name" required name="courseTitle" id="txtCourseTitle">
+            </div>
+        </div> <br />
+        <div class="row">
+            <div class="col-lg-1">
+                <span class="label label-default">Program</span>
+            </div>
+            <div class="col-lg-2">
+                <select class="form-control" asp-for="course.Program" name="program" id="selAccreditation">
+                    <option>Wildlife</option>
+                    <option>Forestry</option>
+                </select>
+            </div>
+        </div> <br />
+        <div class="row">
+            <div class="col-lg-1">
+                <span class="label label-default"> Lead Instructor</span>
+            </div>
+            <div class="col-lg-2">
+                <select class="form-control" name="leadStaff" id="selLeadStaff">
+                    @{ 
+                        var leadStaff = Model.course?.GetLeadStaff();
+                    }
+                    @foreach (Staff s in allStaff)
+                    {
+                        // XXX: Wrong comparison? This should check the course ID (which isn't in this?)
+                        <option selected="@(s.UserId == (leadStaff?.UserId ?? -1))" value=@s.UserId>@s.Name</option>
+                    }
+                </select>
+            </div>
+        </div><br />
+        <div class="row">
+            <div class="col-lg-1">
+                <span class="label label-default"> Support Staff</span>
+            </div>
+            <div class="col-lg-2">
+                <select class="form-control" name="supportStaff" id="selSupportStaff">
+                    <option value="">None</option>
+                    @{
+                        var supportStaff = Model.course?.GetSupportStaff();
+                    }
+                    @foreach (Staff s in allStaff)
+                    {
+                        // XXX: Wrong comparison? This should check the course ID (which isn't in this?)
+                        <option selected="@(s.UserId == (supportStaff?.UserId ?? -1))" value=@s.UserId>@s.Name</option>
+                    }
+                </select>
+            </div>
+        </div><br />
+        <div class="row">
+            <div class="col-lg-1">
+                <span class="label label-default descrip">Description</span>
+            </div>
+            <div class="col-lg-8">
+                <textarea class="form-control" rows="3" name="description" required asp-for="course.Description" id="txtCourseDescrip"></textarea>
+            </div>
+        </div> <br />
+        <div class="row">
+            <div class="col-lg-1">
+                <span class="label label-default">Semester</span>
+            </div>
+            <div class="col-lg-2">
+                <input class="form-control" type="number" name="semester" required asp-for="courseCode.Semester" id="txtSemester">
+            </div>
+        </div> <br />
+        <div class="row">
+            <div class="col-lg-1">
+                <span class="label label-default">Start Date</span>
+            </div>
+            <div class="col-lg-2">
+                <input class="form-control" name="startDate" type="date" min="2000-01-01" max="2090-01-01" required asp-for="courseCode.From" id="txtStartDate">
+            </div>
+        </div> <br />
+        <div class="row">
+            <div class="col-lg-1">
+                <span class="label label-default">End Date</span>
+            </div>
+            <div class="col-lg-2">
+                <input class="form-control" name="endDate" type="date" min="2000-01-01" max="2090-01-01" required asp-for="courseCode.To" id="txtEndDate">
+            </div>
+        </div> <br />
+        <div class="row">
+            <div class="col-lg-1">
+                <span class="label label-default">Credit</span>
+            </div>
+            <div class="col-lg-2">
+                <input class="form-control" type="number" name="credit" required asp-for="course.Credit" id="txtCredit">
+            </div>
+        </div><br />
+        <div class="row">
+            <div class="col-lg-1">
+                <span class="label label-default"> Lecture Hours</span>
+            </div>
+            <div class="col-lg-2">
+                <input class="form-control" type="number" name="lectureHours" required asp-for="course.LectureHours" id="txtLectureHours">
+            </div>
+        </div><br />
+        <div class="row">
+            <div class="col-lg-1">
+                <span class="label label-default"> Lab Hours</span>
+            </div>
+            <div class="col-lg-2">
+                <input class="form-control" type="number" name="labHours" required asp-for="course.LabHours" id="txtLabHours">
+            </div>
+            <div class="col-lg-1">
+                <span class="label label-default"> Total Hours</span>
+            </div>
+            <div class="col-lg-1">
+                <input class="form-control" type="number" name="totalHours" readonly asp-for="course.TotalHours" id="txtTotalHours">
+            </div>
+        </div><br />
+        <div class="row">
+            <div class="col-lg-1">
+                <span class="label label-default"> Exam Hours</span>
+            </div>
+            <div class="col-lg-2">
+                <input class="form-control" type="number" name="examHours" required asp-for="course.ExamHours" id="txtExamHours">
+            </div>
+        </div><br />
+        <div class="row">
+            <div class="col-lg-1">
+                <span class="label label-default"> Revision Number</span>
+            </div>
+            <div class="col-lg-2">
+                <input class="form-control" type="number" step="any" name="revisionNumber" required asp-for="course.RevisionNumber" id="txtRevisionNumber">
+            </div>
+        </div><br />
+        <div class="row">
+            <div class="col-lg-1">
+                <span class="label label-default"> Accreditation</span>
+            </div>
+            <div class="col-lg-2">
+                <select class="form-control" asp-for="course.Accreditation" name="accreditation" id="selAccreditation">
+                    <option>True</option>
+                    <option>False</option>
+                </select>
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-lg-1">
+                <span class="label label-default"> Prerequisites</span>
+            </div>
+            <div class="col-lg-4">
+                <table class="table" id="tblOne">
+                    <thead>
+                        <tr>
+                            <th scope="col">Req.</th>
+                            <th scope="col">Coreq.</th>
+                            <th scope="col">CourseCode</th>
+                            <th scope="col"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.course != null)
+                        {
+                            count = 0;
+
+                            var prereqs = Model.course?.GetPrerequisites()?.ToList() ?? new List<Prerequisite>();
+
+                            @for (var i = 0; i < prereqs.Count; i++)
+                            {
+                                <tr id="Prereq-@i">
+                                    @if (prereqs[i].IsPrereq == true)
+                                    {
+                                        <td><input class="form-check-input" checked=@(prereqs[i].IsPrereq) type="radio" name="reqRadio+@count" value="prereq"></td>
+                                        <td><input class="form-check-input" checked=@(prereqs[i].IsCoreq) type="radio" name="reqRadio+@count" value="coreq"></td>
+                                    }
+                                    else if (prereqs[i].IsCoreq == true)
+                                    {
+                                        <td><input class="form-check-input" checked=@(prereqs[i].IsPrereq) type="radio" name="reqRadio+@count" value="prereq"></td>
+                                        <td><input class="form-check-input" checked=@(prereqs[i].IsCoreq) type="radio" name="reqRadio+@count" value="coreq"></td>
+                                    }
+                                    <td><input class="form-control" type="text" name="prereqCode+@count" id="txtCourseCode" value="@BL.CourseCode.GetNewestCourseCodeById(prereqs[i].PrereqId).Code"></td>
+                                    <td>
+                                        <button type="button" data-id="Prereq-@i" class="Delete btn btn-sm btn-danger d-none d-md-inline-block">
+                                            Delete
+                                        </button>
+                                    </td>
+                                </tr>
+                                count++;
+                            }
+                        }
+                        <tr>
+                            <td><input class="form-check-input" type="radio" name="reqRadio+@count" checked value="prereq"></td>
+                            <td><input class="form-check-input" type="radio" name="reqRadio+@count" value="coreq"></td>
+                            <td><input class="form-control" type="text" name="prereqCode+@count" id="txtCourseCode" value=""></td>
+                            <td><button type="button" class="Add btn btn-primary">Add</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <input class="form-control" type="hidden" name="count" value="@count" id="hiddenCount">
+            </div>
+            <div class="col-md-3 col-md-offset-3">
+                <button type="submit" class="btn btn-danger">Submit Changes</button>
+            </div>
+        </div>
+    </form>
+</div>
+@section scripts{
+    <script type="text/javascript">
+        $("body").on("click", ".table .Delete", function () {
+
+            if (confirm("Do you want to delete this row?")) {
+                var row = $(this).closest("tr");
+
+                row.remove();
+                var count = parseInt($('#hiddenCount').val()) - parseInt(1);
+                $('#hiddenCount').val(count);
+                var i = 0;
+                $('#tblOne > tbody  > tr').each(function () {
+                    console.log("hello");
+                    $(this).find("td:first").find('input').attr('name', 'reqRadio+' + i);
+                    $(this).find("td:first").next('td').find('input').attr('name', 'reqRadio+' + i);
+                    $(this).find("td:first").next('td').next('td').find('input').attr('name', 'prereqCode+' + i);
+                    i++
+                });
+            }
+        });
+
+        $("body").on("click", ".table .Add", function addRow() {
+            if (confirm("Do you want to add this row?")) {
+                var row = $(this).closest("tr");
+                var count = parseInt($('#hiddenCount').val()) + parseInt(1);
+                row.find("button").parent().html("<button type=\"button\" class=\"Delete btn btn-sm btn-danger d-none d-md-inline-block\">Delete</button>");
+                row.after('<tr> <td><input class="form-check-input" type="radio" name="reqRadio+' + count + '" checked value="prereq"></td> <td><input class="form-check-input" type="radio" name="reqRadio+' + count + '" value="coreq"></td><td><input class="form-control" name="prereqCode+' + count + '" type="text" id="txtCourseCode" value=""></td><td><button type="button" class="Add btn btn-primary">Add</button></td></tr>');
+                $('#hiddenCount').val(count);
+            }
+        });
+
+        $(document).ready(function () {
+            $("form").submit(function (e) {
+                if ($('#hdnCourseId').val() == '') {
+                    alert("Please select an option from the dropdown menu");
+                    e.preventDefault();
+                }
+            });
+        });
+    </script>
+}

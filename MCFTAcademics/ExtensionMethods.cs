@@ -32,14 +32,19 @@ namespace MCFTAcademics
         /// </remarks>
         public static bool UserIdMatches(this ClaimsPrincipal claimsPrincipal, int otherId)
         {
+            return IdAsInt(claimsPrincipal) == otherId;
+        }
+
+        public static int IdAsInt(this ClaimsPrincipal claimsPrincipal)
+        {
             if (claimsPrincipal == null)
                 throw new ArgumentNullException(nameof(claimsPrincipal));
             var nameIdentifier = claimsPrincipal.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrWhiteSpace(nameIdentifier))
-                return false;
+                throw new Exception("The user ID is empty");
             if (int.TryParse(nameIdentifier, out int claimId))
-                return claimId == otherId;
-            return false;
+                return claimId;
+            throw new Exception("Couldn't parse the user ID");
         }
 
         /// <summary>

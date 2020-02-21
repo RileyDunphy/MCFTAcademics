@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace MCFTAcademics.BL
 {/// <summary>
-/// This calss will be used to generate academic reports for the college.
+/// This class will be used to generate academic reports for the college.
 /// </summary>
     public class Report
     {

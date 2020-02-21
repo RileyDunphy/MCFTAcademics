@@ -19,22 +19,18 @@ namespace MCFTAcademics.DAL
         // appropriate for each environment. right now, only dev is set up.
         // maybe also consider putting config secrets into an untracked file?
 
-        // also XXX: hard sql server dependency, maybe cache CS
+        // XXX: hard sql server dependency
 
-        /// <summary>
-        /// The configuration object holding the connection strings.
-        /// </summary>
-        public static IConfiguration Configuration { get; set; }
+        private static string _connectionString;
 
-        /// <summary>
-        /// The connection string name to use.
-        /// </summary>
-        public static string ConnectionStringName { get; set; }
+        internal static void InitializeConnectionString(IConfiguration config, string connectionStringName)
+        {
+            _connectionString = ConfigurationExtensions.GetConnectionString(config, connectionStringName);
+        }
 
         public static SqlConnection GetConnection()
         {
-            var connString = ConfigurationExtensions.GetConnectionString(Configuration, ConnectionStringName);
-            var conn = new SqlConnection(connString);
+            var conn = new SqlConnection(_connectionString);
             return conn;
         }
     }

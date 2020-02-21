@@ -1,0 +1,45 @@
+﻿@page
+@model MCFTAcademics.GenerateReportModel
+@{
+    ViewData["Title"] = "GenerateReport";
+}
+
+    <h2>@ViewData["Title"]</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Program</th>
+            <th scope="col">Year</th>
+            <th scope="col">Semester</th>
+            <th scope="col">Generate Report</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <th scope="row">
+                <select class="form-control" name="program" id="selProgram">
+                    <option>Wildlife</option>
+                    <option>Forestry</option>
+                </select>
+            </th>
+            <td>
+                <select class="form-control" name="year" id="selYear">
+                    <option>All</option>
+                    <option>1</option>
+                    <option>2</option>
+                </select>
+            </td>
+            <td>
+                <select class="form-control" name="semester" id="selSemester">
+                    <option>All</option>
+                    <option>1</option>
+                    <option>2</option>
+                </select>
+            </td>
+            <td>
+                <button type="button" id="generate" class="generate btn btn-primary">Generate Report</button>
+            </td>
+        </tr>
+    </tbody>
+</table>

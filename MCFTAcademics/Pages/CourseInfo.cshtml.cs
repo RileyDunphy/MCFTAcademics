@@ -7,11 +7,13 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace MCFTAcademics
 {
-    public class ViewAllCoursesModel : PageModel
+    public class CourseInfoModel : PageModel
     {
-        public void OnGet()
+        public void OnGetInfo(int id)
         {
-            
+            var course = BL.Course.GetCourseById(id);
+            ViewData["Title"] = course.Name;
+            ViewData["ViewData_Course"] = course;
         }
     }
 }

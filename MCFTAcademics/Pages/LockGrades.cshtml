@@ -1,0 +1,92 @@
+﻿@page
+@using BL;
+@model MCFTAcademics.LockGradesModel
+@{
+    ViewData["Title"] = "Lock Grades";
+}
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.css">
+
+<h2>Lock Grades</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Student ID</th>
+            <th scope="col">Name</th>
+            <th scope="col">Program</th>
+            <th scope="col">Course</th>
+            <th scope="col">Grade</th>
+            <th scope="col">Toggle Lock</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (Grade g in Grade.GetAllGrades())
+        {
+            Student s = Student.GetStudent(g.StudentId);
+            <tr>
+                <th scope="row">@g.StudentId</th>
+                <td>@s.FirstName @s.LastName</td>
+                <td>@g.Subject.Program</td>
+                <td>@g.Subject.Name</td>
+                <td>@g.GradeAssigned</td>
+                @if (!g.Locked)
+                {
+                    <td><button type="button" id="@g.StudentId+@g.Subject.Id" class="unlocked btn btn-primary">Unlocked</button></td>
+                }
+                else if (g.Locked)
+                {
+                    <td><button type="button" id="@g.StudentId+@g.Subject.Id" class="locked btn btn-danger">Locked</button></td>
+                }
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section scripts{
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.table').DataTable();
+        });
+        $("body").on("click", ".table .unlocked", function () {
+            if (confirm("Do you want to lock this row?")) {
+                var id = $(this).attr("id");
+                var studentId = id.split('+')[0];
+                var courseId = id.split('+')[1];
+                var row = $(this).closest("tr");
+                $.ajax({
+                    type: "GET",
+                    url: "/LockGrades?handler=Ajax&studentId="+studentId+"&courseId="+courseId,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        row.find("button").parent().html("<button type=\"button\" class=\"locked btn btn-danger\">Locked</button>");
+                    },
+                    failure: function (response) {
+                        alert(response);
+                    }
+                });
+            }
+        });
+        $("body").on("click", ".table .locked", function () {
+            if (confirm("Do you want to unlock this row?")) {
+                var id = $(this).attr("id");
+                var studentId = id.split('+')[0];
+                var courseId = id.split('+')[1];
+                var row = $(this).closest("tr");
+                $.ajax({
+                    type: "GET",
+                    url: "/LockGrades?handler=Ajax&studentId="+studentId+"&courseId="+courseId,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        row.find("button").parent().html("<button type=\"button\" class=\"locked btn btn-primary\">Unlocked</button>");
+                    },
+                    failure: function (response) {
+                        alert(response);
+                    }
+                });
+            }
+        });
+    </script>
+
+} 

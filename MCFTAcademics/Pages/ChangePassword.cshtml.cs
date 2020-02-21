@@ -100,7 +100,7 @@ namespace MCFTAcademics
             if (targetUser == null)
                 ModelState.AddModelError("", "There is no user with that ID.");
             TargetUserId = targetUser?.Id ?? -1;
-            ViewData["ChangePasword_TargetUser"] = targetUser;
+            ViewData["ChangePassword_TargetUser"] = targetUser;
             ViewData["ChangePassword_IsSelf"] = User.UserIdMatches(TargetUserId);
             ViewData["ChangePassword_TargetDescription"] = targetUser.GetReferentialName(User);
         }

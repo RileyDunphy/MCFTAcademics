@@ -8,7 +8,7 @@ namespace MCFTAcademics.Pages
 
         public void OnGet()
         {
-            Message = "Your application description page.";
+            Message = "MCFT Academics System";
         }
     }
 }

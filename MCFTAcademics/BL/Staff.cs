@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MCFTAcademics.DAL;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,23 +8,23 @@ namespace MCFTAcademics.BL
 {
     public class Staff
     {
-        private DateTime from;
-        private DateTime to;
-        private string tempName;
-
         public Staff()
         {
         }
 
-        public Staff(DateTime from, DateTime to, string tempName)
+        public Staff(int id, string name, string type)
         {
-            this.from = from;
-            this.to = to;
-            this.tempName = tempName;
+            this.UserId = id;
+            this.Name = name;
+            this.Type = type;
         }
 
-        public DateTime From { get => from;  }
-        public DateTime To { get => to;  }
-        public string TempName { get => tempName;  }
+        public int UserId { get; }
+        public string Name { get; }
+        public string Type { get; }
+        public static List<Staff> GetAllStaff()
+        {
+            return StaffDAL.GetAllStaff();
+        }
     }
 }

@@ -12,30 +12,34 @@
         <dl>
             <dt><a asp-page="/ViewCourses">View courses</a></dt>
             <dd>View courses you are instructing</dd>
-            <dt><a href="#">Manage courses</a></dt>
+            <dt><a asp-page="/ManageCourses">Manage courses</a></dt>
             <dd>Open management page for courses you are instructing</dd>
-            <dt><a asp-page="/ViewAllCourses">View all courses</a></dt>
+            <dt><a asp-page="/ViewCourses" asp-page-handler="all">View all courses</a></dt>
             <dd>Show a list of all courses</dd>
-            <dt><a href="#">Manage all courses</a></dt>
+            <dt><a asp-page="/ManageCourses" asp-page-handler="all">Manage all courses</a></dt>
             <dd>Manage all courses</dd>
         </dl>
         @if (User.IsInRole("Admin")) //dummy check
         {
             <h2>Student grades</h2>
             <dl>
-                <dt><a href="#">View grades</a></dt>
-                <dd>Show grades of students you're instructing</dd>
-                <dt><a href="#">View all grades</a></dt>
-                <dd>Shows the grades of all students</dd>
-                <dt><a href="#">Manage grades</a></dt>
+                <dt><a asp-page="/ViewGrades">View all grades</a></dt>
+                <dd>Show all grades of students</dd>
+                <dt><a asp-page="/ViewGrades" asp-page-handler="all">View grades</a></dt>
+                <dd>Shows the grades of students you are instructing</dd>
+                <dt><a asp-page="/GradesByCourse">Manage grades</a></dt>
                 <dd>Submit student pages</dd>
+                <dt><a asp-page="/GradesByStudentId">Grades By Student Id</a></dt>
+                <dd>Search and list an individual students grades</dd>
             </dl>
         }
     </div>
     <div class="col-md-6">
         <h2>Academic reports</h2>
         <dl>
-            <dt><a href="ReportGenerate">Generate reports</a></dt>
+            <dt><a href="GenerateTranscript">Generate Transcripts</a></dt>
+            <dd>Generate academic transcripts page</dd>
+            <dt><a href="GenerateReport">Generate Reports</a></dt>
             <dd>Generate academic reports page</dd>
         </dl>
         @if (User.IsInRole("Admin"))
@@ -44,6 +48,10 @@
             <dl>
                 <dt><a asp-page="/ViewUsers">View users</a></dt>
                 <dd>View and manage all users in the system, including changing passwords and role management</dd>
+                <dt><a asp-page="/CreateUser">Create user</a></dt>
+                <dd>Enroll users into the system</dd>
+                <dt><a asp-page="/LockGrades">Lock/Unlock Grades</a></dt>
+                <dd>Lock and unlock grades for each student in each course</dd>
             </dl>
         }
     </div>
