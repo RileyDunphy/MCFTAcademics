@@ -3,59 +3,142 @@
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
     ViewData["Title"] = "GradesByStudentId";
-
 }
 @using System.Collections;
 @using BL;
 @{
+    IEnumerable<Grade> gradeList = null;
+    Student studentUser = null;
+    if (Model.s != null)
+    {
+        studentUser = @Model.s;
+        gradeList= studentUser.GetGrades();
+        gradeList=gradeList.OrderBy(Grade=>Grade);
+
+    }
+    int rowCounter = 1;
+    int semester = 0;
+            }
+    
+            <h1>Grade By Student Id</h1>
+            <br>
+            <form class="form-inline" id="form" method="post">
+                <div class="row">
+                    <label>Please Enter Student ID: </label>
+                    <input class="form-control" style="width:200px" type="text" required name="studentId" id="studentId">
+                    <button class="btn btn-primary" id="searchById" type="submit">Search</button>
+                </div>
+
+            </form>
+            @if (studentUser != null)
+            {
+
+                <h2>@studentUser.Id @studentUser.FirstName @studentUser.LastName</h2>
+                <input id="studentIdHolder" type="hidden" value="@studentUser.Id">
+                <table class="table">
+
+                    @foreach (Grade g in gradeList)
+                    {
+                        CourseCode code = g.Subject.GetCourseCode();
+
+                        if (semester != code.Semester)
+                        {
+                            semester = code.Semester;
+
+                            <tr>
+                                <td colspan="5">
+                                    <h3>Semester @semester</h3>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="col" width="15%">Course Code</th>
+                                <th scope="col" width="20%">Subject</th>
+                                <th scope="col" width="20%">Instructor</th>
+                                <th scope="col" width="10%">Grade</th>
+                                <th scope="col" width="35%">Comment</th>
+                            </tr>
+                        }
+
+                        if (g.Subject != null && g.Locked)
+                        {
+                            <tr>
+                                <th scope="row">@code.Code</th>
+                                <td>@g.Subject.Name</td>
+                                <td>@g.Subject.GetLeadStaff().Name</td>
+                                <td>@g.GradeAssigned</td>
+                                <td>Grade is Locked</td>
+                            </tr>
+                            rowCounter++;
+                        }
+                        else if (g.Subject != null && !g.Locked)
+                        {
+                            <tr>
+                                <th scope="row">@code.Code</th>
+
+                                <td>@g.Subject.Name</td>
+                                <td>@g.Subject.GetLeadStaff().Name</td>
+                                <td><input id="grade#@g.Subject.Id" class="input-sm" onchange="method(this)" type="number" value="@g.GradeAssigned" /></td>
+
+                                <td>
+                                    <input class="input-sm hidden" style="width:200px;padding-top: 6px;" placeholder="comment on changes" type="text" required name="commentField" id="comment#@g.Subject.Id">
+
+                                    <button id="@g.Subject.Id" onclick="submitGrade(this)" style="padding-right: 12px;margin-right:37px;padding-top: 2px;margin-left: 2px; width:110px; float:right" class="btn btn-danger hidden">Submit</button>
+                                </td>
+                            </tr>
+                            rowCounter++;
+                        }
+                    }
+                </table>
+
+            }
+
+            @section scripts{
+
+                <script type="text/javascript">
+                    $(document).ready(function () {
+                        $("[name='commentField']").each(function () {
+                            //not used for anything(yet)
+                        });
+                    });
+
+                    submitGrade = function (buttonObj) {
+                        var grade = $(buttonObj).parent().prev().children().val();
+                        var comment = $(buttonObj).prev().val();
+                        var courseId = $(buttonObj).attr('id');
+                        var studentId = $("#studentIdHolder").val();
+                        console.log(studentId);
+                        if (confirm("Do you want to submit this change?")) {
+
+                            $.ajax({
+                                type: "GET",
+                                url: "/GradesByStudentId?handler=Ajax&grade=" + grade + "&studentId=" + studentId + "&comment=" + comment + "&courseId=" + courseId,
+                                contentType: "application/json; charset=utf-8",
+                                dataType: "json",
+                                success: function (response) {
+                                    alert(response);
+
+                                },
+                                failure: function (response) {
+                                    alert(response);
+                                }
+                            });
+                        }
+                    }
+                    method = function (val) {
+                        //alert(val.value);
+                        var elementList = val.parentElement.nextElementSibling.children;
+                        elementList[0].classList.remove("hidden");
+                        elementList[1].classList.remove("hidden");
 
 
-}
-<h1>Grade By Student Id</h1>
-<br>
-<form class="form-inline" id="form" method="post">
-    <div class="row">
-        <label>Please Enter Student ID: </label>
-        <input class="form-control" style="width:200px" type="text" required name="studentId" id="studentId">
-        <button class="btn" id="searchById" type="submit">Search</button>
-    </div>
- 
-
-
-</form>
-@section scripts{
-
-    <script type="text/javascript">
-        //$(document).ready(function () {
-
-        //    $("form").submit(function (e) {
-        //        alert("in fucnt");
-        //        if ($('studentId').val() == '') {
-        //            alert("Please enter a student Id");
-        //            e.preventDefault();
-        //        }
-        //        if ($('studentId').val().isNaN()) {
-        //            alert("Please enter a student Id (numbers only)");
-        //            e.preventDefault();
-        //        }
-        //        else {
-        //            alert("in else");
-        //            var xmlhttp = new XMLHttpRequest();
-        //            xmlhttp.onreadystatechange = function() {
-        //            if (this.readyState == 4 && this.status == 200) {
-        //            alert(this.responseText);
-        //            }
-        //        };
-        //        xmlhttp.open("GET", "gradesByStudentId?q=" + str, true);
-        //        xmlhttp.send();
-        //        }
-
-          //  });
+                    };
 
 
 
-       // });
-    </script>
-}
+
+
+
+                </script>
+            }
 
 

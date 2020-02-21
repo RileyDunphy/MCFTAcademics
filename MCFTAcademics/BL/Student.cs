@@ -8,6 +8,8 @@ namespace MCFTAcademics.BL
 {
     public class Student
     {
+        //default constructor is needed for serialization
+        public Student() { }
         public Student(int id, string firstName, string lastName, string studentCode, string program, DateTime? admissionDate)
         {
             Id = id;
@@ -81,6 +83,17 @@ namespace MCFTAcademics.BL
                 return GenerateStudentCode(year, id++);
             }
             return studentCode;
+        }
+
+        public Grade GetGradeFromListByCourseId(int id,IEnumerable<Grade> grades)
+        {
+            foreach (Grade g in grades) {
+                if (g.Subject.Id == id) {
+                    return g;
+                }
+            }
+            return null;
+            
         }
 
         public static Student GetStudentByStudentId(int id)

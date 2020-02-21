@@ -23,7 +23,7 @@ namespace MCFTAcademics.DAL
                 course = CourseDAL.CourseFromRow(reader);
             }
             // XXX: Preserve the staff stuff too?
-            return new Grade(studentId,grade, given, locked, hoursAttended, supplemental, course);
+            return new Grade(studentId,grade, given, locked, hoursAttended, supplemental, course,"");
         }
 
         public static IEnumerable<Grade> GetAllGrades()
@@ -126,6 +126,40 @@ namespace MCFTAcademics.DAL
             catch (Exception ex)
             {
 
+                result = false;
+            }
+            finally
+            {
+                conn.Close();
+            }
+            return result;
+        }
+
+        public static bool UpdateGrade(Grade grade, int studentId)
+        {
+            SqlConnection conn = DbConn.GetConnection();
+            bool result;
+            try
+            {
+                conn.Open();
+                SqlCommand updateCommand = new SqlCommand("mcftacademics.dbo.UpdateGradeByStudentIdAndCourseId", conn);
+                updateCommand.CommandType = System.Data.CommandType.StoredProcedure;
+                updateCommand.Parameters.AddWithValue("@studentId", studentId);
+                updateCommand.Parameters.AddWithValue("@courseId", grade.Subject.Id);
+                updateCommand.Parameters.AddWithValue("@grade", grade.GradeAssigned);
+                updateCommand.Parameters.AddWithValue("@comment", grade.Comment);
+                int rows = updateCommand.ExecuteNonQuery();
+                if (rows > 0)
+                {
+                    result = true;
+                }
+                else
+                {
+                    result = false;
+                }
+            }
+            catch (Exception ex)
+            {
                 result = false;
             }
             finally
