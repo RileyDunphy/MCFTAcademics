@@ -80,7 +80,7 @@ namespace MCFTAcademics.BL
                 gfx.DrawString("FIELD GRADE", font, XBrushes.Black, new XRect(360, 215, 50, 50), XStringFormats.TopLeft);
                 gfx.DrawString("COURSE GRADE", font, XBrushes.Black, new XRect(450, 215, 50, 50), XStringFormats.TopLeft);
                 int y = 230;
-                foreach(Grade g in this.student.GetGradesForSemester(1))//All the students grades for semester 1
+                foreach(Grade g in this.student.GetGrades())//All the students grades for semester 1
                 {
                     gfx.DrawString(g.Subject.Name, smallFont, XBrushes.Black, new XRect(15, y, page.Width, page.Height), XStringFormats.TopLeft);
                     gfx.DrawString(g.GradeAssigned.ToString(), smallFont, XBrushes.Black, new XRect(450, y, 50, 15), XStringFormats.Center);
