@@ -23,7 +23,7 @@ namespace MCFTAcademics.DAL
                 course = CourseDAL.CourseFromRow(reader);
             }
             // XXX: Preserve the staff stuff too?
-            return new Grade(grade, given, locked, hoursAttended, supplemental, course,"");
+            return new Grade(studentId,grade, given, locked, hoursAttended, supplemental, course,"");
         }
 
         public static IEnumerable<Grade> GetAllGrades()

@@ -21,7 +21,7 @@ namespace MCFTAcademics.BL
         {
         }
 
-        public Grade(decimal gradeAssigned, DateTime given, bool locked, decimal hoursAttended, bool supplemental, Course subject, string comment)
+        public Grade(int studentId, decimal gradeAssigned, DateTime given, bool locked, decimal hoursAttended, bool supplemental, Course subject, string comment)
         {
             this.studentId = studentId;
             this.gradeAssigned = gradeAssigned;

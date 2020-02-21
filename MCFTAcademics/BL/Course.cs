@@ -10,7 +10,7 @@ namespace MCFTAcademics.BL
         {
         }
 
-        public Course(int id, string name, int v, decimal credit, string description, int lectureHours, int labHours, int examHours, int totalHours, decimal revisionNumber,string program, bool accreditation)
+        public Course(int id, string name, decimal credit, string description, int lectureHours, int labHours, int examHours, int totalHours, decimal revisionNumber,string program, bool accreditation)
         {
             this.Id = id;
             this.Name = name;

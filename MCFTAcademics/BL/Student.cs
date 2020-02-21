@@ -8,6 +8,7 @@ namespace MCFTAcademics.BL
 {
     public class Student
     {
+        //default constructor is needed for serialization
         public Student() { }
         public Student(int id, string firstName, string lastName, string studentCode, string program, DateTime? admissionDate)
         {

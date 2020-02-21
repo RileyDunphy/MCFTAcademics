@@ -62,19 +62,22 @@ namespace MCFTAcademics
                 //List<Grade> grades=StudentDAL.GetGradeByStudentId(id);
                 IEnumerable<Grade> grades = s.GetGrades();
 
-                foreach (Grade g in grades) {
-                    Console.WriteLine(g.ToString());
-                }
+                //foreach (Grade g in grades) {
+                //    Console.WriteLine(g.ToString());
+                //}
 
             }
-            catch (Exception ex) { }
+            catch (Exception ex) {
+                //TODO: add logging for errors
+                Console.WriteLine(ex.Message); 
+            }
             return Page();
         }
         public ActionResult OnGetAjax(int grade, int studentId, string comment, int courseId)
         {   //almost empty course object
-            Course c=new Course(courseId, null,1,0,null,0,0,0,0,0,"",false);
+            Course c=new Course(courseId, null,0,null,0,0,0,0,0,"",false);
 
-            Grade update = new Grade(grade,DateTime.Now,false,0m,false,c,comment);
+            Grade update = new Grade(studentId, grade,DateTime.Now,false,0m,false,c,comment);
 
             bool response=Grade.UpdateGrade(update, studentId);
 

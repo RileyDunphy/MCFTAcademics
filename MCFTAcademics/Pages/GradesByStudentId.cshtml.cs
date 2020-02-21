@@ -65,14 +65,18 @@ namespace MCFTAcademics
                 }
 
             }
-            catch (Exception ex) { }
+            catch (Exception ex)
+            {
+                //TODO: add logging for errors
+                Console.WriteLine(ex.Message);
+            }
             return Page();
         }
         public ActionResult OnGetAjax(int grade, int studentId, string comment, int courseId)
         {   //almost empty course object
-            Course c=new Course(courseId,"",1,1,"",1,1,1,1,12,"",true);
+            Course c=new Course(courseId,"",1,"",1,1,1,1,12,"",true);
 
-            Grade update = new Grade(grade,DateTime.Now,false,0m,false,c,comment);
+            Grade update = new Grade(studentId,grade,DateTime.Now,false,0m,false,c,comment);
 
             bool response=Grade.UpdateGrade(update, studentId);
 

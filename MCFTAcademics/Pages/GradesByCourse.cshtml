@@ -2,20 +2,20 @@
 @model MCFTAcademics.GradeByCourse
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
-    ViewData["Title"] = "GradesByCourse";
+    ViewData["Title"] = "Student Grades";
 
 }
 @using System.Collections;
 @using BL;
 @{
-    List<Course> courses = Course.GetCoursesByInstructor(Convert.ToInt32(HttpContext.User.FindFirst(x => x.Type == System.Security.Claims.ClaimTypes.NameIdentifier).Value));
+    List<Course> courses = Course.GetCoursesByInstructor(HttpContext.User.IdAsInt());
     if (Model.s != null) {
-        
+
     }
-    
+
     int semester = 0;
 }
-<h1>Student Grades</h1>
+    <h1>@ViewData["Title"]</h1>
 
 
 @if (courses != null)
@@ -36,15 +36,9 @@
 
             <h2>@c.Name - @code.Code</h2>
             <tr>
-                <td>
+                <td colspan="5">
                     <h3>Semester @semester</h3>
                 </td>
-                <!--Empty fields so the above and below fields have a hr-->
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
             </tr>
             <tr>
                 <th scope="col" width="15%">Student Id</th>
