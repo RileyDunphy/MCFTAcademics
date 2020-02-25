@@ -20,7 +20,7 @@ namespace MCFTAcademics.DAL
             var grade = (decimal)reader["grade"];
             if (course == null)
             {
-                course = CourseDAL.CourseFromRow(reader);
+                course = CourseDAL.GetCourseById((int)reader["courseId"]);
             }
             // XXX: Preserve the staff stuff too?
             return new Grade(studentId,grade, given, locked, hoursAttended, supplemental, course);
@@ -154,6 +154,32 @@ namespace MCFTAcademics.DAL
                 }
             }
             return grades;
+        }
+
+        internal static decimal GetAverageForStudentSemester(Student student, int semester)
+        {
+            decimal average=0;
+            using (var connection = DbConn.GetConnection())
+            {
+                connection.Open();
+                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectAverageByIdAndSemester", connection);
+                selectCommand.CommandType = System.Data.CommandType.StoredProcedure;
+                selectCommand.Parameters.AddWithValue("@id", student.Id);
+                selectCommand.Parameters.AddWithValue("@semester", semester);
+                SqlDataReader reader = selectCommand.ExecuteReader();
+                if (reader.Read())
+                {
+                    if (reader["average"]==DBNull.Value)
+                    {
+                        average = 0;
+                    }
+                    else
+                    {
+                        average = (decimal)reader["average"];
+                    }
+                }
+            }
+            return Math.Round(average,2);
         }
     }
 }

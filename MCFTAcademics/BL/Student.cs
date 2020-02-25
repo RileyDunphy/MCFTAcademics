@@ -99,5 +99,10 @@ namespace MCFTAcademics.BL
         {
             return GradeDAL.GetGradesForStudentSemester(this,semester);
         }
+
+        public decimal GetAverageForSemester(int semester)
+        {
+            return GradeDAL.GetAverageForStudentSemester(this, semester);
+        }
     }
 }

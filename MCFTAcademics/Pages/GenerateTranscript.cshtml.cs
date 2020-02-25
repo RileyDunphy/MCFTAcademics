@@ -24,15 +24,22 @@ namespace MCFTAcademics
 
         public ActionResult OnGetAjax(int studentId,bool official, string esig,string type)
         {
+            try
+            {
 
-            Student s = Student.GetStudent(studentId);
+                Student s = Student.GetStudent(studentId);
 
-            Transcript t = new Transcript(s, official, esig, type, DateTime.Now);
+                Transcript t = new Transcript(s, official, esig, type, DateTime.Now);
 
-            string path = t.GenerateTranscript();
-            path = path.Replace("./Reports/", "");
-            path =path.Replace(".pdf", "");
-            return new JsonResult(path);
+                string path = t.GenerateTranscript();
+                path = path.Replace("./Reports/", "");
+                path = path.Replace(".pdf", "");
+                return new JsonResult(path);
+            }
+            catch(Exception ex)
+            {
+                return new JsonResult(ex.Message);
+            }
         }
 
 
