@@ -35,7 +35,10 @@
                         <span class="caret"> </span>
                     </button>
                     <ul class="dropdown-menu" aria-labelledby="dropdownMenuCourses">
-                        <li> <a asp-page-handler="AddCourse">Add new course</a></li>
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <li> <a asp-page-handler="AddCourse">Add new course</a></li>
+                        }
                         @foreach (Course c in Model.ShownCourses)
                         {
                             <li> <a asp-page-handler="SelectCourse" asp-route-id="@c.Id" asp-route-forAll="@Model.ShowAllCourses">@c.Name</a> </li>

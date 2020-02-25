@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using MCFTAcademics.BL;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -39,6 +40,21 @@ namespace MCFTAcademics
         [HiddenInput]
         public bool ShowAllCourses { get; set; }
 
+        bool AllowedToModify(int oldCourseId)
+        {
+            var isAdmin = User.IsInRole("Admin");
+            // Admins can always modify/add.
+            if (isAdmin)
+                return true;
+            // If adding (assume if somehow not set)
+            if ((add ?? true) && !isAdmin)
+                return false;
+
+            // Finally, if we're not adding or admins, only if we're the lead staff
+            var oldCourse = Course.GetCourseById(oldCourseId);
+            return (oldCourse != null) && (User.UserIdMatches(oldCourse.GetLeadStaff().UserId));
+        }
+
         public IActionResult OnPost()
         {
             try
@@ -66,6 +82,15 @@ namespace MCFTAcademics
                 DateTime startDate = Convert.ToDateTime(Request.Form["startDate"]);
                 DateTime endDate = Convert.ToDateTime(Request.Form["endDate"]);
                 Staff leadStaff = new Staff(Convert.ToInt32(Request.Form["leadStaff"]), "", "lead");
+
+                // we have enough information for access control
+                if (!AllowedToModify(id))
+                {
+                    this.dropdownText = "Please select a course to change";
+                    this.alertMessage = "You aren't allowed to change this course.";
+                    return Page();
+                }
+
                 Staff supportStaff = null;
                 //Leave support staff as null unless there was a choice selected (its optional)
                 if (Request.Form["supportStaff"] != "")
@@ -171,6 +196,7 @@ namespace MCFTAcademics
             return Page();
         }
 
+        [Authorize( Roles = "Admin" )]
         public IActionResult OnGetAddCourse(int id, bool forAll)
         {
             // XXX: We could consider AJAX. Refresh will handle if all needs auth.
