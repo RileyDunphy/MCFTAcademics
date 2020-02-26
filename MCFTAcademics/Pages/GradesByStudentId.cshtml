@@ -118,8 +118,8 @@
                                     alert(response);
 
                                 },
-                                failure: function (response) {
-                                    alert(response);
+                                error: function (response, status, error) {
+                                    alert(response.responseJSON.error);
                                 }
                             });
                         }

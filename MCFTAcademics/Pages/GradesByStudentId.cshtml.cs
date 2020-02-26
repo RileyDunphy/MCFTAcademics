@@ -73,7 +73,20 @@ namespace MCFTAcademics
             return Page();
         }
         public ActionResult OnGetAjax(int grade, int studentId, string comment, int courseId)
-        {   //almost empty course object
+        {
+            if (grade > 100)
+                return new JsonResult(new { Error = "The grade is over 100." })
+                {
+                    StatusCode = 400
+                };
+            if (grade < 0)
+                return new JsonResult(new { Error = "The grade is below 0." })
+                {
+                    StatusCode = 400
+                };
+            // XXX: Check for locked grade
+
+            //almost empty course object
             Course c=new Course(courseId,"",1,"",1,1,1,1,12,"",true);
 
             Grade update = new Grade(studentId,grade,DateTime.Now,false,0m,false,c,comment);
