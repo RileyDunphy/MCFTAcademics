@@ -93,7 +93,7 @@ namespace MCFTAcademics
 
             bool response=Grade.UpdateGrade(update, studentId);
 
-            return new JsonResult(response);
+             return new JsonResult(response);
         }
 
     }

@@ -72,17 +72,31 @@
                         }
                         else if (g.Subject != null && !g.Locked)
                         {
+                            
                             <tr>
                                 <th scope="row">@code.Code</th>
 
                                 <td>@g.Subject.Name</td>
                                 <td>@g.Subject.GetLeadStaff().Name</td>
-                                <td><input id="grade#@g.Subject.Id" class="input-sm" onchange="method(this)" type="number" value="@g.GradeAssigned" /></td>
-
                                 <td>
-                                    <input class="input-sm hidden" style="width:200px;padding-top: 6px;" placeholder="comment on changes" type="text" required name="commentField" id="comment#@g.Subject.Id">
-
-                                    <button id="@g.Subject.Id" onclick="submitGrade(this)" style="padding-right: 12px;margin-right:37px;padding-top: 2px;margin-left: 2px; width:110px; float:right" class="btn btn-danger hidden">Submit</button>
+                                    <div class="form-group">
+                                        <label class="sr-only" for="grade@g.Subject.Id">Grade</label>
+                                        @* i would use onblur here, but onfocus makes the tabstop work right *@
+                                        <input id="grade@g.Subject.Id" class="input-sm form-control gradeField" onfocus="activateComment(this)" type="number" value="@g.GradeAssigned" name="gradeField" form="form@g.Subject.Id" />
+                                    </div>
+                                </td>
+                                <td>
+                                    @* XXX: Good oppurtunity now for a JS-free fallback... *@
+                                    <form class="form-inline hidden" id="form@g.Subject.Id" onsubmit="return submitGrade(this)">
+                                        <input type="hidden" class="courseField" name="courseId" value="@g.Subject.Id" />
+                                        <div class="input-group" style="width: 100%">
+                                            <label class="sr-only" for="comment@g.Subject.Id">Comment</label>
+                                            <input class="input-sm form-control commentField" placeholder="comment on changes" type="text" required name="commentField" id="comment@g.Subject.Id">
+                                            <span class="input-group-btn">
+                                                <button type="submit" class="btn btn-sm btn-danger">Submit</button>
+                                            </span>
+                                        </div>
+                                    </form>
                                 </td>
                             </tr>
                             rowCounter++;
@@ -101,10 +115,10 @@
                         });
                     });
 
-                    submitGrade = function (buttonObj) {
-                        var grade = $(buttonObj).parent().prev().children().val();
-                        var comment = $(buttonObj).prev().val();
-                        var courseId = $(buttonObj).attr('id');
+                    submitGrade = function (formObj) {
+                        var grade = $(formObj).parent().parent().find('.gradeField').val();
+                        var comment = $(formObj).find('.commentField').val();
+                        var courseId = $(formObj).find('.courseField').val();
                         var studentId = $("#studentIdHolder").val();
                         console.log(studentId);
                         if (confirm("Do you want to submit this change?")) {
@@ -123,17 +137,17 @@
                                 }
                             });
                         }
+                        return false;
                     }
-                    method = function (val) {
-                        //alert(val.value);
-                        var elementList = val.parentElement.nextElementSibling.children;
-                        elementList[0].classList.remove("hidden");
-                        elementList[1].classList.remove("hidden");
 
-
-                    };
-
-
+                    activateComment = function (entry) {
+                        var entryElem = $(entry);
+                        // valid number?
+                        if (!isNaN(parseInt(entryElem.val()))) {
+                            // XXX: ugly ugly ugly
+                            entryElem.parent().parent().next().children().removeClass("hidden");
+                        }
+                    }
 
 
 
