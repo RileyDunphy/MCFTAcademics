@@ -55,6 +55,14 @@ namespace MCFTAcademics
             return (oldCourse != null) && (User.UserIdMatches(oldCourse.GetLeadStaff().UserId));
         }
 
+        IActionResult FailWithMessage(string errorMessage)
+        {
+            // everything should be blanked out here
+            this.dropdownText = "Please select a course to change";
+            this.alertMessage = errorMessage;
+            return Page();
+        }
+
         public IActionResult OnPost()
         {
             try
@@ -66,36 +74,89 @@ namespace MCFTAcademics
                 {
                     return Page();
                 }
-                int id = Convert.ToInt32(Request.Form["courseId"]);
-                string name = Request.Form["courseTitle"];
-                string courseCode = Request.Form["courseCode"];
-                string description = Request.Form["description"];
-                int credit = Convert.ToInt32(Request.Form["credit"]);
-                int lectureHours = Convert.ToInt32(Request.Form["lectureHours"]);
-                int labHours = Convert.ToInt32(Request.Form["labHours"]);
-                int totalHours = Convert.ToInt32(Request.Form["totalHours"]);
-                int examHours = Convert.ToInt32(Request.Form["examHours"]);
-                decimal revisionNumber = Convert.ToDecimal(Request.Form["revisionNumber"]);
-                string program = Request.Form["program"];
-                bool accreditation = Convert.ToBoolean(Request.Form["accreditation"]);
-                int semester = Convert.ToInt32(Request.Form["semester"]);
-                DateTime startDate = Convert.ToDateTime(Request.Form["startDate"]);
-                DateTime endDate = Convert.ToDateTime(Request.Form["endDate"]);
-                Staff leadStaff = new Staff(Convert.ToInt32(Request.Form["leadStaff"]), "", "lead");
+
+                if (!int.TryParse(Request.Form["courseId"], out int id))
+                {
+                    return FailWithMessage("The ID is invalid.");
+                }
 
                 // we have enough information for access control
                 if (!AllowedToModify(id))
                 {
-                    this.dropdownText = "Please select a course to change";
-                    this.alertMessage = "You aren't allowed to change this course.";
-                    return Page();
+                    return FailWithMessage("You aren't allowed to change this course.");
                 }
+
+                string name = Request.Form["courseTitle"];
+                string courseCode = Request.Form["courseCode"];
+                string description = Request.Form["description"];
+                if (!int.TryParse(Request.Form["credit"], out int credit)
+                    || credit < 0)
+                {
+                    return FailWithMessage("The credit is invalid.");
+                }
+                if (!int.TryParse(Request.Form["lectureHours"], out int lectureHours)
+                    || lectureHours < 0)
+                {
+                    return FailWithMessage("The lecture hours are invalid.");
+                }
+                if (!int.TryParse(Request.Form["labHours"], out int labHours)
+                    || labHours < 0)
+                {
+                    return FailWithMessage("The lab hours are invalid.");
+                }
+                if (!int.TryParse(Request.Form["totalHours"], out int totalHours)
+                    || totalHours < 0)
+                {
+                    return FailWithMessage("The total hours are invalid.");
+                }
+                if (!int.TryParse(Request.Form["examHours"], out int examHours)
+                    || examHours < 0)
+                {
+                    return FailWithMessage("The exam hours are invalid.");
+                }
+                if (!decimal.TryParse(Request.Form["revisionNumber"], out decimal revisionNumber))
+                {
+                    return FailWithMessage("The revision number is invalid.");
+                }
+                string program = Request.Form["program"];
+                if (!bool.TryParse(Request.Form["accreditation"], out bool accreditation))
+                {
+                    return FailWithMessage("The accreditation is invalid.");
+                }
+                if (!int.TryParse(Request.Form["semester"], out int semester)
+                    || semester < 0)
+                {
+                    return FailWithMessage("The semester is invalid.");
+                }
+                if (!DateTime.TryParse(Request.Form["startDate"], out DateTime startDate))
+                {
+                    return FailWithMessage("The start date is invalid.");
+                }
+                if (!DateTime.TryParse(Request.Form["endDate"], out DateTime endDate))
+                {
+                    return FailWithMessage("The end date is invalid.");
+                }
+                if (startDate > endDate)
+                {
+                    return FailWithMessage("The end of the course is before when it starts.");
+                }
+                if (!int.TryParse(Request.Form["leadStaff"], out int leadStaffId)
+                    || id < 0)
+                {
+                    return FailWithMessage("The lead staff ID is invalid.");
+                }
+                Staff leadStaff = new Staff(leadStaffId, "", "lead");
 
                 Staff supportStaff = null;
                 //Leave support staff as null unless there was a choice selected (its optional)
-                if (Request.Form["supportStaff"] != "")
+                if (!string.IsNullOrWhiteSpace(Request.Form["supportStaff"]))
                 {
-                    supportStaff = new Staff(Convert.ToInt32(Request.Form["supportStaff"]), "", "support");
+                    if (!int.TryParse(Request.Form["supportStaff"], out int supportStaffId)
+                        || id < 0)
+                    {
+                        return FailWithMessage("The support staff ID is invalid.");
+                    }
+                    supportStaff = new Staff(supportStaffId, "", "support");
                 }
                 List<Prerequisite> prereqs = new List<Prerequisite>();
                 for (int i = 0; i < Convert.ToInt32(Request.Form["count"]); i++)
@@ -106,9 +167,7 @@ namespace MCFTAcademics
                     int prereqId = CourseCode.GetIdByCourseCode(Request.Form["prereqCode+" + i]);
                     if (prereqId == 0)
                     {
-                        this.dropdownText = "Please select a course to change";
-                        this.alertMessage = "You entered a invalid Course Code for a Prerequisite";
-                        return Page();
+                        return FailWithMessage("You entered a invalid Course Code for a Prerequisite");
                     }
                     //If it returned a valid id, now check if its a coreq or a prereq
                     if (Request.Form["reqRadio+" + i].Equals("prereq"))
@@ -138,9 +197,8 @@ namespace MCFTAcademics
             }
             catch (Exception ex)
             {
-                this.dropdownText = "Please select a course to change";
-                this.alertMessage = "An error occured";
-                return Page();
+                return FailWithMessage("There was an exception from the system updating the course;" +
+                    "report this to an administrator: " + ex.Message);
             }
         }
 
