@@ -15,12 +15,13 @@ namespace MCFTAcademics.BL
         private decimal hoursAttended;
         private bool supplemental;
         private Course subject;
+        private string comment;
 
         public Grade()
         {
         }
 
-        public Grade(int studentId, decimal gradeAssigned, DateTime given, bool locked, decimal hoursAttended, bool supplemental, Course subject)
+        public Grade(int studentId, decimal gradeAssigned, DateTime given, bool locked, decimal hoursAttended, bool supplemental, Course subject, string comment)
         {
             this.studentId = studentId;
             this.gradeAssigned = gradeAssigned;
@@ -29,6 +30,7 @@ namespace MCFTAcademics.BL
             this.hoursAttended = hoursAttended;
             this.supplemental = supplemental;
             this.subject=subject;
+            this.comment = comment;
         }
 
         public int StudentId { get => studentId; }
@@ -38,6 +40,7 @@ namespace MCFTAcademics.BL
         public decimal HoursAttended { get => hoursAttended;  }
         public bool Supplemental { get => supplemental; }
         public Course Subject { get => subject; }
+        public string Comment { get => comment; }
 
         public static IEnumerable<Grade> GetAllGrades() => GradeDAL.GetAllGrades();
 
@@ -62,6 +65,11 @@ namespace MCFTAcademics.BL
         public static bool ToggleGradeLock(int studentId, int courseId)
         {
             return GradeDAL.ToggleGradeLock(studentId, courseId);
+        }
+
+        public static Grade GetSummerPracticum(Student s)
+        {
+            return GradeDAL.GetSummerPracticum(s);
         }
     }
 }
