@@ -69,7 +69,7 @@
             </div>
             <div class="col-lg-2">
                 <select class="form-control" name="leadStaff" id="selLeadStaff">
-                    @{ 
+                    @{
                         var leadStaff = Model.course?.GetLeadStaff();
                     }
                     @foreach (Staff s in allStaff)
@@ -286,6 +286,15 @@
                     e.preventDefault();
                 }
             });
+        });
+
+        $('ul.dropdown-menu li a').click(function (event) {
+            var text = $('#dropdownMenuCourses').text();
+            if (!text.includes('Please select a course to change')) {
+                if (!confirm("Discard Changes?")) {
+                    event.preventDefault();
+                }
+            }
         });
     </script>
 }
