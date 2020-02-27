@@ -94,7 +94,7 @@ namespace MCFTAcademics.DAL
             using (var connection = DbConn.GetConnection())
             {
                 connection.Open();
-                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.[SelectStudentsByStudentId]", connection);
+                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.[SelectStudentsByStudentCode]", connection);
                 selectCommand.CommandType = System.Data.CommandType.StoredProcedure;
                 selectCommand.Parameters.AddWithValue("@studentCode", code);
                 //execute the sql statement

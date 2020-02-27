@@ -54,21 +54,17 @@ namespace MCFTAcademics
                 {
                     return Page();
                 }
-                int id = Convert.ToInt32(Request.Form["studentId"]);
-                this.s = null;
+                var id = Request.Form["studentCode"][0];
                 this.s = Student.GetStudent(id);
                 //List<Grade> grades=StudentDAL.GetGradeByStudentId(id);
                 IEnumerable<Grade> grades = s.GetGrades();
-
-                foreach (Grade g in grades) {
-                    Console.WriteLine(g.ToString());
-                }
-
             }
             catch (Exception ex)
             {
                 //TODO: add logging for errors
-                Console.WriteLine(ex.Message);
+                ModelState.AddModelError("",
+                    "There was an exception from the system getting the grades;" +
+                    "report this to an administrator: " + ex.Message);
             }
             return Page();
         }
