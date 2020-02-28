@@ -4,7 +4,6 @@
 @{
     ViewData["Title"] = "Grades by Student";
 }
-@using System.Collections;
 @using BL;
 @{
     IEnumerable<Grade> gradeList = null;
@@ -16,7 +15,6 @@
         gradeList = gradeList.OrderBy(Grade => Grade);
 
     }
-    int rowCounter = 1;
 }
 
 <h1>Grade By Student Id</h1>
@@ -58,7 +56,6 @@
                         <td>@g.GradeAssigned</td>
                         <td>Grade is Locked</td>
                     </tr>
-                    rowCounter++;
                 }
                 else if (g.Subject != null && !g.Locked)
                 {
@@ -88,7 +85,6 @@
                             </form>
                         </td>
                     </tr>
-                    rowCounter++;
                 }
             }
         </tbody>
