@@ -18,12 +18,17 @@ namespace MCFTAcademics.DAL
             var given = (DateTime)reader["given"];
             var hoursAttended = (decimal)reader["hoursAttended"];
             var grade = (decimal)reader["grade"];
+            var comment = "";
+            if (reader["comment"] != DBNull.Value)
+            {
+                comment = (string)reader["comment"];
+            }
             if (course == null)
             {
-                course = CourseDAL.CourseFromRow(reader);
+                course = CourseDAL.GetCourseById((int)reader["courseId"]);
             }
             // XXX: Preserve the staff stuff too?
-            return new Grade(studentId,grade, given, locked, hoursAttended, supplemental, course,"");
+            return new Grade(studentId,grade, given, locked, hoursAttended, supplemental, course,comment);
         }
 
         public static IEnumerable<Grade> GetAllGrades()
@@ -187,6 +192,75 @@ namespace MCFTAcademics.DAL
                 }
             }
             return grades;
+        }
+
+        internal static decimal GetAverageForStudentSemester(Student student, int semester)
+        {
+            decimal average=0;
+            using (var connection = DbConn.GetConnection())
+            {
+                connection.Open();
+                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectAverageByIdAndSemester", connection);
+                selectCommand.CommandType = System.Data.CommandType.StoredProcedure;
+                selectCommand.Parameters.AddWithValue("@id", student.Id);
+                selectCommand.Parameters.AddWithValue("@semester", semester);
+                SqlDataReader reader = selectCommand.ExecuteReader();
+                if (reader.Read())
+                {
+                    if (reader["average"]==DBNull.Value)
+                    {
+                        average = 0;
+                    }
+                    else
+                    {
+                        average = (decimal)reader["average"];
+                    }
+                }
+            }
+            return Math.Round(average,2);
+        }
+        internal static decimal GetAverageForStudent(Student student)
+        {
+            decimal average = 0;
+            using (var connection = DbConn.GetConnection())
+            {
+                connection.Open();
+                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectAverageById", connection);
+                selectCommand.CommandType = System.Data.CommandType.StoredProcedure;
+                selectCommand.Parameters.AddWithValue("@id", student.Id);
+                SqlDataReader reader = selectCommand.ExecuteReader();
+                if (reader.Read())
+                {
+                    if (reader["average"] == DBNull.Value)
+                    {
+                        average = 0;
+                    }
+                    else
+                    {
+                        average = (decimal)reader["average"];
+                    }
+                }
+            }
+            return Math.Round(average, 2);
+        }
+        public static Grade GetSummerPracticum(Student s)
+        {
+            Grade grade = null;
+            using (var connection = DbConn.GetConnection())
+            {
+                connection.Open();
+                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectSummerPracticumByStudentId", connection);
+                selectCommand.CommandType = System.Data.CommandType.StoredProcedure;
+                selectCommand.Parameters.AddWithValue("@studentId", s.Id);
+                //execute the sql statement
+                SqlDataReader reader = selectCommand.ExecuteReader();
+                //loop through the resultset
+                if (reader.Read())
+                {
+                    grade = GradeDAL.GradeFromRow(reader);
+                }
+            }
+            return grade;//return the grade
         }
     }
 }

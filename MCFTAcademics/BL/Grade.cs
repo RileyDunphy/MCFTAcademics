@@ -78,7 +78,11 @@ namespace MCFTAcademics.BL
             Course otherCourse = other.subject;
 
             return thisCourse.CompareTo(otherCourse);
+        }
  
+        public static Grade GetSummerPracticum(Student s)
+        {
+            return GradeDAL.GetSummerPracticum(s);
         }
     }
 }
