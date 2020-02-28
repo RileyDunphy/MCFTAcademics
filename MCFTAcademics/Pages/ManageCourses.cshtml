@@ -235,7 +235,13 @@
                         <tr>
                             <td><input class="form-check-input" type="radio" name="reqRadio+@count" checked value="prereq"></td>
                             <td><input class="form-check-input" type="radio" name="reqRadio+@count" value="coreq"></td>
-                            <td><input class="form-control" type="text" name="prereqCode+@count" id="txtCourseCode" value=""></td>
+                            <td>
+                                <input class="txtCourseCode form-control" type="text" name="prereqCode+@count" list="dlCourseCodes" autocomplete="off" id="txtCourseCode" value="">
+                                <datalist id="dlCourseCodes">
+                                    <!-- this datalist is empty initially but will hold the list of coursecodes to select as the user is typing -->
+                                </datalist>
+                            </td>
+
                             <td><button type="button" class="Add btn btn-primary">Add</button></td>
                         </tr>
                     </tbody>
@@ -273,8 +279,9 @@
             if (confirm("Do you want to add this row?")) {
                 var row = $(this).closest("tr");
                 var count = parseInt($('#hiddenCount').val()) + parseInt(1);
+                row.find("datalist").prev().removeClass('txtCourseCode');
                 row.find("button").parent().html("<button type=\"button\" class=\"Delete btn btn-sm btn-danger d-none d-md-inline-block\">Delete</button>");
-                row.after('<tr> <td><input class="form-check-input" type="radio" name="reqRadio+' + count + '" checked value="prereq"></td> <td><input class="form-check-input" type="radio" name="reqRadio+' + count + '" value="coreq"></td><td><input class="form-control" name="prereqCode+' + count + '" type="text" id="txtCourseCode" value=""></td><td><button type="button" class="Add btn btn-primary">Add</button></td></tr>');
+                row.after('<tr> <td><input class="form-check-input" type="radio" name="reqRadio+' + count + '" checked value="prereq"></td> <td><input class="form-check-input" type="radio" name="reqRadio+' + count + '" value="coreq"></td><td><input class="txtCourseCode form-control" name="prereqCode+' + count + '" type="text" list="dlCourseCodes" autocomplete="off" id="txtCourseCode" value=""><datalist id="dlCourseCodes"></datalist></td><td><button type="button" class="Add btn btn-primary">Add</button></td></tr>');
                 $('#hiddenCount').val(count);
             }
         });
@@ -296,5 +303,39 @@
                 }
             }
         });
+
+        $(".txtCourseCode").keyup(//key up event for the coursecode textbox
+            function (e) {
+                if (e.keyCode === 13) {
+                    //don't do anything if the user types the enter key, it might try to submit the form
+                    return false;
+                }
+                $.ajax({
+                    type: "GET",
+                    url: "/ManageCourses?handler=Ajax&code=" + $('.txtCourseCode').val(),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        //alert(response);
+                        //clear the coursecodes datalist
+                        $("#dlCourseCodes").empty();
+                        if (typeof (response) === "undefined") {
+                            $("#dlCourseCodes").append("<option value='NO COURSECODES FOUND' label='NO COURSECODES FOUND'></option>");
+                        }
+                    
+                        $.each(response, function (index, element) {
+                            //this will loop through the JSON array of coursecodes and add them to the select box
+                            $("#dlCourseCodes").append("<option value='" + response[index] + "' label='" + response[index] + "'></option>");
+                        });
+                    },
+                    failure: function (response) {
+                        alert(response);
+                    }
+                });
+                //make sure the focus stays on the textbox so the user can keep typing
+                $(".txtCourseCode").focus();
+                return false;
+            }
+        );
     </script>
 }

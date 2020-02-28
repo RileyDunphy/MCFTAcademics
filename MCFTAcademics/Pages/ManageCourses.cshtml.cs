@@ -184,5 +184,15 @@ namespace MCFTAcademics
             this.dropdownText = "Add new course";
             return Page();
         }
+
+        public ActionResult OnGetAjax(string code)
+        {
+            List<string> array = new List<string>();
+            array.Add(code);
+            array.Add("hello");
+            array.Add("test");
+            JsonResult result = new JsonResult(array);
+            return result;
+        }
     }
 }
