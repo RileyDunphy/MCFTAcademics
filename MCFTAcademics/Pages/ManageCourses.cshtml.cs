@@ -187,12 +187,13 @@ namespace MCFTAcademics
 
         public ActionResult OnGetAjax(string code)
         {
-            List<string> array = new List<string>();
-            array.Add(code);
-            array.Add("hello");
-            array.Add("test");
-            JsonResult result = new JsonResult(array);
-            return result;
+            if (code != null)
+            {
+                List<string> prereqCodes = CourseCode.SearchCourseCodes(code);
+                JsonResult result = new JsonResult(prereqCodes);
+                return result;
+            }
+            return new JsonResult("");
         }
     }
 }
