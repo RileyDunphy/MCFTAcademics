@@ -20,6 +20,8 @@
     <form method="post">
         <!-- handles one version of the case, at least -->
         <input asp-for="ShowAllCourses" />
+        <input asp-for="Add" />
+        <input asp-for="OldCode" />
         <div class="row">
             <div class="col-lg-1">
                 <span class="label label-default">Course Code</span>
@@ -27,6 +29,10 @@
             <div class="col-lg-2">
                 <input class="form-control" type="hidden" name="courseId" asp-for="course.Id" id="hdnCourseId">
                 <input class="form-control" type="text" name="courseCode" required asp-for="courseCode.Code" id="txtCourseCode">
+                @if (Model.Add == false)
+                {
+                    <span class="help-block">Changing the course code will create a new course based off of an existing course.</span>
+                }
             </div>
             <div class="col-md-4 col-md-offset-4">
                 <div class="dropdown">
@@ -72,7 +78,7 @@
             </div>
             <div class="col-lg-2">
                 <select class="form-control" name="leadStaff" id="selLeadStaff">
-                    @{ 
+                    @{
                         var leadStaff = Model.course?.GetLeadStaff();
                     }
                     @foreach (Staff s in allStaff)

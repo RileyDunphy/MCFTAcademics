@@ -26,10 +26,14 @@ namespace MCFTAcademics
 
         //Variable to store old course code, incase it is changed. 
         //If it is changed, create a new entry in course code table
-        public static string code { get; set; }
+        [BindProperty]
+        [HiddenInput]
+        public string OldCode { get; set; }
 
         //Flag to tell whether to add course or update course on submit, or if null then no menu item selected
-        public static bool? add { get; set; }
+        [BindProperty]
+        [HiddenInput]
+        public bool? Add { get; set; }
 
         // XXX: Ugly
         // Used for persisting the list of courses between states.
@@ -47,7 +51,7 @@ namespace MCFTAcademics
             if (isAdmin)
                 return true;
             // If adding (assume if somehow not set)
-            if ((add ?? true) && !isAdmin)
+            if ((Add ?? true) && !isAdmin)
                 return false;
 
             // Finally, if we're not adding or admins, only if we're the lead staff
@@ -180,16 +184,16 @@ namespace MCFTAcademics
                     }
                     prereqs.Add(prereq);
                 }
-                if (add == false)
+                if (Add == false && courseCode == OldCode)
                 {
                     Course c = new Course(id, name, credit, description, lectureHours, labHours, examHours, totalHours, revisionNumber, program, accreditation);
                     c.UpdateCourse(leadStaff, supportStaff, prereqs);
                 }
-                else if (add == true)
+                else //if (add == true)
                 {
                     id = Course.AddCourse(new Course(id, name, credit, description, lectureHours, labHours, examHours, totalHours, revisionNumber, program, accreditation), leadStaff, supportStaff, prereqs);
                 }
-                if (courseCode != code)
+                if (courseCode != OldCode)
                 {
                     CourseCode.AddCourseCode(id, new CourseCode(courseCode, startDate, endDate, semester));
                 }
@@ -248,8 +252,8 @@ namespace MCFTAcademics
             // XXX: We don't check if the user is allowed to use the course
             this.course = Course.GetCourseById(id);
             this.courseCode = CourseCode.GetNewestCourseCodeById(id);
-            code = courseCode.Code;
-            add = false;
+            OldCode = courseCode.Code;
+            Add = false;
             this.dropdownText = this.course.Name;
             return Page();
         }
@@ -263,8 +267,8 @@ namespace MCFTAcademics
             // XXX: We don't check if the user is allowed to use the course
             this.course = new Course();
             this.courseCode = new CourseCode();
-            code = courseCode.Code;
-            add = true;
+            OldCode = courseCode.Code;
+            Add = true;
             this.dropdownText = "Add new course";
             return Page();
         }
