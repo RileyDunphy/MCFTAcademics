@@ -2,9 +2,8 @@
 @model MCFTAcademics.GradeByStudentId
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
-    ViewData["Title"] = "GradesByStudentId";
+    ViewData["Title"] = "Grades by Student";
 }
-@using System.Collections;
 @using BL;
 @{
     IEnumerable<Grade> gradeList = null;
@@ -12,133 +11,129 @@
     if (Model.s != null)
     {
         studentUser = @Model.s;
-        gradeList= studentUser.GetGrades();
-        gradeList=gradeList.OrderBy(Grade=>Grade);
+        gradeList = studentUser.GetGrades();
+        gradeList = gradeList.OrderBy(Grade => Grade);
 
     }
-    int rowCounter = 1;
-    int semester = 0;
-            }
-    
-            <h1>Grade By Student Id</h1>
-            <br>
-            <form class="form-inline" id="form" method="post">
-                <div class="row">
-                    <label>Please Enter Student ID: </label>
-                    <input class="form-control" style="width:200px" type="text" required name="studentId" id="studentId">
-                    <button class="btn btn-primary" id="searchById" type="submit">Search</button>
-                </div>
+}
 
-            </form>
-            @if (studentUser != null)
+<h1>Grade By Student Id</h1>
+<div asp-validation-summary="All" class="text-danger"></div>
+<br>
+<form class="form-inline" id="form" method="post">
+    <div class="form-group">
+        <label for="studentCode">Student ID</label>
+        <input class="form-control" style="width:200px" type="text" required name="studentCode" placeholder="i.e. ST98404" id="studentCode">
+    </div>
+    <button class="btn btn-primary" id="searchById" type="submit">Search</button>
+</form>
+@if (studentUser != null)
+{
+    <h2>@studentUser.StudentCode: @studentUser.FirstName @studentUser.LastName</h2>
+    <input id="studentIdHolder" type="hidden" value="@studentUser.Id">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col" width="5%">Semester</th>
+                <th scope="col" width="15%">Course Code</th>
+                <th scope="col" width="20%">Subject</th>
+                <th scope="col" width="20%">Instructor</th>
+                <th scope="col" width="10%">Grade</th>
+                <th scope="col" width="30%">Comment</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (Grade g in gradeList)
             {
-
-                <h2>@studentUser.Id @studentUser.FirstName @studentUser.LastName</h2>
-                <input id="studentIdHolder" type="hidden" value="@studentUser.Id">
-                <table class="table">
-
-                    @foreach (Grade g in gradeList)
-                    {
-                        CourseCode code = g.Subject.GetCourseCode();
-
-                        if (semester != code.Semester)
-                        {
-                            semester = code.Semester;
-
-                            <tr>
-                                <td colspan="5">
-                                    <h3>Semester @semester</h3>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th scope="col" width="15%">Course Code</th>
-                                <th scope="col" width="20%">Subject</th>
-                                <th scope="col" width="20%">Instructor</th>
-                                <th scope="col" width="10%">Grade</th>
-                                <th scope="col" width="35%">Comment</th>
-                            </tr>
-                        }
-
-                        if (g.Subject != null && g.Locked)
-                        {
-                            <tr>
-                                <th scope="row">@code.Code</th>
-                                <td>@g.Subject.Name</td>
-                                <td>@g.Subject.GetLeadStaff().Name</td>
-                                <td>@g.GradeAssigned</td>
-                                <td>Grade is Locked</td>
-                            </tr>
-                            rowCounter++;
-                        }
-                        else if (g.Subject != null && !g.Locked)
-                        {
-                            <tr>
-                                <th scope="row">@code.Code</th>
-
-                                <td>@g.Subject.Name</td>
-                                <td>@g.Subject.GetLeadStaff().Name</td>
-                                <td><input id="grade#@g.Subject.Id" class="input-sm" onchange="method(this)" type="number" value="@g.GradeAssigned" /></td>
-
-                                <td>
-                                    <input class="input-sm hidden" style="width:200px;padding-top: 6px;" placeholder="comment on changes" type="text" required name="commentField" id="comment#@g.Subject.Id">
-
-                                    <button id="@g.Subject.Id" onclick="submitGrade(this)" style="padding-right: 12px;margin-right:37px;padding-top: 2px;margin-left: 2px; width:110px; float:right" class="btn btn-danger hidden">Submit</button>
-                                </td>
-                            </tr>
-                            rowCounter++;
-                        }
-                    }
-                </table>
-
+                CourseCode code = g.Subject.GetCourseCode();
+                if (g.Subject != null && g.Locked)
+                {
+                    <tr>
+                        <th scope="row">@code.Semester</th>
+                        <th scope="row">@code.Code</th>
+                        <td>@g.Subject.Name</td>
+                        <td>@g.Subject.GetLeadStaff().Name</td>
+                        <td>@g.GradeAssigned</td>
+                        <td>Grade is Locked</td>
+                    </tr>
+                }
+                else if (g.Subject != null && !g.Locked)
+                {
+                    <tr>
+                        <th scope="row">@code.Semester</th>
+                        <th scope="row">@code.Code</th>
+                        <td>@g.Subject.Name</td>
+                        <td>@g.Subject.GetLeadStaff().Name</td>
+                        <td>
+                            <div class="form-group">
+                                <label class="sr-only" for="grade@g.Subject.Id">Grade</label>
+                                @* i would use onblur here, but onfocus makes the tabstop work right *@
+                                <input id="grade@g.Subject.Id" class="input-sm form-control gradeField" onfocus="activateComment(this)" type="number" value="@g.GradeAssigned" name="gradeField" form="form@g.Subject.Id" />
+                            </div>
+                        </td>
+                        <td>
+                            @* XXX: Good oppurtunity now for a JS-free fallback... *@
+                            <form class="form-inline hidden" id="form@g.Subject.Id" onsubmit="return submitGrade(this)">
+                                <input type="hidden" class="courseField" name="courseId" value="@g.Subject.Id" />
+                                <div class="input-group" style="width: 100%">
+                                    <label class="sr-only" for="comment@g.Subject.Id">Comment</label>
+                                    <input class="input-sm form-control commentField" placeholder="comment on changes" type="text" required name="commentField" id="comment@g.Subject.Id">
+                                    <span class="input-group-btn">
+                                        <button type="submit" class="btn btn-sm btn-danger">Submit</button>
+                                    </span>
+                                </div>
+                            </form>
+                        </td>
+                    </tr>
+                }
             }
+        </tbody>
+    </table>
+}
 
-            @section scripts{
+@section scripts{
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.css">
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.table').DataTable();
+            $("[name='commentField']").each(function () {
+                //not used for anything(yet)
+            });
+        });
 
-                <script type="text/javascript">
-                    $(document).ready(function () {
-                        $("[name='commentField']").each(function () {
-                            //not used for anything(yet)
-                        });
-                    });
+        submitGrade = function (formObj) {
+            var grade = $(formObj).parent().parent().find('.gradeField').val();
+            var comment = $(formObj).find('.commentField').val();
+            var courseId = $(formObj).find('.courseField').val();
+            var studentId = $("#studentIdHolder").val();
+            console.log(studentId);
+            if (confirm("Do you want to submit this change?")) {
 
-                    submitGrade = function (buttonObj) {
-                        var grade = $(buttonObj).parent().prev().children().val();
-                        var comment = $(buttonObj).prev().val();
-                        var courseId = $(buttonObj).attr('id');
-                        var studentId = $("#studentIdHolder").val();
-                        console.log(studentId);
-                        if (confirm("Do you want to submit this change?")) {
+                $.ajax({
+                    type: "GET",
+                    url: "/GradesByStudentId?handler=Ajax&grade=" + grade + "&studentId=" + studentId + "&comment=" + comment + "&courseId=" + courseId,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        alert(response);
 
-                            $.ajax({
-                                type: "GET",
-                                url: "/GradesByStudentId?handler=Ajax&grade=" + grade + "&studentId=" + studentId + "&comment=" + comment + "&courseId=" + courseId,
-                                contentType: "application/json; charset=utf-8",
-                                dataType: "json",
-                                success: function (response) {
-                                    alert(response);
-
-                                },
-                                failure: function (response) {
-                                    alert(response);
-                                }
-                            });
-                        }
+                    },
+                    error: function (response, status, error) {
+                        alert(response.responseJSON.error);
                     }
-                    method = function (val) {
-                        //alert(val.value);
-                        var elementList = val.parentElement.nextElementSibling.children;
-                        elementList[0].classList.remove("hidden");
-                        elementList[1].classList.remove("hidden");
-
-
-                    };
-
-
-
-
-
-
-                </script>
+                });
             }
+            return false;
+        }
 
-
+        activateComment = function (entry) {
+            var entryElem = $(entry);
+            // valid number?
+            if (!isNaN(parseInt(entryElem.val()))) {
+                // XXX: ugly ugly ugly
+                entryElem.parent().parent().next().children().removeClass("hidden");
+            }
+        }
+    </script>
+}
