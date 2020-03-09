@@ -195,5 +195,20 @@ namespace MCFTAcademics
             }
             return new JsonResult("");
         }
+        public ActionResult OnGetCheckPrereqCode(string code)
+        {
+            if (code != null)
+            {
+                if (CourseCode.GetIdByCourseCode(code) == 0)
+                {
+                    return new JsonResult(false);
+                }
+                else
+                {
+                    return new JsonResult(true);
+                }
+            }
+            return new JsonResult(false);
+        }
     }
 }
