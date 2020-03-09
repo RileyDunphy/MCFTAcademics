@@ -56,11 +56,25 @@ namespace MCFTAcademics.BL
         /// the result is maximum 60 regardless if more was earned on the
         /// supplemental.
         /// </remarks>
-        // XXX: How do we handle historical versions?
-        public decimal CalculateFinalGrade() =>
-            Supplemental ? Math.Min(60, GradeAssigned) : GradeAssigned;
-
+        public decimal CalculateFinalGrade()
+        {
+            // If their grading algorithm changes in the future,
+            // please modify the list of grading algorithms and
+            // return the old algorithm type for grades in old date ranges,
+            // to avoid issues with recalculating in the future
+            switch (GetGradingAlgorithm()) {
+                case GradingAlgorithm.Default:
+                default:
+                    return Supplemental ? Math.Min(60, GradeAssigned) : GradeAssigned;
+            }
+        }
         public bool IsPassing() => CalculateFinalGrade() >= 60;
+
+        internal GradingAlgorithm GetGradingAlgorithm()
+        {
+            // Check based on time (or other criteria?)
+            return GradingAlgorithm.Default;
+        }
 
         public static bool ToggleGradeLock(int studentId, int courseId)
         {
