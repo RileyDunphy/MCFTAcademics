@@ -13,7 +13,7 @@
 
     }
 
-    int semester = 0;
+    int semester = -1;
 }
     <h1>@ViewData["Title"]</h1>
 
@@ -26,15 +26,16 @@
     @foreach (Course c in courses)
     {
         CourseCode code = c.GetCourseCode();
-        
+
         List<Student> students = Student.GetStudentsByCourse(c);
 
 
         if (semester != code.Semester)
         {
             semester = code.Semester;
+        }
 
-            <h2>@c.Name - @code.Code</h2>
+            <tr><td colspan="5"><h2>@c.Name - @code.Code</h2></td></tr>
             <tr>
                 <td colspan="5">
                     <h3>Semester @semester</h3>
@@ -47,7 +48,6 @@
                 <th scope="col" width="10%">Grade</th>
                 <th scope="col" width="35%">Comment</th>
             </tr>
-        }
         @foreach (Student s in students)
         {
             Grade g = s.GetGradeFromListByCourseId(c.Id,s.GetGrades());
@@ -63,7 +63,7 @@
             }
             else if (!g.Locked)
             {
-<tr>
+<tr id="@s.Id">
     <td>@s.Id</td>
     <td>@s.FirstName</td>
     <td>@s.LastName</td>
@@ -100,7 +100,7 @@
             var grade = $(buttonObj).parent().prev().children().val();
             var comment = $(buttonObj).prev().val();
             var courseId = $(buttonObj).attr('id');
-            var studentId = $("#studentIdHolder").val();   
+            var studentId = $(buttonObj).parent().parent().attr('id');
             console.log(studentId);
             if (confirm("Do you want to submit this change?")) {
 
@@ -110,7 +110,7 @@
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",
                     success: function (response) {
-                        alert(response);
+                        alert("Grade has been updated");
 
                     },
                     failure: function (response) {
