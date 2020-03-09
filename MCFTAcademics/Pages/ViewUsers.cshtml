@@ -4,7 +4,7 @@
     ViewData["Title"] = "List of Users";
 }
 
-@{ 
+@{
     var users = BL.User.GetAllUsers();
 }
 
@@ -25,13 +25,14 @@
         @foreach (var user in users)
         {
             <tr>
-                @{ 
+                @{
                     var disabledClass = user.IsDisabled ? "userDisabled" : string.Empty;
                 }
                 <th class="@disabledClass" scope="row">@user.Id</th>
                 <td class="@disabledClass">@user.Username</td>
                 <td class="@disabledClass">@user.Name</td>
-                <td>@user.IsDisabled</td>@* don't put disabled on this since it states it *@
+                <td>@user.IsDisabled</td>
+                @* don't put disabled on this since it states it *@
                 <td>
                     <a class="btn btn-warning" asp-page="/ChangePassword" asp-page-handler="WithId" asp-route-id="@user.Id">Change Password</a>
                     @if (!User.UserIdMatches(user.Id))
@@ -46,3 +47,14 @@
         }
     </tbody>
 </table>
+
+@section scripts{
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.css">
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.table').DataTable();
+        });
+    </script>
+
+} 
