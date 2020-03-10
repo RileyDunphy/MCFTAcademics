@@ -24,12 +24,6 @@ namespace MCFTAcademics
         public string dropdownText { get; set; }
         public string alertMessage { get; set; }
 
-        //Variable to store old course code, incase it is changed. 
-        //If it is changed, create a new entry in course code table
-        [BindProperty]
-        [HiddenInput]
-        public string OldCode { get; set; }
-
         //Flag to tell whether to add course or update course on submit, or if null then no menu item selected
         [BindProperty]
         [HiddenInput]
@@ -145,7 +139,7 @@ namespace MCFTAcademics
                     return FailWithMessage("The end of the course is before when it starts.");
                 }
                 if (!int.TryParse(Request.Form["leadStaff"], out int leadStaffId)
-                    || id < 0)
+                    || leadStaffId < 0)
                 {
                     return FailWithMessage("The lead staff ID is invalid.");
                 }
@@ -156,7 +150,7 @@ namespace MCFTAcademics
                 if (!string.IsNullOrWhiteSpace(Request.Form["supportStaff"]))
                 {
                     if (!int.TryParse(Request.Form["supportStaff"], out int supportStaffId)
-                        || id < 0)
+                        || supportStaffId < 0)
                     {
                         return FailWithMessage("The support staff ID is invalid.");
                     }
@@ -184,16 +178,18 @@ namespace MCFTAcademics
                     }
                     prereqs.Add(prereq);
                 }
-                if (Add == false && courseCode == OldCode)
+                if (Add == false)
                 {
                     Course c = new Course(id, name, credit, description, lectureHours, labHours, examHours, totalHours, revisionNumber, program, accreditation);
                     c.UpdateCourse(leadStaff, supportStaff, prereqs);
                 }
-                else //if (add == true)
+                else if (Add == true)
                 {
                     id = Course.AddCourse(new Course(id, name, credit, description, lectureHours, labHours, examHours, totalHours, revisionNumber, program, accreditation), leadStaff, supportStaff, prereqs);
                 }
-                if (courseCode != OldCode)
+                // XXX: really flawed and prob won't be performant, we need proper course code management
+                var oldCourseCode = !(Add ?? false) ? Course.GetCourseById(id)?.GetCourseCode()?.Code : null;
+                if (courseCode != oldCourseCode)
                 {
                     CourseCode.AddCourseCode(id, new CourseCode(courseCode, startDate, endDate, semester));
                 }
@@ -251,8 +247,7 @@ namespace MCFTAcademics
             RefreshShownCourses();
             // XXX: We don't check if the user is allowed to use the course
             this.course = Course.GetCourseById(id);
-            this.courseCode = CourseCode.GetNewestCourseCodeById(id);
-            OldCode = courseCode.Code;
+            this.courseCode = course.GetCourseCode();
             Add = false;
             this.dropdownText = this.course.Name;
             return Page();
@@ -266,8 +261,6 @@ namespace MCFTAcademics
             RefreshShownCourses();
             // XXX: We don't check if the user is allowed to use the course
             this.course = new Course();
-            this.courseCode = new CourseCode();
-            OldCode = courseCode.Code;
             Add = true;
             this.dropdownText = "Add new course";
             return Page();
