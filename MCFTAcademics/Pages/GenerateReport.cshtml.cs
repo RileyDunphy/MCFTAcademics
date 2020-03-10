@@ -5,6 +5,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using MCFTAcademics.BL;
+using System.Data;
+
+using Newtonsoft.Json;
+using MCFTAcademics.DAL;
 
 namespace MCFTAcademics
 {
@@ -14,23 +18,21 @@ namespace MCFTAcademics
         {
 
         }
-        public ActionResult OnGetAjax(string program, int semester, int year)
+        public IActionResult OnGetAjax(string program, int semester, int year)
         {
             try
             {
 
-                Report report = new Report(program, semester, year);
+                List<Report> dt = ReportDAL.SelectReportData(program, semester);
 
-                string path = report.generateReport();
-
-                
-                path = path.Replace("./Reports/", "");
-                path = path.Replace(".pdf", "");
-                return new JsonResult(path);
+               //JsonSerializer js= JsonSerializer.Create();
+                //string json = JsonConvert.SerializeObject(dt);
+                return new JsonResult(dt);
+      
             }
             catch (Exception ex)
             {
-                return new JsonResult(ex);
+                return new JsonResult(ex.Message);
             }
         }
 

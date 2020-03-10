@@ -79,35 +79,12 @@
     <script type="text/javascript" charset="utf-8" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
     <script type="text/javascript" charset="utf-8" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
     <script type="text/javascript" charset="utf-8" src="https://cdn.datatables.net/buttons/1.6.1/js/buttons.html5.min.js"></script>
-    
-
-    
-
-
-
 
 
     <script type="text/javascript">
 
         $(document).ready(function () {
-            $('#table_id').DataTable({
-                "paging": true,
-                "ordering": true,
-                "bSort": true,
-                "info": true,
-                dom: 'Bfrtip',
-                buttons: [
-                    {
-                        extend: 'csvHtml5',
-                        title: 'Report'
-                    },
-                    {
-                        extend: 'pdfHtml5',
-                        title: 'Report',
-                        download: 'open'
-                    }
-                ]
-            });
+            
 
         });
 
@@ -119,17 +96,70 @@
                 var program = document.getElementById("selProgram").value;
                 var year = document.getElementById("selYear").value;
 
-
                 //Pass them in the handler method via AJAX that will generate and save our transcript on the server
                 $.ajax({
                     type: "GET",
                     url: "/GenerateReport?handler=Ajax&program=" + program + "&semester=" + semester + "&year=" + year,
                     contentType: "application/json; charset=utf-8",
-                    dataType: "html",
+                    dataType: "json",
                     success: function (response) {
                         //Direct link to the transcript generated
-                        alert(response);
-                        $("generate").parent().html("<a href=\"../downloadtranscript/" + response + "\">View Report</a>");
+                        var len = response.length;
+                        var counter = 0;
+                        var tableHtml = "<thead><tr><th>StudentId</th><th>First Name</th><th>Last Name</th><th>Course ID</th><th>Course Code</th><th>name</th><th>Grade</th></tr><tbody>";
+                        while (counter < len) {
+                         tableHtml += " <tr>"
+                            tableHtml += " <td>"
+                                tableHtml += response[counter]["studentId"];
+                            tableHtml += " </td>"
+                            tableHtml += " <td>"
+                                tableHtml += response[counter]["firstName"];
+                            tableHtml += " </td>"
+                            tableHtml += " <td>"
+                                tableHtml += response[counter]["lastName"];
+                            tableHtml += " </td>"
+                            tableHtml += " <td>"
+                                tableHtml += response[counter]["courseId"];
+                            tableHtml += " </td>"
+                            tableHtml += " <td>"
+                                tableHtml += response[counter]["courseCode"];
+                            tableHtml += " </td>"
+                            tableHtml += " <td>"
+                                tableHtml += response[counter]["name"];
+                            tableHtml += " </td>"
+                            tableHtml += " <td>"
+                                tableHtml += response[counter]["grade"];
+                            tableHtml+=" </td>"
+                         tableHtml+=" </tr>"
+                            counter++;
+                        }
+                        tableHtml += " </tbody>"
+                        document.getElementById('table_id').innerHTML = tableHtml;
+
+                        $('#table_id').DataTable({
+                            "paging": true,
+                            "ordering": true,
+                            "bSort": true,
+                            "info": true,
+                            "destroy": true,
+                            dom: 'Bfrtip',
+                            buttons: [
+                                {
+                                    extend: 'csvHtml5',
+                                    title: 'Report'
+                                },
+                                {
+                                    extend: 'pdfHtml5',
+                                    title: 'Report',
+                                    download: 'open'
+                                }
+                            ]
+                        });
+
+                        //var resp = JSON.stringify(response);
+                        //console.log(resp);
+
+                        //$("generate").parent().html("<a href=\"../downloadtranscript/" + response + "\">View Report</a>");
                     },
                     failure: function (response) {
                         alert(response);
