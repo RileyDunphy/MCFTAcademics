@@ -202,7 +202,14 @@ namespace MCFTAcademics.BL
             foreach (Grade g in this.student.GetGradesForSemester(semester))//All the students grades for semester 1
             {
                 gfx.DrawString(g.Subject.Name, smallFont, XBrushes.Black, new XRect(15, y, page1.Width, page1.Height), XStringFormats.TopLeft);
-                gfx.DrawString(g.GradeAssigned.ToString(), smallFont, XBrushes.Black, new XRect(450, y, 50, 15), XStringFormats.Center);
+                if (g.Supplemental)
+                {
+                    gfx.DrawString(g.GradeAssigned.ToString()+"/60*", smallFont, XBrushes.Black, new XRect(450, y, 50, 15), XStringFormats.Center);
+                }
+                else
+                {
+                    gfx.DrawString(g.GradeAssigned.ToString(), smallFont, XBrushes.Black, new XRect(450, y, 50, 15), XStringFormats.Center);
+                }
                 y += 15;
             }
             y += 10;
