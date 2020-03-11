@@ -1,4 +1,5 @@
-﻿using MCFTAcademics.BL;
+﻿using Flee.PublicTypes;
+using MCFTAcademics.BL;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -219,7 +220,7 @@ namespace MCFTAcademics.DAL
             }
             return Math.Round(average,2);
         }
-        internal static decimal GetAverageForStudent(Student student)
+        internal static decimal GetAverageForStudentOLD(Student student)
         {
             decimal average = 0;
             using (var connection = DbConn.GetConnection())
@@ -261,6 +262,71 @@ namespace MCFTAcademics.DAL
                 }
             }
             return grade;//return the grade
+        }
+
+        public static bool UpdateFormula(string formula)
+        {
+            SqlConnection conn = DbConn.GetConnection();
+            bool result;
+            using (var connection = DbConn.GetConnection())
+            {
+                conn.Open();
+                SqlCommand updateCommand = new SqlCommand("mcftacademics.dbo.UpdateFormula", conn);
+                updateCommand.CommandType = System.Data.CommandType.StoredProcedure;
+                updateCommand.Parameters.AddWithValue("@formula", formula);
+                int rows = updateCommand.ExecuteNonQuery();
+                if (rows > 0)
+                {
+                    result = true;
+                }
+                else
+                {
+                    result = false;
+                }
+            }
+            return result;
+        }
+
+        internal static decimal GetAverageForStudent(Student student)
+        {
+            List<decimal> results = new List<decimal>();
+            decimal average = 0;
+            using (var connection = DbConn.GetConnection())
+            {
+                connection.Open();
+                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectFormula", connection);
+                selectCommand.CommandType = System.Data.CommandType.StoredProcedure;
+                SqlDataReader reader = selectCommand.ExecuteReader();
+                if (reader.Read())
+                {
+                    // Define the context of our expression
+                    ExpressionContext context = new ExpressionContext();
+                    // Allow the expression to use all static public methods of System.Math
+                    context.Imports.AddType(typeof(Math));
+                    foreach(Grade g in student.GetGrades())
+                    {
+                        // Define an int variable
+                        if (g.Supplemental)
+                        {
+                            context.Variables["a"] = 60;
+                        }
+                        else
+                        {
+                            context.Variables["a"] = g.GradeAssigned;
+                        }
+                        context.Variables["b"] = g.Subject.Credit;
+
+                        // Create a dynamic expression that evaluates to an Object
+                        IDynamicExpression eDynamic = context.CompileDynamic(reader["Formula"].ToString());
+
+                        // Evaluate the expressions
+                        decimal result = (decimal)eDynamic.Evaluate();
+                        results.Add(result);
+                    }
+                    average = results.Average();
+                }
+            }
+            return Math.Round(average, 2);
         }
     }
 }
