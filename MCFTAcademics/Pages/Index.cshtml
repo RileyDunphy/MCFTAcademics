@@ -27,9 +27,9 @@
                 <dd>Shows the grades of students you are instructing</dd>
                 <dt><a asp-page="/ViewGrades" asp-page-handler="all">View all grades</a></dt>
                 <dd>Show all grades of students</dd>
-                <dt><a asp-page="/GradesByCourse">Manage grades</a></dt>
+                <dt><a asp-page="/ManageGrades" asp-page-handler="ByCurrentInstructor">Manage grades</a></dt>
                 <dd>Submit student pages</dd>
-                <dt><a asp-page="/GradesByStudentId">Grades By Student Id</a></dt>
+                <dt><a asp-page="/ManageGrades" asp-page-handler="ByStudent">Grades By Student Id</a></dt>
                 <dd>Search and list an individual students grades</dd>
             </dl>
         }
