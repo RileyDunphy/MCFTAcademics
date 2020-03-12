@@ -20,6 +20,7 @@
     <form method="post">
         <!-- handles one version of the case, at least -->
         <input asp-for="ShowAllCourses" />
+        <input asp-for="Add" />
         <div class="row">
             <div class="col-lg-1">
                 <span class="label label-default">Course Code</span>
@@ -37,7 +38,7 @@
                     <ul class="dropdown-menu" aria-labelledby="dropdownMenuCourses">
                         @if (User.IsInRole("Admin"))
                         {
-                            <li> <a asp-page-handler="AddCourse">Add new course</a></li>
+                            <li> <a asp-page-handler="AddCourse" asp-route-forAll="@Model.ShowAllCourses">Add new course</a></li>
                         }
                         @foreach (Course c in Model.ShownCourses)
                         {

@@ -32,7 +32,7 @@ namespace MCFTAcademics.DAL
             using (var connection = DbConn.GetConnection())
             {
                 connection.Open();
-                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.Get_AllCoursesANDCourseCodes", connection);
+                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.Get_AllCourses", connection);
                 selectCommand.CommandType = System.Data.CommandType.StoredProcedure;
                 //execute the sql statement
                 SqlDataReader reader = selectCommand.ExecuteReader();
@@ -52,7 +52,7 @@ namespace MCFTAcademics.DAL
             using (var connection = DbConn.GetConnection())
             {
                 connection.Open();
-                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectCoursesByInstructor", connection);
+                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectCoursesByInstructorNoCode", connection);
                 selectCommand.CommandType = System.Data.CommandType.StoredProcedure;
                 selectCommand.Parameters.AddWithValue("@userid", userid);
                 //execute the sql statement
