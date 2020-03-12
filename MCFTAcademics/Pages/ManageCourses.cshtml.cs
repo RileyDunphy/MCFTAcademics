@@ -268,5 +268,31 @@ namespace MCFTAcademics
             this.dropdownText = "Add new course";
             return Page();
         }
+
+        public ActionResult OnGetAjax(string code)
+        {
+            if (code != null)
+            {
+                List<string> prereqCodes = CourseCode.SearchCourseCodes(code);
+                JsonResult result = new JsonResult(prereqCodes);
+                return result;
+            }
+            return new JsonResult("");
+        }
+        public ActionResult OnGetCheckPrereqCode(string code)
+        {
+            if (code != null)
+            {
+                if (CourseCode.GetIdByCourseCode(code) == 0)
+                {
+                    return new JsonResult(false);
+                }
+                else
+                {
+                    return new JsonResult(true);
+                }
+            }
+            return new JsonResult(false);
+        }
     }
 }
