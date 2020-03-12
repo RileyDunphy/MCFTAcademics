@@ -196,7 +196,7 @@ namespace MCFTAcademics.DAL
         }
 
         internal static decimal GetAverageForStudentSemester(Student student, int semester)
-        {
+        {//Old way of doing it, probably use the formula building way instead of this now
             decimal average=0;
             using (var connection = DbConn.GetConnection())
             {
@@ -221,7 +221,7 @@ namespace MCFTAcademics.DAL
             return Math.Round(average,2);
         }
         internal static decimal GetAverageForStudentOLD(Student student)
-        {
+        {//Old way of doing it, probably use the formula building way instead of this now
             decimal average = 0;
             using (var connection = DbConn.GetConnection())
             {
@@ -287,8 +287,10 @@ namespace MCFTAcademics.DAL
             return result;
         }
 
-        internal static decimal GetAverageForStudent(Student student)
+        internal static decimal GetAverageForStudent(Student student, int semester = -1)
         {
+            //Get all Grades for the Student, by program if no semester passed in, or by semester if it is
+            IEnumerable<Grade> grades = semester != -1 ? student.GetGradesForSemester(semester) : student.GetGrades();
             List<decimal> results = new List<decimal>();
             decimal average = 0;
             using (var connection = DbConn.GetConnection())
@@ -303,12 +305,14 @@ namespace MCFTAcademics.DAL
                     ExpressionContext context = new ExpressionContext();
                     // Allow the expression to use all static public methods of System.Math
                     context.Imports.AddType(typeof(Math));
-                    foreach(Grade g in student.GetGrades())
+                    //Get the total Course credit hours for use in the expression
+                    context.Variables["c"] = grades.Sum(gg => gg.Subject.Credit);
+                    foreach (Grade g in grades)
                     {
                         // Define an int variable
                         if (g.Supplemental)
                         {
-                            context.Variables["a"] = 60;
+                            context.Variables["a"] = 60m;
                         }
                         else
                         {
@@ -323,7 +327,7 @@ namespace MCFTAcademics.DAL
                         decimal result = (decimal)eDynamic.Evaluate();
                         results.Add(result);
                     }
-                    average = results.Average();
+                    average = results.Sum();
                 }
             }
             return Math.Round(average, 2);
