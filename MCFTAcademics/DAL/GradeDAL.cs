@@ -58,6 +58,7 @@ namespace MCFTAcademics.DAL
                 var command = connection.CreateCommand();
                 command.CommandText = "mcftacademics.dbo.Get_Grades_ByStaff";
                 command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@staffId", staff.Id);
                 var reader = command.ExecuteReader();
                 while (reader.Read())
                     yield return GradeFromRow(reader);
@@ -153,6 +154,7 @@ namespace MCFTAcademics.DAL
                 updateCommand.Parameters.AddWithValue("@courseId", grade.Subject.Id);
                 updateCommand.Parameters.AddWithValue("@grade", grade.GradeAssigned);
                 updateCommand.Parameters.AddWithValue("@comment", grade.Comment);
+                updateCommand.Parameters.AddWithValue("@supplemental", grade.Supplemental);
                 int rows = updateCommand.ExecuteNonQuery();
                 if (rows > 0)
                 {

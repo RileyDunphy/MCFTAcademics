@@ -1,0 +1,151 @@
+﻿@page
+@model MCFTAcademics.ManageGrades
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@using BL;
+@{ 
+    string MakeHtmlId(Grade g, string prefix) => $"{prefix}{g.GetHashCode()}";
+}
+
+<h1>@ViewData["Title"]</h1>
+<div asp-validation-summary="All" class="text-danger"></div>
+<br>
+@if (Model.ShowStudentIdForm)
+{
+    <form class="form-inline" id="form" asp-page-handler="ByStudent" method="post">
+        <div class="form-group">
+            <label for="studentCode">Student ID</label>
+            <input class="form-control" style="width:200px" type="text" required name="studentCode" placeholder="i.e. ST98404" id="studentCode">
+        </div>
+        <button class="btn btn-primary" id="searchById" type="submit">Search</button>
+    </form>
+}
+@if (Model.Grades != null)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col" width="5%">Semester</th>
+                <th scope="col" width="15%">Student</th>
+                <th scope="col" width="25%">Subject</th>
+                <th scope="col" width="20%">Instructor</th>
+                <th scope="col" width="10%">Grade</th>
+                <th scole="col" width="5%">Supplemental</th>
+                <th scope="col" width="30%">Comment</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (Grade g in Model.Grades)
+            {
+                Student s = Model.StudentMapping[g.StudentId];
+                CourseCode code = g.Subject.GetCourseCode();
+                <tr>
+                    <th scope="row">@code.Semester</th>
+                    <th scope="row">@s.StudentCode<br />@s.FirstName @s.LastName</th>
+                    <th scope="row">@code.Code<br />@g.Subject.Name</th>
+                    <td>@g.Subject.GetLeadStaff().Name</td>
+                    @if (g.Subject != null && g.Locked)
+                    {
+                        <td>@g.GradeAssigned</td>
+                        <td>@g.Supplemental</td>
+                        <td>@g.Comment</td>
+                    }
+                    else if (g.Subject != null && !g.Locked)
+                    {
+                        <td>
+                            <div class="form-group">
+                                <label class="sr-only" for="@MakeHtmlId(g, "grade")">Grade</label>
+                                @* i would use onblur here, but onfocus makes the tabstop work right *@
+                                <input id="@MakeHtmlId(g, "grade")" class="input-sm form-control gradeField" onfocus="activateComment(this)" type="number" value="@g.GradeAssigned" name="gradeField" form="@MakeHtmlId(g, "form")" />
+                            </div>
+                        </td>
+                        <td>
+                            <div class="checkbox">
+                                <input id="@MakeHtmlId(g, "supplemental")" class="input-sm form-control supplemental" onchange="activateCommentCheck(this)" type="checkbox" checked="@g.Supplemental" name="isSupplemental" form="@MakeHtmlId(g, "form")" />
+                            </div>
+                        </td>
+                        <td>
+                            @* XXX: Good oppurtunity now for a JS-free fallback... *@
+                            <form class="form-inline hidden" id="@MakeHtmlId(g, "form")" onsubmit="return submitGrade(this)">
+                                <input type="hidden" class="courseField" name="courseId" value="@g.Subject.Id" />
+                                <input class="studentId" name="studentId" type="hidden" value="@g.StudentId">
+                                <div class="input-group" style="width: 100%">
+                                    <label class="sr-only" for="@MakeHtmlId(g, "comment")">Comment</label>
+                                    <input class="input-sm form-control commentField" placeholder="comment on changes" type="text" required name="commentField" id="@MakeHtmlId(g, "comment")">
+                                    <span class="input-group-btn">
+                                        <button type="submit" class="btn btn-sm btn-danger">Submit</button>
+                                    </span>
+                                </div>
+                            </form>
+                        </td>
+                    }
+                 </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@section scripts{
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.css">
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.table').DataTable();
+            $("[name='commentField']").each(function () {
+                //not used for anything(yet)
+            });
+        });
+
+        submitGrade = function (formObj) {
+            var grade = $(formObj).parent().parent().find('.gradeField').val();
+            var comment = $(formObj).find('.commentField').val();
+            var courseId = $(formObj).find('.courseField').val();
+            var studentId = $(formObj).find('.studentId').val();
+            var isSupplemental = $(formObj).parent().parent().find('.supplemental').is(":checked");
+            var ajaxUrl = "/ManageGrades?handler=Ajax&grade="
+                + encodeURIComponent(grade)
+                + "&studentId="
+                + encodeURIComponent(studentId)
+                + "&comment="
+                + encodeURIComponent(comment)
+                + "&courseId="
+                + encodeURIComponent(courseId)
+                + "&isSupplemental="
+                + encodeURIComponent(isSupplemental);
+            console.log(studentId);
+            if (confirm("Do you want to submit this change?")) {
+
+                $.ajax({
+                    type: "GET",
+                    url: ajaxUrl,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        if (response == true) {
+                            alert("Successfully updated the grade.");
+                        } else {
+                            // in case we somehow get a false from 200 OK
+                            alert("The grade couldn't be submitted.");
+                        }
+                    },
+                    error: function (response, status, error) {
+                        alert(response.responseJSON.error);
+                    }
+                });
+            }
+            return false;
+        }
+
+        activateComment = function (entry) {
+            var entryElem = $(entry);
+            // valid number?
+            if (!isNaN(parseInt(entryElem.val()))) {
+                $("#" + entryElem.attr("form")).removeClass("hidden");
+            }
+        }
+
+        activateCommentCheck = function (entry) {
+            var entryElem = $(entry);
+            $("#" + entryElem.attr("form")).removeClass("hidden");
+        }
+    </script>
+}
