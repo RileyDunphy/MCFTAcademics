@@ -100,18 +100,32 @@
             var comment = $(formObj).find('.commentField').val();
             var courseId = $(formObj).find('.courseField').val();
             var studentId = $(formObj).find('.studentId').val();
-            var isSupplemental = $(formObj).parent().parent().find('.supplemental').val() == "on" ? "true" : "false";
+            var isSupplemental = $(formObj).parent().parent().find('.supplemental').is(":checked");
+            var ajaxUrl = "/ManageGrades?handler=Ajax&grade="
+                + encodeURIComponent(grade)
+                + "&studentId="
+                + encodeURIComponent(studentId)
+                + "&comment="
+                + encodeURIComponent(comment)
+                + "&courseId="
+                + encodeURIComponent(courseId)
+                + "&isSupplemental="
+                + encodeURIComponent(isSupplemental);
             console.log(studentId);
             if (confirm("Do you want to submit this change?")) {
 
                 $.ajax({
                     type: "GET",
-                    url: "/ManageGrades?handler=Ajax&grade=" + grade + "&studentId=" + studentId + "&comment=" + comment + "&courseId=" + courseId + "&isSupplemental=" + isSupplemental,
+                    url: ajaxUrl,
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",
                     success: function (response) {
-                        alert(response);
-
+                        if (response == true) {
+                            alert("Successfully updated the grade.");
+                        } else {
+                            // in case we somehow get a false from 200 OK
+                            alert("The grade couldn't be submitted.");
+                        }
                     },
                     error: function (response, status, error) {
                         alert(response.responseJSON.error);
