@@ -16,27 +16,30 @@
             <th scope="col">Course</th>
             <th scope="col">Grade</th>
             <th scope="col">Toggle Lock</th>
+            <th scope="col">Unlock Until</th>
         </tr>
     </thead>
     <tbody>
         @foreach (Grade g in Grade.GetAllGrades())
         {
             Student s = Student.GetStudent(g.StudentId);
-            <tr>
-                <th scope="row">@g.StudentId</th>
-                <td>@s.FirstName @s.LastName</td>
-                <td>@g.Subject.Program</td>
-                <td>@g.Subject.Name</td>
-                <td>@g.GradeAssigned</td>
-                @if (!g.Locked)
-                {
-                    <td><button type="button" id="@g.StudentId+@g.Subject.Id" class="unlocked btn btn-primary">Unlocked</button></td>
-                }
-                else if (g.Locked)
-                {
-                    <td><button type="button" id="@g.StudentId+@g.Subject.Id" class="locked btn btn-danger">Locked</button></td>
-                }
-            </tr>
+        <tr>
+            <th scope="row">@g.StudentId</th>
+            <td>@s.FirstName @s.LastName</td>
+            <td>@g.Subject.Program</td>
+            <td>@g.Subject.Name</td>
+            <td>@g.GradeAssigned</td>
+            @if (!g.Locked)
+            {
+                <td><button type="button" id="@g.StudentId+@g.Subject.Id" class="unlocked btn btn-primary">Unlocked</button></td>
+                <td></td>
+            }
+            else if (g.Locked)
+            {
+                <td><button type="button" id="@g.StudentId+@g.Subject.Id" class="locked btn btn-danger">Locked</button></td>
+                <td><input class="form-control" name="unlockUntil" type="date" min="@(DateTime.Now)" max="2090-01-01" required id="txtUnlockUntil"></td>
+            }
+        </tr>
         }
     </tbody>
 </table>
