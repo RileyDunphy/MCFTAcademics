@@ -23,23 +23,37 @@
         @foreach (Grade g in Grade.GetAllGrades())
         {
             Student s = Student.GetStudent(g.StudentId);
-        <tr>
-            <th scope="row">@g.StudentId</th>
-            <td>@s.FirstName @s.LastName</td>
-            <td>@g.Subject.Program</td>
-            <td>@g.Subject.Name</td>
-            <td>@g.GradeAssigned</td>
-            @if (!g.Locked)
-            {
-                <td><button type="button" id="@g.StudentId+@g.Subject.Id" class="unlocked btn btn-primary">Unlocked</button></td>
-                <td></td>
-            }
-            else if (g.Locked)
-            {
-                <td><button type="button" id="@g.StudentId+@g.Subject.Id" class="locked btn btn-danger">Locked</button></td>
-                <td><input class="form-control" name="unlockUntil" type="date" min="@(DateTime.Now)" max="2090-01-01" required id="txtUnlockUntil"></td>
-            }
-        </tr>
+            <tr>
+                <th scope="row">@g.StudentId</th>
+                <td>@s.FirstName @s.LastName</td>
+                <td>@g.Subject.Program</td>
+                <td>@g.Subject.Name</td>
+                <td>@g.GradeAssigned</td>
+                @if (!g.Locked)
+                {
+                    @if (g.UnlockedUntil < DateTime.Now)
+                    {
+                        Grade.ToggleGradeLock(s.Id, g.Subject.Id, null);
+                        <td><button type="button" id="@g.StudentId+@g.Subject.Id" class="locked btn btn-danger">Locked</button></td>
+                        <td><input class="form-control unlockedUntil" name="unlockUntil" type="date" min="@(DateTime.Now)" max="2090-01-01" required id="txtUnlockUntil"></td>
+                    }
+                    else
+                    {
+                        <td><button type="button" id="@g.StudentId+@g.Subject.Id" class="unlocked btn btn-primary">Unlocked</button></td>
+                        <td>
+                        @if (g.UnlockedUntil != null)
+                        {
+                            @g.UnlockedUntil.Value.ToShortDateString()
+                        }
+                        </td>
+                    }
+                }
+                else if (g.Locked)
+                {
+                    <td><button type="button" id="@g.StudentId+@g.Subject.Id" class="locked btn btn-danger">Locked</button></td>
+                    <td><input class="form-control unlockedUntil" name="unlockUntil" type="date" min="@(DateTime.Now)" max="2090-01-01" required id="txtUnlockUntil"></td>
+                }
+            </tr>
         }
     </tbody>
 </table>
@@ -58,11 +72,12 @@
                 var row = $(this).closest("tr");
                 $.ajax({
                     type: "GET",
-                    url: "/LockGrades?handler=Ajax&studentId="+studentId+"&courseId="+courseId,
+                    url: "/LockGrades?handler=Ajax&studentId=" + studentId + "&courseId=" + courseId,
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",
                     success: function (response) {
                         row.find("button").parent().html("<button type=\"button\" class=\"locked btn btn-danger\">Locked</button>");
+                        row.find(".unlockedUntil").parent().html('<input class="form-control unlockedUntil" name="unlockUntil" type="date" min="@(DateTime.Now)" max="2090-01-01" required id="txtUnlockUntil">');
                     },
                     failure: function (response) {
                         alert(response);
@@ -71,23 +86,29 @@
             }
         });
         $("body").on("click", ".table .locked", function () {
-            if (confirm("Do you want to unlock this row?")) {
-                var id = $(this).attr("id");
-                var studentId = id.split('+')[0];
-                var courseId = id.split('+')[1];
-                var row = $(this).closest("tr");
-                $.ajax({
-                    type: "GET",
-                    url: "/LockGrades?handler=Ajax&studentId="+studentId+"&courseId="+courseId,
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json",
-                    success: function (response) {
-                        row.find("button").parent().html("<button type=\"button\" class=\"locked btn btn-primary\">Unlocked</button>");
-                    },
-                    failure: function (response) {
-                        alert(response);
-                    }
-                });
+            var id = $(this).attr("id");
+            var studentId = id.split('+')[0];
+            var courseId = id.split('+')[1];
+            var row = $(this).closest("tr");
+            var unlockedUntil = row.find('.unlockedUntil').val();
+            if (unlockedUntil == "") {
+                alert("Please enter a date");
+            }
+            else {
+                if (confirm("Do you want to unlock this row?")) {
+                    $.ajax({
+                        type: "GET",
+                        url: "/LockGrades?handler=Ajax&studentId=" + studentId + "&courseId=" + courseId + "&unlockedUntil=" + unlockedUntil,
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (response) {
+                            row.find("button").parent().html("<button type=\"button\" class=\"locked btn btn-primary\">Unlocked</button>");
+                        },
+                        failure: function (response) {
+                            alert(response);
+                        }
+                    });
+                }
             }
         });
     </script>

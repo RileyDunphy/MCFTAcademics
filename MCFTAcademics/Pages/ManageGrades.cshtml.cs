@@ -119,7 +119,7 @@ namespace MCFTAcademics
             //almost empty course object
             Course c=new Course(courseId,"",1,"",1,1,1,1,12,"",false);
 
-            Grade update = new Grade(studentId,grade,DateTime.Now,false,0m,isSupplemental,c,comment);
+            Grade update = new Grade(studentId,grade,DateTime.Now,false,0m,isSupplemental,c,comment,null);
 
             bool response=Grade.UpdateGrade(update, studentId);
 
