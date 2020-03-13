@@ -98,5 +98,10 @@ namespace MCFTAcademics.BL
         {
             return GradeDAL.GetSummerPracticum(s);
         }
+
+        public static bool UpdateFormula(string formula)
+        {
+            return GradeDAL.UpdateFormula(formula);
+        }
     }
 }

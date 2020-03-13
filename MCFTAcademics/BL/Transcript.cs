@@ -214,7 +214,7 @@ namespace MCFTAcademics.BL
             }
             y += 10;
             gfx.DrawString("*Indicates grade achieved through supplemental exam", font, XBrushes.Black, new XRect(15, y, page1.Width, page1.Height), XStringFormats.TopLeft);
-            decimal average = this.student.GetAverageForSemester(semester);
+            decimal average = this.student.GetAverage(semester);
             gfx.DrawString("Semester Average: " + average, font, XBrushes.Black, new XRect(330, y, page1.Width, page1.Height), XStringFormats.TopLeft);
             string honors = average >= 80 ? "Yes" : "No";
             y += 10;
