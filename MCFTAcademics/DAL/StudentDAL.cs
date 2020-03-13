@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Linq;
 
 namespace MCFTAcademics.DAL
 {
@@ -94,7 +95,7 @@ namespace MCFTAcademics.DAL
             using (var connection = DbConn.GetConnection())
             {
                 connection.Open();
-                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.[SelectStudentsByStudentId]", connection);
+                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.[SelectStudentsByStudentCode]", connection);
                 selectCommand.CommandType = System.Data.CommandType.StoredProcedure;
                 selectCommand.Parameters.AddWithValue("@studentCode", code);
                 //execute the sql statement
@@ -130,7 +131,7 @@ namespace MCFTAcademics.DAL
             return null;
         }
 
-        public static string GetClassRank(Student s)
+        public static string GetClassRankOLD(Student s)//Old way that doesn't use formula building method
         {
             SortedList<int, decimal> ranks = new SortedList<int, decimal>();
             using (var connection = DbConn.GetConnection())
@@ -149,6 +150,30 @@ namespace MCFTAcademics.DAL
                 }
                 int rank = ranks.IndexOfKey(s.Id) + 1;
                 int total = ranks.Count;
+                return rank + " of " + total;
+            }
+            return null;
+        }
+        public static string GetClassRank(Student s)
+        {
+            SortedList<int, decimal> students = new SortedList<int, decimal>();
+            using (var connection = DbConn.GetConnection())
+            {
+                connection.Open();
+                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectAllStudentsByClass", connection);
+                selectCommand.CommandType = System.Data.CommandType.StoredProcedure;
+                selectCommand.Parameters.AddWithValue("@program", s.Program);
+                selectCommand.Parameters.AddWithValue("@graduationDate", s.GraduationDate);
+                //execute the sql statement
+                SqlDataReader reader = selectCommand.ExecuteReader();
+                //loop through the resultset
+                while (reader.Read())
+                {
+                    Student student = StudentFromRow(reader);
+                    students.Add(student.Id, student.GetAverage());
+                }
+                int rank = students.IndexOfKey(s.Id) + 1;
+                int total = students.Count;
                 return rank + " of " + total;
             }
             return null;

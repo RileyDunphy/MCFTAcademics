@@ -50,6 +50,11 @@ namespace MCFTAcademics.BL
             return GradeDAL.GetGradesForStudentInCourse(course, this);
         }
 
+        public static Student GetStudent(string code)
+        {
+            return StudentDAL.GetStudent(code);
+        }
+
         public static Student GetStudent(int id)
         {
             return StudentDAL.GetStudent(id);
@@ -111,6 +116,15 @@ namespace MCFTAcademics.BL
         public IEnumerable<Grade> GetGradesForSemester(int semester)
         {
             return GradeDAL.GetGradesForStudentSemester(this,semester);
+        }
+
+        public decimal GetAverageForSemester(int semester)//Probably use the formula building way instead of this now
+        {
+            return GradeDAL.GetAverageForStudentSemester(this, semester);
+        }
+        public decimal GetAverage(int semester = -1)
+        {//Calls the method that uses the formula
+            return GradeDAL.GetAverageForStudent(this,semester);
         }
     }
 }
