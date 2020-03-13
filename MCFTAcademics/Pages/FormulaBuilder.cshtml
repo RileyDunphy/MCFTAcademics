@@ -3,6 +3,10 @@
 @{
     ViewData["Title"] = "Build the Grade Average Formula";
 }
+@if (!string.IsNullOrEmpty(Model.alertMessage))
+{
+<script>alert("@Model.alertMessage");</script>
+}
 
 <h2>Build the Grade Average Formula</h2>
 <p><b>Please refer to the course grade as "a", the course credit as "b", and the total sum of course credit hours as "c"</b></p>
