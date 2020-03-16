@@ -41,11 +41,13 @@
                     {
                         <td><button type="button" id="@g.StudentId+@g.Subject.Id" class="unlocked btn btn-primary">Unlocked</button></td>
                         <td>
-                        @if (g.UnlockedUntil != null)
+                            <p class="unlockedUntil">
+                                @if (g.UnlockedUntil != null)
                         {
-                            @g.UnlockedUntil.Value.ToShortDateString()
+                                @g.UnlockedUntil.Value.ToShortDateString()
                         }
-                        </td>
+                                </p>
+                            </td>
                     }
                 }
                 else if (g.Locked)
@@ -76,7 +78,7 @@
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",
                     success: function (response) {
-                        row.find("button").parent().html("<button type=\"button\" class=\"locked btn btn-danger\">Locked</button>");
+                        row.find("button").parent().html("<button type=\"button\" id=\""+id+"\" class=\"locked btn btn-danger\">Locked</button>");
                         row.find(".unlockedUntil").parent().html('<input class="form-control unlockedUntil" name="unlockUntil" type="date" min="@(DateTime.Now)" max="2090-01-01" required id="txtUnlockUntil">');
                     },
                     failure: function (response) {
@@ -102,7 +104,7 @@
                         contentType: "application/json; charset=utf-8",
                         dataType: "json",
                         success: function (response) {
-                            row.find("button").parent().html("<button type=\"button\" class=\"locked btn btn-primary\">Unlocked</button>");
+                            row.find("button").parent().html("<button type=\"button\" id=\""+id+"\" class=\"unlocked btn btn-primary\">Unlocked</button>");
                         },
                         failure: function (response) {
                             alert(response);
