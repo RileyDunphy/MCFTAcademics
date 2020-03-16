@@ -17,6 +17,7 @@ using MCFTAcademics.BL;
 using System.IO;
 using Rotativa;
 using System.Data;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MCFTAcademics
 {
@@ -27,6 +28,7 @@ namespace MCFTAcademics
         public Dictionary<int, Student> StudentMapping { get; set; }
         public bool ShowStudentIdForm { get; set; }
 
+        [Authorize(Roles = "Admin,Instructor")]
         public IActionResult OnGet()
         {
             ViewData["Title"] = "Grades";
@@ -34,6 +36,7 @@ namespace MCFTAcademics
             return Page();
         }
 
+        [Authorize(Roles = "Admin,Instructor")]
         public IActionResult OnGetByStudent()
         {
             ViewData["Title"] = "Grades by Student";
@@ -41,6 +44,7 @@ namespace MCFTAcademics
             return Page();
         }
 
+        [Authorize(Roles = "Admin")]
         public IActionResult OnPostByStudent(string studentCode)
         {
             ViewData["Title"] = "Grades by Student";
@@ -74,6 +78,7 @@ namespace MCFTAcademics
             return Page();
         }
 
+        [Authorize(Roles = "Admin,Instructor")]
         public IActionResult OnGetByCurrentInstructor()
         {
             ViewData["Title"] = "Grades by Courses You Teach";
@@ -102,6 +107,7 @@ namespace MCFTAcademics
             return Page();
         }
 
+        [Authorize(Roles = "Admin,Instructor")]
         public ActionResult OnGetAjax(int grade, int studentId, string comment, int courseId, bool isSupplemental)
         {
             if (grade > 100)
@@ -114,12 +120,32 @@ namespace MCFTAcademics
                 {
                     StatusCode = 400
                 };
-            // XXX: Check for locked grade and if user is allowed to modify
 
-            //almost empty course object
-            Course c=new Course(courseId,"",1,"",1,1,1,1,12,"",false);
+            var course = Course.GetCourseById(courseId);
+            // should supporting staff be allowed to change grades?
+            if (!(User.IsInRole("Admin") || course.GetLeadStaff().UserId == User.IdAsInt()))
+                return new JsonResult(new { Error = "You aren't an admin or lead instructor for this course." })
+                {
+                    StatusCode = 400
+                };
+            // now check if the grade is locked (we should have a more direct way to get a specific grade, this is likely slow)
+            var oldGrade = Grade.GetAllGrades()
+                .Where(x => x.StudentId == studentId
+                    && x.Subject.Id == courseId
+                    /* XXX: More criteria? */)
+                .FirstOrDefault();
+            if (oldGrade == null)
+                return new JsonResult(new { Error = "The grade doesn't exist." })
+                {
+                    StatusCode = 400
+                };
+            if (oldGrade.Locked)
+                return new JsonResult(new { Error = "The grade is locked." })
+                {
+                    StatusCode = 400
+                };
 
-            Grade update = new Grade(studentId,grade,DateTime.Now,false,0m,isSupplemental,c,comment,null);
+            Grade update = new Grade(studentId,grade,DateTime.Now,false,0m,isSupplemental,course,comment,null);
 
             bool response=Grade.UpdateGrade(update, studentId);
 

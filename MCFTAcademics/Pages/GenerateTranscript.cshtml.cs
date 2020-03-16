@@ -16,9 +16,12 @@ using PdfSharpCore.Pdf;
 using MCFTAcademics.BL;
 using System.IO;
 using Rotativa;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MCFTAcademics
 {
+    // Subject matter expert (XXX: what role?)
+    [Authorize(Roles = "Admin")]
     public class GenerateTranscript : PageModel
     {
 
