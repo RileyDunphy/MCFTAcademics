@@ -20,6 +20,7 @@ namespace MCFTAcademics.DAL
             var hoursAttended = (decimal)reader["hoursAttended"];
             var grade = (decimal)reader["grade"];
             var comment = "";
+            var unlockedUntil = reader["unlockedUntil"]!= DBNull.Value ? (DateTime?)reader["unlockedUntil"] : null;
             if (reader["comment"] != DBNull.Value)
             {
                 comment = (string)reader["comment"];
@@ -29,7 +30,7 @@ namespace MCFTAcademics.DAL
                 course = CourseDAL.GetCourseById((int)reader["courseId"]);
             }
             // XXX: Preserve the staff stuff too?
-            return new Grade(studentId,grade, given, locked, hoursAttended, supplemental, course,comment);
+            return new Grade(studentId,grade, given, locked, hoursAttended, supplemental, course,comment,unlockedUntil);
         }
 
         public static IEnumerable<Grade> GetAllGrades()
@@ -108,9 +109,13 @@ namespace MCFTAcademics.DAL
             return grade;//return the grade
         }
 
-        public static bool ToggleGradeLock(int studentId, int courseId)
+        public static bool ToggleGradeLock(int studentId, int courseId, DateTime? unlockedUntil)
         {
             SqlConnection conn = DbConn.GetConnection();
+            if(unlockedUntil == null)
+            {
+                unlockedUntil = DateTime.Now;
+            }
             bool result;
             try
             {
@@ -119,6 +124,7 @@ namespace MCFTAcademics.DAL
                 updateCommand.CommandType = System.Data.CommandType.StoredProcedure;
                 updateCommand.Parameters.AddWithValue("@studentId", studentId);
                 updateCommand.Parameters.AddWithValue("@courseId", courseId);
+                updateCommand.Parameters.AddWithValue("@unlockUntil", unlockedUntil);
                 int rows = updateCommand.ExecuteNonQuery();
                 if (rows > 0)
                 {

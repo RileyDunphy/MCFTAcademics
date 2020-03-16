@@ -14,9 +14,9 @@ namespace MCFTAcademics
         {
 
         }
-        public ActionResult OnGetAjax(int studentId, int courseId)
+        public ActionResult OnGetAjax(int studentId, int courseId, DateTime? unlockedUntil = null)
         {
-            bool result = Grade.ToggleGradeLock(studentId, courseId);
+            bool result = Grade.ToggleGradeLock(studentId, courseId,unlockedUntil);
             return new JsonResult(result);
         }
     }
