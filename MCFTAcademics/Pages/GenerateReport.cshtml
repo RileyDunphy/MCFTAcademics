@@ -47,22 +47,18 @@
 <table id="table_id" class="display">
     <thead>
         <tr>
-            <th>Column 1</th>
-            <th>Column 2</th>
+            
         </tr>
     </thead>
     <tbody>
         <tr>
-            <td>Row 1 Data 1</td>
-            <td>Row 1 Data 2</td>
+            
         </tr>
         <tr>
-            <td>Row 2 Data 1</td>
-            <td>Row 2 Data 2</td>
+            
         </tr>
     </tbody>
 </table>
-
 
 @section scripts{
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
@@ -84,59 +80,7 @@
     <script type="text/javascript">
 
         $(document).ready(function () {
-            
-
-        });
-
-
-        $("body").on("click", ".table .generate", function () {
-            if (confirm("Do you want to generate this Report?")) {
-                //Get all the attributes you will need to customize the transcript
-                var semester = document.getElementById("selSemester").value;
-                var program = document.getElementById("selProgram").value;
-                var year = document.getElementById("selYear").value;
-
-                //Pass them in the handler method via AJAX that will generate and save our transcript on the server
-                $.ajax({
-                    type: "GET",
-                    url: "/GenerateReport?handler=Ajax&program=" + program + "&semester=" + semester + "&year=" + year,
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json",
-                    success: function (response) {
-                        //Direct link to the transcript generated
-                        var len = response.length;
-                        var counter = 0;
-                        var tableHtml = "<thead><tr><th>StudentId</th><th>First Name</th><th>Last Name</th><th>Course ID</th><th>Course Code</th><th>name</th><th>Grade</th></tr><tbody>";
-                        while (counter < len) {
-                         tableHtml += " <tr>"
-                            tableHtml += " <td>"
-                                tableHtml += response[counter]["studentId"];
-                            tableHtml += " </td>"
-                            tableHtml += " <td>"
-                                tableHtml += response[counter]["firstName"];
-                            tableHtml += " </td>"
-                            tableHtml += " <td>"
-                                tableHtml += response[counter]["lastName"];
-                            tableHtml += " </td>"
-                            tableHtml += " <td>"
-                                tableHtml += response[counter]["courseId"];
-                            tableHtml += " </td>"
-                            tableHtml += " <td>"
-                                tableHtml += response[counter]["courseCode"];
-                            tableHtml += " </td>"
-                            tableHtml += " <td>"
-                                tableHtml += response[counter]["name"];
-                            tableHtml += " </td>"
-                            tableHtml += " <td>"
-                                tableHtml += response[counter]["grade"];
-                            tableHtml+=" </td>"
-                         tableHtml+=" </tr>"
-                            counter++;
-                        }
-                        tableHtml += " </tbody>"
-                        document.getElementById('table_id').innerHTML = tableHtml;
-
-                        $('#table_id').DataTable({
+                                    $('#table_id').DataTable({
                             "paging": true,
                             "ordering": true,
                             "bSort": true,
@@ -155,16 +99,136 @@
                                 }
                             ]
                         });
+        });
 
-                        //var resp = JSON.stringify(response);
-                        //console.log(resp);
+        $("body").on("click", ".table .generate", function () {
+            if (confirm("Do you want to generate this Report?")) {
 
-                        //$("generate").parent().html("<a href=\"../downloadtranscript/" + response + "\">View Report</a>");
+                //Get all the attributes you will need to customize the transcript
+                var semester = document.getElementById("selSemester").value;
+                var program = document.getElementById("selProgram").value;
+                var year = document.getElementById("selYear").value;
+
+                //Pass them in the handler method via AJAX that will generate and save our transcript on the server
+                $.ajax({
+                    type: "GET",
+                    url: "/GenerateReport?handler=Ajax&program=" + program + "&semester=" + semester + "&year=" + year,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        //begin table inner HTML
+                        document.getElementById('table_id').innerHTML = "";
+                        var tableHtml = "<thead><tr><th>Student Id</th><th>First Name</th><th>Last Name</th>";
+
+                        var len = response.length;
+                        console.log(response);
+                        var counter = 0;
+                        //console.log(response["columns"]);
+                        //console.log(response["grades"][5]["subject"]);
+                        var courseLength = response["columns"].length;
+                        var courses = [];
+                        var students = [];
+                        var grade = [];
+
+                        //this is the dataset portion of the table
+                        var studentRecordHtml = "<tbody>";
+
+                        //console.log(response["grades"]);
+
+                        while (counter < courseLength) {
+
+                            //console.log(courses);
+                            //console.log(courseCode);
+                            var courseCode = (response["columns"][counter]["courseCode"]);
+                            //console.log(courseCode);
+                            if (!courses.includes(courseCode)) {
+                                courses.push(courseCode);
+                                tableHtml += "<th>" + courseCode + "</th>";
+                            }
+
+                            //console.log(response["columns"][counter]);
+                            //if student has not been added to student array
+                            if (!students.includes(response["columns"][counter]["studentId"])) {
+                                students.push(response["columns"][counter]["studentId"]);
+                                //console.log(response["columns"][counter]["studentId"]);
+                                console.log(response["columns"][counter]["firstName"]);
+                                //console.log(response["columns"][counter]["lastName"]);
+
+
+                            }
+                            counter++
+                        }
+
+
+
+                        counter = 0;
+                        var studentGrades = courses.slice();
+
+                        console.log("COURSES:" + courses);
+
+
+
+
+                        while (counter < courseLength) {
+                            var index = 0;
+
+
+
+                            var g = -1;
+
+                            while (index < courses.length) {
+                                var holder = (response["columns"][counter]["courseCode"]);
+
+                                console.log()
+                                if (courses[index] === (response["columns"][counter]["courseCode"])) {
+                                    console.log(response["columns"][counter]["firstName"] + " : " + response["columns"][counter]["courseCode"] + " : " + response["columns"][counter]["grade"]);
+                                    studentGrades.splice(studentGrades.indexOf(response["columns"][counter]["courseCode"]), 1);
+
+                                    g = response["columns"][counter]["grade"];
+                                }
+                                index++;
+                            }
+                            grade.push(g);
+                            console.log(studentGrades);
+                            console.log(grade);
+                            if (studentGrades.length == 0) {
+                                console.log("undef");
+                            } else {
+                                console.log("this is the array!" + studentGrades);
+                            }
+                            counter++;
+                        }
+                        studentRecordHtml += "</tbody>";
+
+                        counter = 0;
+                        while (counter < len) {
+
+                            counter++;
+                        }
+                        tableHtml += studentRecordHtml;
+
+                        console.log(tableHtml);
+                        document.getElementById('table_id').innerHTML = tableHtml;
+
+
+
                     },
                     failure: function (response) {
                         alert(response);
                     }
                 });
+
+                var returnStudentGradeList = function (courses, columns) {
+                    studentGrades = [];
+                    for (var i; i < columns.length; i++) {
+                        var studentID = response["columns"][counter]["studentId"];
+                        var courseCode = response["columns"][counter]["courseCode"];
+                        var grade = response["columns"][counter]["grade"];
+
+                        
+                    }
+                    
+                }
             }
         });
     </script>

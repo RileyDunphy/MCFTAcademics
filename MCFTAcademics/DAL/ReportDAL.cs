@@ -11,11 +11,11 @@ namespace MCFTAcademics.DAL
 {
     public static class ReportDAL
     {
-        public static List<Report> SelectReportData(string program, int semester)
+        public static List<ReportColumn> SelectReportData(string program, int semester)
         {
             SqlConnection conn = DbConn.GetConnection();
             
-            List<Report> reportData = new List<Report>();
+            List<ReportColumn> reportData = new List<ReportColumn>();
 
             try
             {
@@ -26,13 +26,9 @@ namespace MCFTAcademics.DAL
                 selectCommand.Parameters.AddWithValue("@semester", semester);
                 SqlDataReader reader = selectCommand.ExecuteReader();
 
-               
-               
-
                 //loop through the resultset
                 while (reader.Read())
                 {
-                    
                     var studentId = (int)reader["studentId"];
                     var firstName = (string)reader["firstName"];
                     var lastName = (string)reader["lastName"];
@@ -45,11 +41,9 @@ namespace MCFTAcademics.DAL
                     var startDate = (DateTime)reader["startDate"];
                     var endDate = (DateTime)reader["endDate"];
 
-                    Report reportRecord=new Report(studentId,firstName,lastName,grade,supplemental,courseId,name,prog,courseCode,startDate,endDate);
+                    ReportColumn reportRecord=new ReportColumn(studentId,firstName,lastName,grade,supplemental,courseId,name,prog,courseCode,startDate,endDate);
 
                     reportData.Add(reportRecord);
-
-
 
                 }
                 return reportData;

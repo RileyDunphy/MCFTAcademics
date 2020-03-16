@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace MCFTAcademics.BL
 {/// <summary>
-/// This class will be used to generate academic reports for the college.
+/// This class will be used to hold data for generating academic reports for the college.
 /// </summary>
-    public class Report
+    public class ReportColumn : IComparable<ReportColumn>
     {
         
         private int studentId;
@@ -18,10 +19,11 @@ namespace MCFTAcademics.BL
         private string courseCode;
         private DateTime startDate;
         private DateTime endDate;
+        
+        
 
-        public Report(int studentId, string firstName, string lastName, decimal grade, bool supplemental, int courseId, string name, string program, string courseCode, DateTime startDate, DateTime endDate)
+        public ReportColumn(int studentId, string firstName, string lastName, decimal grade, bool supplemental, int courseId, string name, string program, string courseCode, DateTime startDate, DateTime endDate)
         {
-            
             this.studentId = studentId;
             this.firstName = firstName;
             this.lastName = lastName;
@@ -46,5 +48,10 @@ namespace MCFTAcademics.BL
         public string CourseCode { get => courseCode;  }
         public DateTime StartDate { get => startDate; }
         public DateTime EndDate { get => endDate; }
+
+        public int CompareTo(ReportColumn obj)
+        {
+            return studentId.CompareTo(obj.StudentId);
+        }
     }
 }
