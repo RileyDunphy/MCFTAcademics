@@ -45,19 +45,19 @@
 </table>
 
 <table id="table_id" class="display">
-    <thead>
+    @*<thead>
         <tr>
-            
+            <td>testHeader</td>
         </tr>
     </thead>
     <tbody>
         <tr>
-            
+            <td>test1</td>
         </tr>
         <tr>
-            
+            <td>test2</td>
         </tr>
-    </tbody>
+    </tbody>*@
 </table>
 
 @section scripts{
@@ -80,26 +80,38 @@
     <script type="text/javascript">
 
         $(document).ready(function () {
-                                    $('#table_id').DataTable({
-                            "paging": true,
-                            "ordering": true,
-                            "bSort": true,
-                            "info": true,
-                            "destroy": true,
-                            dom: 'Bfrtip',
-                            buttons: [
-                                {
-                                    extend: 'csvHtml5',
-                                    title: 'Report'
-                                },
-                                {
-                                    extend: 'pdfHtml5',
-                                    title: 'Report',
-                                    download: 'open'
-                                }
-                            ]
-                        });
+                        //            $('#table_id').DataTable({
+                        //    "paging": true,
+                        //    "ordering": true,
+                        //    "bSort": true,
+                        //    "info": true,
+                        //    "destroy": true,
+                        //    dom: 'Bfrtip',
+                        //    buttons: [
+                        //        {
+                        //            extend: 'csvHtml5',
+                        //            title: 'Report'
+                        //        },
+                        //        {
+                        //            extend: 'pdfHtml5',
+                        //            title: 'Report',
+                        //            download: 'open'
+                        //        }
+                        //    ]
+                        //});
         });
+        // https://stackoverflow.com/questions/966225/how-can-i-create-a-two-dimensional-array-in-javascript
+            function createArray(length) {
+                var arr = new Array(length || 0),
+                    i = length;
+
+                if (arguments.length > 1) {
+                    var args = Array.prototype.slice.call(arguments, 1);
+                    while(i--) arr[length-1 - i] = createArray.apply(this, args);
+                }
+
+                return arr;
+            }
 
         $("body").on("click", ".table .generate", function () {
             if (confirm("Do you want to generate this Report?")) {
@@ -120,14 +132,16 @@
                         document.getElementById('table_id').innerHTML = "";
                         var tableHtml = "<thead><tr><th>Student Id</th><th>First Name</th><th>Last Name</th>";
 
-                        var len = response.length;
+                        
                         console.log(response);
                         var counter = 0;
                         //console.log(response["columns"]);
                         //console.log(response["grades"][5]["subject"]);
                         var courseLength = response["columns"].length;
+                        //this lists 
                         var courses = [];
                         var students = [];
+                        var studentDetails = [];
                         var grade = [];
 
                         //this is the dataset portion of the table
@@ -145,46 +159,55 @@
                                 courses.push(courseCode);
                                 tableHtml += "<th>" + courseCode + "</th>";
                             }
-
-                            //console.log(response["columns"][counter]);
+                            
+                            
                             //if student has not been added to student array
                             if (!students.includes(response["columns"][counter]["studentId"])) {
-                                students.push(response["columns"][counter]["studentId"]);
-                                //console.log(response["columns"][counter]["studentId"]);
+                                var id = response["columns"][counter]["studentId"];
+                                var fname = response["columns"][counter]["firstName"];
+                                var lname = response["columns"][counter]["lastName"];
+
+                                students.push(id);
+
+                                var studentDetailRow = [id, fname, lname];
+                                studentDetails.push(studentDetailRow);
                                 console.log(response["columns"][counter]["firstName"]);
-                                //console.log(response["columns"][counter]["lastName"]);
-
-
                             }
                             counter++
                         }
-
-
-
+                        tableHtml += "</tr></thead>";
                         counter = 0;
                         var studentGrades = courses.slice();
 
                         console.log("COURSES:" + courses);
+                        console.log("STUDENTS:" + students);
 
+                        var gradeArray = createArray(students.length, courses.length);
 
+                        gradeArray.forEach(function (item, index) { item.fill(0); });
+                        
 
-
+                        console.log("length: " + gradeArray[0].length);
+                        console.log("GRADE:" + gradeArray);
                         while (counter < courseLength) {
                             var index = 0;
-
-
 
                             var g = -1;
 
                             while (index < courses.length) {
-                                var holder = (response["columns"][counter]["courseCode"]);
-
+                               
                                 console.log()
                                 if (courses[index] === (response["columns"][counter]["courseCode"])) {
+                                var cc = (response["columns"][counter]["courseCode"]);
+                                var st= (response["columns"][counter]["studentId"]);
+                                    console.log("index in cc: " + courses.indexOf(cc));
+                                    console.log("index in st: "+students.indexOf(st));
+
                                     console.log(response["columns"][counter]["firstName"] + " : " + response["columns"][counter]["courseCode"] + " : " + response["columns"][counter]["grade"]);
                                     studentGrades.splice(studentGrades.indexOf(response["columns"][counter]["courseCode"]), 1);
 
                                     g = response["columns"][counter]["grade"];
+                                    gradeArray[students.indexOf(st)][courses.indexOf(cc)] = g;
                                 }
                                 index++;
                             }
@@ -198,19 +221,55 @@
                             }
                             counter++;
                         }
-                        studentRecordHtml += "</tbody>";
+                        
 
+                        console.log(studentDetails);
+                        console.log(gradeArray);
+                        
                         counter = 0;
-                        while (counter < len) {
+                        var len = gradeArray.length;
+                        var colsLen = gradeArray[0].length;
+                        
+                        
 
+                        while (counter < len) {
+                            var colCounter = 0;
+                            studentRecordHtml += "<tr><td>" + studentDetails[counter][0] + "</td>";
+                            studentRecordHtml += "<td>" + studentDetails[counter][1] + "</td>";
+                            studentRecordHtml += "<td>" + studentDetails[counter][2] + "</td>";
+                            while (colCounter < colsLen) {
+                                studentRecordHtml += "<td>" + gradeArray[counter][colCounter] + "</td>";
+                                colCounter++;
+                            }
+                            studentRecordHtml += "</tr>";
                             counter++;
                         }
+                        studentRecordHtml += "</tbody>";
                         tableHtml += studentRecordHtml;
 
                         console.log(tableHtml);
-                        document.getElementById('table_id').innerHTML = tableHtml;
-
-
+                        document.getElementById('table_id').innerHTML = "";
+                        
+                        $('#table_id').html(tableHtml);
+                        $('#table_id').DataTable({
+                            "paging": true,
+                            "ordering": true,
+                            "bSort": true,
+                            "info": true,
+                            "destroy": true,
+                            dom: 'Bfrtip',
+                            buttons: [
+                                {
+                                    extend: 'csvHtml5',
+                                    title: 'Report'
+                                },
+                                {
+                                    extend: 'pdfHtml5',
+                                    title: 'Report',
+                                    download: 'open'
+                                }
+                            ]
+                        });
 
                     },
                     failure: function (response) {
