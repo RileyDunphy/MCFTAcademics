@@ -206,8 +206,7 @@ namespace MCFTAcademics
 
         void RefreshShownCourses()
         {
-            // XXX: Check if the user is allowed to do this.
-            if (ShowAllCourses)
+            if (ShowAllCourses && User.IsInRole("Admin"))
             {
                 ViewData["Title"] = "Manage courses";
                 var courses = Course.GetAllCourses();
