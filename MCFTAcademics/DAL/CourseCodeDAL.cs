@@ -115,5 +115,30 @@ namespace MCFTAcademics.DAL
             }
             return courseCodes;//return the list of coursecodes
         }
+
+        public static List<CourseCode> GetCourseCodes(SqlConnection connection, int id)
+        {
+            List<CourseCode> coursecodes = new List<CourseCode>();
+            SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectCourseCodesById", connection);
+            selectCommand.CommandType = System.Data.CommandType.StoredProcedure;
+            selectCommand.Parameters.AddWithValue("@courseId", id);
+            //execute the sql statement
+            SqlDataReader reader = selectCommand.ExecuteReader();
+            //loop through the resultset
+            while (reader.Read())
+            {
+                coursecodes.Add(CourseCodeFromRow(reader));
+            }
+            return coursecodes;
+        }
+
+        public static List<CourseCode> GetCourseCodes(int id)
+        {
+            using (var connection = DbConn.GetConnection())
+            {
+                connection.Open();
+                return GetCourseCodes(connection, id);
+            }
+        }
     }
 }
