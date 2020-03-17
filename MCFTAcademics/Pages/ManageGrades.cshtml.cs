@@ -128,12 +128,9 @@ namespace MCFTAcademics
                 {
                     StatusCode = 400
                 };
-            // now check if the grade is locked (we should have a more direct way to get a specific grade, this is likely slow)
-            var oldGrade = Grade.GetAllGrades()
-                .Where(x => x.StudentId == studentId
-                    && x.Subject.Id == courseId
-                    /* XXX: More criteria? */)
-                .FirstOrDefault();
+            // now check if the grade is locked (needs more criteria to get grade?)
+            var oldGrade = new Student(studentId, null, null, null, null, null, null)
+                .GetGradeForCourse(course);
             if (oldGrade == null)
                 return new JsonResult(new { Error = "The grade doesn't exist." })
                 {
