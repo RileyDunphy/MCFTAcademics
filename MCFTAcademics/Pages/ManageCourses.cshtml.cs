@@ -53,6 +53,7 @@ namespace MCFTAcademics
             return (oldCourse != null) && (User.UserIdMatches(oldCourse.GetLeadStaff().UserId));
         }
 
+        [Authorize(Roles = "Admin,Instructor")]
         IActionResult FailWithMessage(string errorMessage)
         {
             // everything should be blanked out here
@@ -61,6 +62,7 @@ namespace MCFTAcademics
             return Page();
         }
 
+        [Authorize(Roles = "Admin,Instructor")]
         public IActionResult OnPost()
         {
             try
@@ -204,8 +206,7 @@ namespace MCFTAcademics
 
         void RefreshShownCourses()
         {
-            // XXX: Check if the user is allowed to do this.
-            if (ShowAllCourses)
+            if (ShowAllCourses && User.IsInRole("Admin"))
             {
                 ViewData["Title"] = "Manage courses";
                 var courses = Course.GetAllCourses();
@@ -233,6 +234,7 @@ namespace MCFTAcademics
         }
 
         // consistent, but awkward since we refresh a lot
+        [Authorize(Roles = "Admin")]
         public void OnGetAll()
         {
             ShowAllCourses = true;
@@ -240,10 +242,11 @@ namespace MCFTAcademics
             Init();
         }
 
+        [Authorize(Roles = "Admin,Instructor")]
         public IActionResult OnGetSelectCourse(int id, bool forAll)
         {
             // XXX: We could consider AJAX. Refresh will handle if all needs auth.
-            ShowAllCourses = forAll;
+            ShowAllCourses = forAll && User.IsInRole("Admin");
             RefreshShownCourses();
             // XXX: We don't check if the user is allowed to use the course
             this.course = Course.GetCourseById(id);
@@ -257,7 +260,7 @@ namespace MCFTAcademics
         public IActionResult OnGetAddCourse(int id, bool forAll)
         {
             // XXX: We could consider AJAX. Refresh will handle if all needs auth.
-            ShowAllCourses = forAll;
+            ShowAllCourses = forAll && User.IsInRole("Admin");
             RefreshShownCourses();
             // XXX: We don't check if the user is allowed to use the course
             this.course = new Course();
@@ -266,6 +269,7 @@ namespace MCFTAcademics
             return Page();
         }
 
+        [Authorize(Roles = "Admin,Instructor")]
         public ActionResult OnGetAjax(string code)
         {
             if (code != null)
@@ -276,6 +280,8 @@ namespace MCFTAcademics
             }
             return new JsonResult("");
         }
+
+        [Authorize(Roles = "Admin,Instructor")]
         public ActionResult OnGetCheckPrereqCode(string code)
         {
             if (code != null)

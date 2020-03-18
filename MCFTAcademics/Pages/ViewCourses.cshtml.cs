@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -9,6 +10,7 @@ namespace MCFTAcademics
 {
     public class ViewCoursesModel : PageModel
     {
+        [Authorize(Roles = "Admin,Instructor")]
         public void OnGet()
         {
             ViewData["Title"] = "Courses you are instructing";
@@ -16,6 +18,8 @@ namespace MCFTAcademics
             ViewData["ViewData_Courses"] = courses;
         }
 
+        // See its counterpart in ViewGrades
+        [Authorize(Roles = "Admin,Instructor")]
         public void OnGetAll()
         {
             ViewData["Title"] = "All Courses";
