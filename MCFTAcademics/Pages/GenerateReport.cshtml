@@ -134,10 +134,9 @@
 
                         console.log(response);
                         var counter = 0;
-                        //console.log(response["columns"]);
-                        //console.log(response["grades"][5]["subject"]);
+                        
                         var courseLength = response["columns"].length;
-                        //this lists 
+                        
                         var courses = [];
                         var students = [];
                         var studentDetails = [];
@@ -183,8 +182,7 @@
 
                         var gradeArray = createArray(students.length, courses.length);
 
-                        gradeArray.forEach(function (item, index) { item.fill(0); });
-                        
+                        gradeArray.forEach(function (item, index) { item.fill('-'); });
 
                        // console.log("length: " + gradeArray[0].length);
                        // console.log("GRADE:" + gradeArray);
@@ -202,8 +200,11 @@
                                    
                                     //console.log(response["columns"][counter]["firstName"] + " : " + response["columns"][counter]["courseCode"] + " : " + response["columns"][counter]["grade"]);
                                     studentGrades.splice(studentGrades.indexOf(response["columns"][counter]["courseCode"]), 1);
-
-                                    g = response["columns"][counter]["grade"];
+                                    var supplemental = "";
+                                    if (response["columns"][counter]["supplemental"] === true) {
+                                        supplemental = "*";
+                                    }
+                                    g = response["columns"][counter]["grade"] + supplemental;
                                     gradeArray[students.indexOf(st)][courses.indexOf(cc)] = g;
                                 }
                                 index++;
@@ -217,13 +218,11 @@
                             }
                             counter++;
                         }
-                        
 
                         counter = 0;
                         var len = gradeArray.length;
                         var colsLen = gradeArray[0].length;
                         
-
                         while (counter < len) {
                             var colCounter = 0;
                             studentRecordHtml += "<tr><td>" + studentDetails[counter][0] + "</td>";
