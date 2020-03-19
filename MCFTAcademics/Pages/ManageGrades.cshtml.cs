@@ -62,7 +62,7 @@ namespace MCFTAcademics
                         "There was no student with that ID.");
                     return Page();
                 }
-                Grades = student.GetGrades().OrderBy(Grade => Grade);
+                Grades = student.GetGrades().OrderBy(Grade => Grade.GradeAssigned);
                 StudentMapping = new Dictionary<int, Student>
                 {
                     { student.Id, student }
@@ -129,7 +129,7 @@ namespace MCFTAcademics
                     StatusCode = 400
                 };
             // now check if the grade is locked (needs more criteria to get grade?)
-            var oldGrade = new Student(studentId, null, null, null, null, null, null)
+            var oldGrade = new Student(studentId, null, null, null, null, null, null, false)
                 .GetGradeForCourse(course);
             if (oldGrade == null)
                 return new JsonResult(new { Error = "The grade doesn't exist." })

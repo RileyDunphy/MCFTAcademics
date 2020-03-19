@@ -10,7 +10,7 @@ namespace MCFTAcademics.BL
     {
         //default constructor is needed for serialization
         public Student() { }
-        public Student(int id, string firstName, string lastName, string studentCode, string program, DateTime? admissionDate, DateTime? graduationDate)
+        public Student(int id, string firstName, string lastName, string studentCode, string program, DateTime? admissionDate, DateTime? graduationDate, bool academicAccommodation)
         {
             Id = id;
             FirstName = firstName;
@@ -19,12 +19,14 @@ namespace MCFTAcademics.BL
             Program = program;
             AdmissionDate = admissionDate;
             GraduationDate = graduationDate;
+            AcademicAccommodation = academicAccommodation;
         }
 
         /// <summary>
         /// This is the student ID used as the database primary key.
         /// </summary>
         public int Id { get; }
+        public bool AcademicAccommodation { get; }
         // XXX: This can be nullable in the DB, is that right?
         public DateTime? AdmissionDate { get; }
         public DateTime? GraduationDate { get; }

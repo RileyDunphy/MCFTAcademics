@@ -12,13 +12,14 @@ namespace MCFTAcademics.DAL
         private static Student StudentFromRow(IDataReader reader)
         {
             var id = Convert.ToInt32(reader["studentId"]);
+            var academicAccommodation = Convert.ToBoolean(reader["academicAccommodation"]);
             var firstName = reader["firstName"].ToString();
             var lastName = reader["lastName"].ToString();
             var studentCode = reader["studentCode"].ToString();
             var program = reader["program"].ToString();
             var admissionDate = reader["admissionDate"] is DateTime ? (DateTime?)reader["admissionDate"] : null;
             var graduationDate = reader["graduationDate"] is DateTime ? (DateTime?)reader["graduationDate"] : null;
-            return new Student(id, firstName, lastName, studentCode, program, admissionDate,graduationDate);
+            return new Student(id, firstName, lastName, studentCode, program, admissionDate,graduationDate, academicAccommodation);
         } 
 
         public static List<Student> GetStudentsInCourse(Course course)
