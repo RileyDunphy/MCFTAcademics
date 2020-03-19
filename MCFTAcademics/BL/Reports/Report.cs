@@ -6,7 +6,7 @@ namespace MCFTAcademics.BL.Reports
 {
     public class Report
     {
-        private List<Grade> grades= new List<Grade>();
+        //private List<Grade> grades= new List<Grade>();
         private List<ReportColumn> columns;
 
         public Report(List<ReportColumn> columns)
@@ -18,7 +18,7 @@ namespace MCFTAcademics.BL.Reports
             fillGrades();
         }
 
-        public List<Grade> Grades { get => grades; set => grades = value; }
+        //public List<Grade> Grades { get => grades; set => grades = value; }
         public List<ReportColumn> Columns { get => columns; set => columns = value; }
 
         public bool fillGrades()
@@ -29,20 +29,20 @@ namespace MCFTAcademics.BL.Reports
                 columns.Sort();
 
                 //some fields are hard coded as they are not used in reports
-                foreach (ReportColumn col in columns)
-                {
-                    int studentId = col.StudentId;
-                    decimal gradeAssigned = col.Grade;
-                    DateTime given = DateTime.Now;
-                    bool locked = false;
-                    decimal hoursAttended = -1;
-                    bool supplemental = col.Supplemental;
-                    Course subject = Course.GetCourseById(col.CourseId);
+                //foreach (ReportColumn col in columns)
+                //{
+                //    int studentId = col.StudentId;
+                //    decimal gradeAssigned = col.Grade;
+                //    DateTime given = DateTime.Now;
+                //    bool locked = false;
+                //    decimal hoursAttended = -1;
+                //    bool supplemental = col.Supplemental;
+                //    Course subject = Course.GetCourseById(col.CourseId);
 
-                    Grade Grade = new Grade(studentId, gradeAssigned, given, locked, hoursAttended, supplemental, subject);
+                //    //Grade Grade = new Grade(studentId, gradeAssigned, given, locked, hoursAttended, supplemental, subject);
 
-                    grades.Add(Grade);
-                }
+                //    //grades.Add(Grade);
+                //}
 
                 return true;
             }

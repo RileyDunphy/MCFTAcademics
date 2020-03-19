@@ -132,7 +132,6 @@
                         document.getElementById('table_id').innerHTML = "";
                         var tableHtml = "<thead><tr><th>Student Id</th><th>First Name</th><th>Last Name</th>";
 
-                        
                         console.log(response);
                         var counter = 0;
                         //console.log(response["columns"]);
@@ -179,16 +178,16 @@
                         counter = 0;
                         var studentGrades = courses.slice();
 
-                        console.log("COURSES:" + courses);
-                        console.log("STUDENTS:" + students);
+                       // console.log("COURSES:" + courses);
+                       // console.log("STUDENTS:" + students);
 
                         var gradeArray = createArray(students.length, courses.length);
 
                         gradeArray.forEach(function (item, index) { item.fill(0); });
                         
 
-                        console.log("length: " + gradeArray[0].length);
-                        console.log("GRADE:" + gradeArray);
+                       // console.log("length: " + gradeArray[0].length);
+                       // console.log("GRADE:" + gradeArray);
                         while (counter < courseLength) {
                             var index = 0;
 
@@ -200,10 +199,8 @@
                                 if (courses[index] === (response["columns"][counter]["courseCode"])) {
                                 var cc = (response["columns"][counter]["courseCode"]);
                                 var st= (response["columns"][counter]["studentId"]);
-                                    console.log("index in cc: " + courses.indexOf(cc));
-                                    console.log("index in st: "+students.indexOf(st));
-
-                                    console.log(response["columns"][counter]["firstName"] + " : " + response["columns"][counter]["courseCode"] + " : " + response["columns"][counter]["grade"]);
+                                   
+                                    //console.log(response["columns"][counter]["firstName"] + " : " + response["columns"][counter]["courseCode"] + " : " + response["columns"][counter]["grade"]);
                                     studentGrades.splice(studentGrades.indexOf(response["columns"][counter]["courseCode"]), 1);
 
                                     g = response["columns"][counter]["grade"];
@@ -212,8 +209,7 @@
                                 index++;
                             }
                             grade.push(g);
-                            console.log(studentGrades);
-                            console.log(grade);
+
                             if (studentGrades.length == 0) {
                                 console.log("undef");
                             } else {
@@ -223,13 +219,9 @@
                         }
                         
 
-                        console.log(studentDetails);
-                        console.log(gradeArray);
-                        
                         counter = 0;
                         var len = gradeArray.length;
                         var colsLen = gradeArray[0].length;
-                        
                         
 
                         while (counter < len) {
