@@ -53,5 +53,9 @@ namespace MCFTAcademics.BL
         {
             return CourseCodeDAL.SearchCourseCodes(code);
         }
+        public static bool UpdateCourseCodes(List<CourseCode> coursecodes, int id)
+        {
+            return CourseCodeDAL.UpdateCourseCodes(coursecodes, id);
+        }
     }
 }

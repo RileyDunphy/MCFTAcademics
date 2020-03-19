@@ -3,17 +3,16 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace MCFTAcademics.DAL
 {
     public class CourseCodeDAL
     {
-        static CourseCode CourseCodeFromRow(IDataReader reader)
+        private static CourseCode CourseCodeFromRow(IDataReader reader)
         {
             return new CourseCode(reader["courseCode"].ToString(), DateTime.Parse(reader["startDate"].ToString()), DateTime.Parse(reader["endDate"].ToString()), Convert.ToInt32(reader["semester"]));
         }
+
         public static CourseCode GetNewestCourseCodeById(int id)
         {
             CourseCode courseCode = null;
@@ -65,15 +64,16 @@ namespace MCFTAcademics.DAL
                 int rows = insertCommand.ExecuteNonQuery();
                 if (rows > 0)
                 {
-                    result= true;
+                    result = true;
                 }
                 else
                 {
-                    result= false;
+                    result = false;
                 }
             }
             return result;
         }
+
         public static List<CourseCode> GetAllCourseCodesById(int id)
         {
             List<CourseCode> courseCodes = new List<CourseCode>();
@@ -90,11 +90,11 @@ namespace MCFTAcademics.DAL
                 {
                     CourseCode c = CourseCodeFromRow(reader);
                     courseCodes.Add(c);
-
                 }
             }
             return courseCodes;//return the list of coursecodes
         }
+
         public static List<string> SearchCourseCodes(string code)
         {
             List<string> courseCodes = new List<string>();
@@ -110,10 +110,66 @@ namespace MCFTAcademics.DAL
                 while (reader.Read())
                 {
                     courseCodes.Add(reader["courseCode"].ToString());
-
                 }
             }
             return courseCodes;//return the list of coursecodes
+        }
+
+        public static List<CourseCode> GetCourseCodes(SqlConnection connection, int id)
+        {
+            List<CourseCode> coursecodes = new List<CourseCode>();
+            SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectCourseCodesById", connection);
+            selectCommand.CommandType = System.Data.CommandType.StoredProcedure;
+            selectCommand.Parameters.AddWithValue("@courseId", id);
+            //execute the sql statement
+            SqlDataReader reader = selectCommand.ExecuteReader();
+            //loop through the resultset
+            while (reader.Read())
+            {
+                coursecodes.Add(CourseCodeFromRow(reader));
+            }
+            return coursecodes;
+        }
+
+        public static List<CourseCode> GetCourseCodes(int id)
+        {
+            using (var connection = DbConn.GetConnection())
+            {
+                connection.Open();
+                return GetCourseCodes(connection, id);
+            }
+        }
+
+        public static bool UpdateCourseCodes(List<CourseCode> coursecodes, int id)
+        {
+            bool result = false;
+            try
+            {
+                result = CourseCodeDAL.DropCourseCodes(id);
+                if (!result) throw new Exception();
+                foreach (CourseCode coursecode in coursecodes)
+                {
+                    result = CourseCodeDAL.AddCourseCode(id, coursecode);
+                    if (!result) throw new Exception();
+                }
+            }
+            catch(Exception ex)
+            {
+                return false;
+            }
+            return true;
+        }
+        public static bool DropCourseCodes(int id)
+        {
+            using (var connection = DbConn.GetConnection())
+            {
+                connection.Open();
+                SqlCommand deleteCommand = new SqlCommand("mcftacademics.dbo.DropAllCourseCodesById", connection);
+                deleteCommand.CommandType = System.Data.CommandType.StoredProcedure;
+                deleteCommand.Parameters.AddWithValue("@id", id);
+                int rows = deleteCommand.ExecuteNonQuery();
+                return (rows > 0);
+            }
         }
     }
 }

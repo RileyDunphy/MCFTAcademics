@@ -40,6 +40,8 @@ namespace MCFTAcademics.BL
         // These were previously cached unconditionally, but led a lot of logic issues and performance issues.
         public IEnumerable<Prerequisite> GetPrerequisites() => PrerequisiteDAL.GetPrereqs(Id);
 
+        public IEnumerable<CourseCode> GetCourseCodes() => CourseCodeDAL.GetCourseCodes(Id);
+
         public Staff GetLeadStaff() => StaffDAL.GetStaffByCourseIdAndType(Id, "lead");
 
         public Staff GetSupportStaff() => StaffDAL.GetStaffByCourseIdAndType(Id, "support");
