@@ -12,56 +12,51 @@
 
 <h2>@ViewData["Title"] Course Code Editor</h2>
 <form method="post">
-    <div class="row">
-        <div class="col-lg-1">
-            <span class="label label-default"> Course Codes</span>
-        </div>
-        <div class="col-lg-4">
-            <table class="table" id="tblOne">
-                <thead>
-                    <tr>
-                        <th scope="col">Code</th>
-                        <th scope="col">Start Date</th>
-                        <th scope="col">End Date</th>
-                        <th scope="col"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if (Model.course != null)
-                    {
-                        count = 0;
+    <input class="form-control" type="hidden" name="courseId" value="@(Model.course?.Id)" id="hdnCourseId">
+    <table class="table" id="tblOne">
+        <thead>
+            <tr>
+                <th scope="col">Code</th>
+                <th scope="col">Start Date</th>
+                <th scope="col">End Date</th>
+                <th scope="col">Semester</th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.course != null)
+            {
+                count = 0;
 
-                        var coursecodes = Model.course?.GetCourseCodes()?.ToList() ?? new List<CourseCode>();
+                var coursecodes = Model.course?.GetCourseCodes()?.ToList() ?? new List<CourseCode>();
 
-                        @for (var i = 0; i < coursecodes.Count; i++)
-                        {
-                            <tr id="CourseCode-@i">
-                                <td><input class="form-control" type="text" name="txtCode+@count" value=@(coursecodes[i].Code)></td>
-                                <td><input class="form-control" name="txtStartDate+@count" type="date" min="2000-01-01" max="2090-01-01" required id="txtStartDate" value=@(coursecodes[i].From)></td>
-                                <td><input class="form-control" name="txtEndDate+@count" type="date" min="2000-01-01" max="2090-01-01" required id="txtEndDate" value=@(coursecodes[i].To)></td>
-                                <td>
-                                    <button type="button" data-id="CourseCode-@i" class="Delete btn btn-sm btn-danger d-none d-md-inline-block">
-                                        Delete
-                                    </button>
-                                </td>
-                            </tr>
-                            count++;
-                        }
-                    }
-                    <tr>
-                        <td><input class="form-control" type="text" name="txtCode+@count"></td>
-                        <td><input class="form-control" name="txtStartDate+@count" type="date" min="2000-01-01" max="2090-01-01" required id="txtStartDate"></td>
-                        <td><input class="form-control" name="txtEndDate+@count" type="date" min="2000-01-01" max="2090-01-01" required id="txtEndDate"></td>
-                        <td><button type="button" class="Add btn btn-primary">Add</button></td>
+                @for (var i = 0; i < coursecodes.Count; i++)
+                {
+                    <tr id="CourseCode-@i">
+                        <td><input class="form-control" type="text" name="txtCode+@count" required value=@(coursecodes[i].Code)></td>
+                        <td><input class="form-control" name="txtStartDate+@count" type="date" min="2000-01-01" max="2090-01-01" required id="txtStartDate" value=@(coursecodes[i].From)></td>
+                        <td><input class="form-control" name="txtEndDate+@count" type="date" min="2000-01-01" max="2090-01-01" required id="txtEndDate" value=@(coursecodes[i].To)></td>
+                        <td><input class="form-control" type="number" name="semester+@count" required value="@(coursecodes[i].Semester)" id="txtSemester"></td>
+                        <td>
+                            <button type="button" data-id="CourseCode-@i" class="Delete btn btn-sm btn-danger d-none d-md-inline-block">
+                                Delete
+                            </button>
+                        </td>
                     </tr>
-                </tbody>
-            </table>
-            <input class="form-control" type="hidden" name="count" value="@count" id="hiddenCount">
-        </div>
-        <div class="col-md-3 col-md-offset-3">
-            <button type="submit" class="btn btn-danger">Submit Changes</button>
-        </div>
-    </div>
+                    count++;
+                }
+            }
+        <tr>
+            <td><input class="form-control" type="text" name="txtCode+@count"></td>
+            <td><input class="form-control" name="txtStartDate+@count" type="date" min="2000-01-01" max="2090-01-01" id="txtStartDate"></td>
+            <td><input class="form-control" name="txtEndDate+@count" type="date" min="2000-01-01" max="2090-01-01" id="txtEndDate"></td>
+            <td><input class="form-control" type="number" name="semester+@count" id="txtSemester"></td>
+            <td><button type="button" class="Add btn btn-primary">Add</button></td>
+        </tr>
+        </tbody>
+    </table>
+    <input class="form-control" type="hidden" name="count" value="@count" id="hiddenCount">
+    <button type="submit" class="btn btn-danger">Submit Changes</button>
 </form>
 
 @section scripts{
@@ -94,7 +89,7 @@
                 //Change the button to a delete button
                 row.find("button").parent().html("<button type=\"button\" class=\"Delete btn btn-sm btn-danger d-none d-md-inline-block\">Delete</button>");
                 //Add a new blank row after
-                row.after('<tr> <td><input class="form-control" type="text" name="txtCode+' + count + '"></td> <td><input class="form-control" name="txtStartDate+' + count + '" type="date" min="2000-01-01" max="2090-01-01" required id="txtStartDate"></td><td><input class="form-control" name="txtEndDate+' + count + '" type="date" min="2000-01-01" max="2090-01-01" required id="txtEndDate"></td><td><button type="button" class="Add btn btn-primary">Add</button></td></tr>');
+                row.after('<tr> <td><input class="form-control" type="text" name="txtCode+' + count + '"></td> <td><input class="form-control" name="txtStartDate+' + count + '" type="date" min="2000-01-01" max="2090-01-01" id="txtStartDate"></td><td><input class="form-control" name="txtEndDate+' + count + '" type="date" min="2000-01-01" max="2090-01-01" id="txtEndDate"></td><td><input class="form-control" type="number" name="semester' + count + '" id="txtSemester"></td><td><button type="button" class="Add btn btn-primary">Add</button></td></tr>');
                 $('#hiddenCount').val(count);
             }
         });
