@@ -13,11 +13,12 @@ namespace MCFTAcademics
         [BindProperty]
         public Course course { get; set; }
         public string alertMessage { get; set; }
-        public void OnGet(int id)
+        public void OnGet(int id,string alertMessage="")
         {
             this.course = BL.Course.GetCourseById(id);
             ViewData["Title"] = course.Name;
             ViewData["ViewData_Course"] = course;
+            this.alertMessage = alertMessage;
         }
 
         public IActionResult OnPost()
@@ -35,8 +36,7 @@ namespace MCFTAcademics
                 bool result = CourseCode.UpdateCourseCodes(coursecodes, Convert.ToInt32(Request.Form["courseId"]));
                 if (result)
                 {
-                    this.alertMessage = "Course Codes have been updated";
-                    return RedirectToPage("CourseCodeEditor", new { id = Convert.ToInt32(Request.Form["courseId"]) });
+                    return RedirectToPage("CourseCodeEditor", new { id = Convert.ToInt32(Request.Form["courseId"]), alertMessage = "Course Codes have been updated" });
                 }
                 else
                 {
@@ -45,8 +45,7 @@ namespace MCFTAcademics
             }
             catch (Exception ex)
             {
-                return FailWithMessage("There was an exception from the system updating the course codes;" +
-                    "report this to an administrator: " + ex.Message);
+                return RedirectToPage("CourseCodeEditor", new { id = Convert.ToInt32(Request.Form["courseId"]), alertMessage = "Error: You have entered invalid data" });
             }
         }
 
