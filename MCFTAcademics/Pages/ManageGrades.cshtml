@@ -43,8 +43,12 @@
                     <th scope="row">@s.StudentCode<br />@s.FirstName @s.LastName</th>
                     <th scope="row">@code.Code<br />@g.Subject.Name</th>
                     <td>@g.Subject.GetLeadStaff().Name</td>
-                    @if (g.Subject != null && g.Locked)
+                    @if ((g.Subject != null && g.Locked)||(g.Subject !=null && g.UnlockedUntil < DateTime.Now))
                     {
+                        if (g.UnlockedUntil < DateTime.Now)
+                        {
+                            Grade.ToggleGradeLock(s.Id, g.Subject.Id, null);
+                        }
                         <td>@g.GradeAssigned</td>
                         <td>@g.Supplemental</td>
                         <td>@g.Comment</td>
