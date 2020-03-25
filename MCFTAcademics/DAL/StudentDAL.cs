@@ -180,5 +180,53 @@ namespace MCFTAcademics.DAL
             return null;
         }
 
+        public static int AddStudent(Student s)
+        {
+            int id;
+            using (var connection = DbConn.GetConnection())
+            {
+                connection.Open();
+                var transaction = connection.BeginTransaction("AddStudent");
+                try
+                {
+                    SqlCommand insertCommand = new SqlCommand("mcftacademics.dbo.InsertAndEnrollStudent", connection);
+                    insertCommand.Transaction = transaction;
+                    insertCommand.CommandType = System.Data.CommandType.StoredProcedure;
+                    insertCommand.Parameters.AddWithValue("@firstName", s.FirstName);
+                    insertCommand.Parameters.AddWithValue("@lastName", s.LastName);
+                    insertCommand.Parameters.AddWithValue("@studentCode", s.StudentCode);
+                    insertCommand.Parameters.AddWithValue("@program", s.Program);
+                    insertCommand.Parameters.AddWithValue("@gradDate", s.GraduationDate);
+                    insertCommand.Parameters.AddWithValue("@academicAccommodation", s.AcademicAccommodation);
+                    int rows = insertCommand.ExecuteNonQuery();
+                    if (rows > 0)
+                    {
+                        SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectLastStudentInsert", connection);
+                        selectCommand.Transaction = transaction;
+                        id = Convert.ToInt32(selectCommand.ExecuteScalar());
+                        transaction.Commit();
+                    }
+                    else
+                    {
+                        throw new Exception();
+                    }
+                }
+                catch (Exception)
+                {
+                    try
+                    {
+                        transaction.Rollback();
+                    }
+                    catch
+                    {
+                        // if THAT fails
+                        throw;
+                    }
+                    throw;
+                }
+            }
+            return id;
+        }
+
     }
 }
