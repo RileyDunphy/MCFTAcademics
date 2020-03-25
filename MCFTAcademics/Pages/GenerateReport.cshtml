@@ -43,258 +43,263 @@
             </tr>
         </tbody>
     </table>
-    </div>
-    <div style="display:none;" id="refresh_href">
+</div>
+<div style="display:none;" id="refresh_href">
     <hr>
-        <h4><a href="GenerateReport">Click Here</a> to generate another Report.</h4>
-    <hr></div>
-        <table id="table_id" class="display">
+    <h4><a href="GenerateReport">Click Here</a> to generate another Report.</h4>
+    <hr>
+</div>
 
-        </table>
+<div id="loaderObj" style="display:none;" class="loader"></div>
+<table id="table_id" class="display">
+</table>
 
-        @section scripts{
-            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-            <script type="text/javascript" charset="utf-8" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.js"></script>
+@section scripts{
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script type="text/javascript" charset="utf-8" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.js"></script>
 
-            @* CSS and JS for datatables *@
+    @* CSS and JS for datatables *@
 
-            <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.css">
 
-            @* CSS,JS and AJAX for datatable buttons  *@
-            <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css" />
-            <script type="text/javascript" charset="utf-8" src="https://cdn.datatables.net/buttons/1.6.1/js/dataTables.buttons.min.js"></script>
-            <script type="text/javascript" charset="utf-8" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-            <script type="text/javascript" charset="utf-8" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
-            <script type="text/javascript" charset="utf-8" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-            <script type="text/javascript" charset="utf-8" src="https://cdn.datatables.net/buttons/1.6.1/js/buttons.html5.min.js"></script>
-
-
-            <script type="text/javascript">
-
-                // https://stackoverflow.com/questions/966225/how-can-i-create-a-two-dimensional-array-in-javascript
-                function createArray(length) {
-                    var arr = new Array(length || 0),
-                        i = length;
-
-                    if (arguments.length > 1) {
-                        var args = Array.prototype.slice.call(arguments, 1);
-                        while (i--) arr[length - 1 - i] = createArray.apply(this, args);
-                    }
-
-                    return arr;
-                }
-
-                $("body").on("click", ".table .generate", function () {
-                    if (confirm("Do you want to generate this Report?")) {
-
-                        //Get all the attributes you will need to customize the transcript
-                        var semester = document.getElementById("selSemester").value;
-                        var program = document.getElementById("selProgram").value;
-                        var year = document.getElementById("selYear").value;
-
-                        //Pass them in the handler method via AJAX that will generate and save our transcript on the server
-                        $.ajax({
-                            type: "GET",
-                            url: "/GenerateReport?handler=Ajax&program=" + program + "&semester=" + semester + "&year=" + year,
-                            contentType: "application/json; charset=utf-8",
-                            dataType: "json",
-                            success: function (response) {
-                                $('#generate_form').hide();
-                                $('#refresh_href').show();
-                                //begin table inner HTML
-                                document.getElementById('table_id').innerHTML = "";
-                                var tableHtml = "<thead><tr><th>Student Id</th><th>First Name</th><th>Last Name</th>";
-
-                                console.log(response);
-                                var counter = 0;
-
-                                var courseLength = response["columns"].length;
-
-                                var courses = [];
-                                var students = [];
-                                var studentDetails = [];
-                                var grade = [];
-                                var averages = [];
-
-                                //this is the dataset portion of the table
-                                var studentRecordHtml = "<tbody>";
-
-                                //console.log(response["grades"]);
-
-                                while (counter < courseLength) {
-
-                                    //console.log(courses);
-                                    //console.log(courseCode);
-                                    var courseCode = (response["columns"][counter]["courseCode"]);
-                                    //console.log(courseCode);
-                                    if (!courses.includes(courseCode)) {
-                                        courses.push(courseCode);
-                                        tableHtml += "<th>" + courseCode + "</th>";
-                                    }
-
-                                    //if student has not been added to student array
-                                    if (!students.includes(response["columns"][counter]["studentId"])) {
-                                        var id = response["columns"][counter]["studentId"];
-                                        var fname = response["columns"][counter]["firstName"];
-                                        var lname = response["columns"][counter]["lastName"];
-                                        var avg = response["columns"][counter]["average"];
-                                        averages.push(avg);
-                                        students.push(id);
-
-                                        var studentDetailRow = [id, fname, lname];
-                                        studentDetails.push(studentDetailRow);
-                                        console.log(response["columns"][counter]["firstName"]);
-                                    }
-                                    counter++
-                                }
-                                if (response["semesterReport"]) {
-                                    tableHtml += "<th>Academic Standing</th><th>Semester Average</th>";
-                                } else {
-                                    tableHtml += "<th>Honors</th><th>Average</th>";
-                                }
-
-                                tableHtml += "</tr></thead>";
-                                counter = 0;
-                                var studentGrades = courses.slice();
-
-                                // console.log("COURSES:" + courses);
-                                // console.log("STUDENTS:" + students);
-
-                                var gradeArray = createArray(students.length, courses.length);
-
-                                gradeArray.forEach(function (item, index) { item.fill('-'); });
-
-                                // console.log("length: " + gradeArray[0].length);
-                                // console.log("GRADE:" + gradeArray);
-                                while (counter < courseLength) {
-                                    var index = 0;
-
-                                    var g = -1;
-
-                                    while (index < courses.length) {
-
-                                        console.log()
-                                        if (courses[index] === (response["columns"][counter]["courseCode"])) {
-                                            var cc = (response["columns"][counter]["courseCode"]);
-                                            var st = (response["columns"][counter]["studentId"]);
-
-                                            //console.log(response["columns"][counter]["firstName"] + " : " + response["columns"][counter]["courseCode"] + " : " + response["columns"][counter]["grade"]);
-                                            studentGrades.splice(studentGrades.indexOf(response["columns"][counter]["courseCode"]), 1);
-                                            var supplemental = "";
-                                            if (response["columns"][counter]["supplemental"] === true) {
-                                                supplemental = "*";
-                                            }
-                                            g = response["columns"][counter]["grade"] + supplemental;
-                                            gradeArray[students.indexOf(st)][courses.indexOf(cc)] = g;
-                                        }
-                                        index++;
-                                    }
-                                    grade.push(g);
-
-                                    if (studentGrades.length == 0) {
-                                        console.log("undef");
-                                    } else {
-                                        console.log("this is the array!" + studentGrades);
-                                    }
-                                    counter++;
-                                }
-
-                                counter = 0;
-                                var len = gradeArray.length;
-                                var colsLen = gradeArray[0].length;
-
-                                while (counter < len) {
-                                    var colCounter = 0;
-                                    var failed = false;
-                                    studentRecordHtml += "<tr><td>" + studentDetails[counter][0] + "</td>";
-                                    studentRecordHtml += "<td>" + studentDetails[counter][1] + "</td>";
-                                    studentRecordHtml += "<td>" + studentDetails[counter][2] + "</td>";
-                                    var supplementalList = "";
-                                    while (colCounter < colsLen) {
-                                        studentRecordHtml += "<td>" + gradeArray[counter][colCounter] + "</td>";
-                                        if (gradeArray[counter][colCounter].includes("*")) {
-                                            supplementalList = "Supplemental List";
-
-                                        }
-                                        var grade = +gradeArray[counter][colCounter];
-                                        failed = grade > 60;
-                                        colCounter++;
-                                    }
-                                    console.log(supplementalList);
-                                    studentRecordHtml += "<td>";
-                                    var lists = "";
-                                    if (response["semesterReport"]) {
-                                        if (averages[counter] >= 80) {
-                                            lists += "Directors List";
-                                        }
-                                        else if (averages[counter] >= 65 && failed) {
-                                            lists += "Supplemental List";
-                                        }
-                                        else {
-                                            console.log("The failed course bool " + failed);
-                                            lists += "Withdrawl List"
-                                        }
-                                    }
-                                    else {
-                                        if (averages[counter] >= 80) {
-                                            lists += "Honors List";
-                                        }
-                                        else {
-                                            lists += "-";
-                                        }
-                                    }
+    @* CSS,JS and AJAX for datatable buttons  *@
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css" />
+    <script type="text/javascript" charset="utf-8" src="https://cdn.datatables.net/buttons/1.6.1/js/dataTables.buttons.min.js"></script>
+    <script type="text/javascript" charset="utf-8" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script type="text/javascript" charset="utf-8" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+    <script type="text/javascript" charset="utf-8" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+    <script type="text/javascript" charset="utf-8" src="https://cdn.datatables.net/buttons/1.6.1/js/buttons.html5.min.js"></script>
 
 
-                                    studentRecordHtml += lists;
-                                    studentRecordHtml += "</td>";
-                                    studentRecordHtml += "<td>" + averages[counter] + "</td>";
-                                    studentRecordHtml += "</tr>";
-                                    counter++;
-                                }
-                                studentRecordHtml += "</tbody>";
-                                tableHtml += studentRecordHtml;
+    <script type="text/javascript">
 
-                                console.log(tableHtml);
-                                document.getElementById('table_id').innerHTML = "";
-                                $('#table_id').html(tableHtml);
+        // https://stackoverflow.com/questions/966225/how-can-i-create-a-two-dimensional-array-in-javascript
+        function createArray(length) {
+            var arr = new Array(length || 0),
+                i = length;
 
-                                $('#table_id').DataTable({
-                                    "paging": true,
-                                    "ordering": true,
-                                    "bSort": true,
-                                    "info": true,
-                                    "destroy": true,
-                                    dom: 'Bfrtip',
-                                    buttons: [
-                                        {
-                                            extend: 'csvHtml5',
-                                            title: 'Report'
-                                        },
-                                        {
-                                            extend: 'pdfHtml5',
-                                            title: 'Report',
-                                            download: 'open'
-                                        }
-                                    ]
-                                });
+            if (arguments.length > 1) {
+                var args = Array.prototype.slice.call(arguments, 1);
+                while (i--) arr[length - 1 - i] = createArray.apply(this, args);
+            }
 
-                            },
-                            failure: function (response) {
-                                alert(response);
+            return arr;
+        }
+
+        $("body").on("click", ".table .generate", function () {
+            
+            if (confirm("Do you want to generate this Report?")) {
+                $('#loaderObj').show();
+                $('#generate_form').hide();
+                console.log("Should Be shown!");
+                //Get all the attributes you will need to customize the transcript
+                var semester = document.getElementById("selSemester").value;
+                var program = document.getElementById("selProgram").value;
+                var year = document.getElementById("selYear").value;
+                
+                //Pass them in the handler method via AJAX that will generate and save our transcript on the server
+                $.ajax({
+                    type: "GET",
+                    url: "/GenerateReport?handler=Ajax&program=" + program + "&semester=" + semester + "&year=" + year,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        
+                        $('#refresh_href').show();
+                        $('#loaderObj').hide();
+                        //begin table inner HTML
+                        document.getElementById('table_id').innerHTML = "";
+                        var tableHtml = "<thead><tr><th>Student Id</th><th>First Name</th><th>Last Name</th>";
+
+                        console.log(response);
+                        var counter = 0;
+                        
+                        var courseLength = response["columns"].length;
+
+                        var courses = [];
+                        var students = [];
+                        var studentDetails = [];
+                        var grade = [];
+                        var averages = [];
+
+                        //this is the dataset portion of the table
+                        var studentRecordHtml = "<tbody>";
+
+                        //console.log(response["grades"]);
+
+                        while (counter < courseLength) {
+
+                            //console.log(courses);
+                            //console.log(courseCode);
+                            var courseCode = (response["columns"][counter]["courseCode"]);
+                            //console.log(courseCode);
+                            if (!courses.includes(courseCode)) {
+                                courses.push(courseCode);
+                                tableHtml += "<th>" + courseCode + "</th>";
                             }
+
+                            //if student has not been added to student array
+                            if (!students.includes(response["columns"][counter]["studentId"])) {
+                                var id = response["columns"][counter]["studentId"];
+                                var fname = response["columns"][counter]["firstName"];
+                                var lname = response["columns"][counter]["lastName"];
+                                var avg = response["columns"][counter]["average"];
+                                averages.push(avg);
+                                students.push(id);
+
+                                var studentDetailRow = [id, fname, lname];
+                                studentDetails.push(studentDetailRow);
+                                console.log(response["columns"][counter]["firstName"]);
+                            }
+                            counter++
+                        }
+                        if (response["semesterReport"]) {
+                            tableHtml += "<th>Academic Standing</th><th>Semester Average</th>";
+                        } else {
+                            tableHtml += "<th>Honors</th><th>Average</th>";
+                        }
+
+                        tableHtml += "</tr></thead>";
+                        counter = 0;
+                        var studentGrades = courses.slice();
+
+                        // console.log("COURSES:" + courses);
+                        // console.log("STUDENTS:" + students);
+
+                        var gradeArray = createArray(students.length, courses.length);
+
+                        gradeArray.forEach(function (item, index) { item.fill('-'); });
+
+                        // console.log("length: " + gradeArray[0].length);
+                        // console.log("GRADE:" + gradeArray);
+                        while (counter < courseLength) {
+                            var index = 0;
+
+                            var g = -1;
+
+                            while (index < courses.length) {
+
+                                console.log()
+                                if (courses[index] === (response["columns"][counter]["courseCode"])) {
+                                    var cc = (response["columns"][counter]["courseCode"]);
+                                    var st = (response["columns"][counter]["studentId"]);
+
+                                    //console.log(response["columns"][counter]["firstName"] + " : " + response["columns"][counter]["courseCode"] + " : " + response["columns"][counter]["grade"]);
+                                    studentGrades.splice(studentGrades.indexOf(response["columns"][counter]["courseCode"]), 1);
+                                    var supplemental = "";
+                                    if (response["columns"][counter]["supplemental"] === true) {
+                                        supplemental = "*";
+                                    }
+                                    g = response["columns"][counter]["grade"] + supplemental;
+                                    gradeArray[students.indexOf(st)][courses.indexOf(cc)] = g;
+                                }
+                                index++;
+                            }
+                            grade.push(g);
+
+                            if (studentGrades.length == 0) {
+                                console.log("undef");
+                            } else {
+                                console.log("this is the array!" + studentGrades);
+                            }
+                            counter++;
+                        }
+
+                        counter = 0;
+                        var len = gradeArray.length;
+                        var colsLen = gradeArray[0].length;
+
+                        while (counter < len) {
+                            var colCounter = 0;
+                            var failed = false;
+                            studentRecordHtml += "<tr><td>" + studentDetails[counter][0] + "</td>";
+                            studentRecordHtml += "<td>" + studentDetails[counter][1] + "</td>";
+                            studentRecordHtml += "<td>" + studentDetails[counter][2] + "</td>";
+                            var supplementalList = "";
+                            while (colCounter < colsLen) {
+                                studentRecordHtml += "<td>" + gradeArray[counter][colCounter] + "</td>";
+                                if (gradeArray[counter][colCounter].includes("*")) {
+                                    supplementalList = "Supplemental List";
+
+                                }
+                                var grade = +gradeArray[counter][colCounter];
+                                failed = grade > 60;
+                                colCounter++;
+                            }
+                            console.log(supplementalList);
+                            studentRecordHtml += "<td>";
+                            var lists = "";
+                            if (response["semesterReport"]) {
+                                if (averages[counter] >= 80) {
+                                    lists += "Directors List";
+                                }
+                                else if (averages[counter] >= 65 && failed) {
+                                    lists += "Supplemental List";
+                                }
+                                else {
+                                    console.log("The failed course bool " + failed);
+                                    lists += "Withdrawl List"
+                                }
+                            }
+                            else {
+                                if (averages[counter] >= 80) {
+                                    lists += "Honors List";
+                                }
+                                else {
+                                    lists += "-";
+                                }
+                            }
+
+                            studentRecordHtml += lists;
+                            studentRecordHtml += "</td>";
+                            studentRecordHtml += "<td>" + averages[counter] + "</td>";
+                            studentRecordHtml += "</tr>";
+                            counter++;
+                        }
+                        studentRecordHtml += "</tbody>";
+                        tableHtml += studentRecordHtml;
+
+                        console.log(tableHtml);
+                        document.getElementById('table_id').innerHTML = "";
+                        $('#table_id').html(tableHtml);
+
+                        $('#table_id').DataTable({
+                            "paging": true,
+                            "ordering": true,
+                            "bSort": true,
+                            "info": true,
+                            "destroy": true,
+                            dom: 'Bfrtip',
+                            buttons: [
+                                {
+                                    extend: 'csvHtml5',
+                                    title: 'Report'
+                                },
+                                {
+                                    extend: 'pdfHtml5',
+                                    title: 'Report',
+                                    download: 'open'
+                                }
+                            ]
                         });
 
-                        var returnStudentGradeList = function (courses, columns) {
-                            studentGrades = [];
-                            for (var i; i < columns.length; i++) {
-                                var studentID = response["columns"][counter]["studentId"];
-                                var courseCode = response["columns"][counter]["courseCode"];
-                                var grade = response["columns"][counter]["grade"];
-                            }
-
-                        }
+                    },
+                    failure: function (response) {
+                        alert(response);
                     }
                 });
-            </script>
 
-        }
+                var returnStudentGradeList = function (courses, columns) {
+                    studentGrades = [];
+                    for (var i; i < columns.length; i++) {
+                        var studentID = response["columns"][counter]["studentId"];
+                        var courseCode = response["columns"][counter]["courseCode"];
+                        var grade = response["columns"][counter]["grade"];
+                    }
+
+                }
+            }
+        });
+    </script>
+
+}
