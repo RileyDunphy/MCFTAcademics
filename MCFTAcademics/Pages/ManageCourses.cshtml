@@ -10,7 +10,13 @@
 {
     <script>alert("@Model.alertMessage");</script>
 }
-
+<style>
+    .scrollable-menu {
+        height: auto;
+        max-height: 200px;
+        overflow-x: hidden;
+    }
+</style>
 <div class="container">
     <div class="row">
         <div class="col">
@@ -29,19 +35,19 @@
                 <input class="form-control" type="hidden" name="courseId" asp-for="course.Id" id="hdnCourseId">
                 <input class="form-control" type="text" name="courseCode" required asp-for="courseCode.Code" id="txtCourseCode">
             </div>
-        @if (Model.course != null && Model.course.Id != 0)
-        {
-            <div class="col-lg-2">
-                <a asp-page="/CourseCodeEditor" asp-route-id="@Model.course.Id">Edit All Course Codes</a>
-            </div>
-        }
+            @if (Model.course != null && Model.course.Id != 0)
+            {
+                <div class="col-lg-2">
+                    <a asp-page="/CourseCodeEditor" asp-route-id="@Model.course.Id">Edit All Course Codes</a>
+                </div>
+            }
             <div class="col-md-4 col-md-offset-4">
                 <div class="dropdown">
                     <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenuCourses" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                         @Model.dropdownText
                         <span class="caret"> </span>
                     </button>
-                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuCourses">
+                    <ul class="dropdown-menu scrollable-menu" aria-labelledby="dropdownMenuCourses">
                         @if (User.IsInRole("Admin"))
                         {
                             <li> <a asp-page-handler="AddCourse" asp-route-forAll="@Model.ShowAllCourses">Add new course</a></li>
