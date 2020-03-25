@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace MCFTAcademics.BL
@@ -7,7 +8,6 @@ namespace MCFTAcademics.BL
 /// </summary>
     public class ReportColumn : IComparable<ReportColumn>
     {
-        
         private int studentId;
         private string firstName;
         private string lastName;
@@ -19,10 +19,9 @@ namespace MCFTAcademics.BL
         private string courseCode;
         private DateTime startDate;
         private DateTime endDate;
+        private decimal average;
         
-        
-
-        public ReportColumn(int studentId, string firstName, string lastName, decimal grade, bool supplemental, int courseId, string name, string program, string courseCode, DateTime startDate, DateTime endDate)
+        public ReportColumn(int studentId, string firstName, string lastName, decimal grade, bool supplemental, int courseId, string name, string program, string courseCode, DateTime startDate, DateTime endDate,int semester, bool semesterReport)
         {
             this.studentId = studentId;
             this.firstName = firstName;
@@ -35,6 +34,15 @@ namespace MCFTAcademics.BL
             this.courseCode = courseCode;
             this.startDate = startDate;
             this.endDate = endDate;
+            if (semesterReport)
+            {
+                this.average = Student.GetAverageForSemesterByStudentId(studentId, semester);
+            }
+            else 
+            {
+                this.average = Student.GetAverageByStudentId(studentId);
+            }
+            
         }
 
         public int StudentId { get => studentId;  }
@@ -48,6 +56,7 @@ namespace MCFTAcademics.BL
         public string CourseCode { get => courseCode;  }
         public DateTime StartDate { get => startDate; }
         public DateTime EndDate { get => endDate; }
+        public decimal Average { get => average; }
 
         public int CompareTo(ReportColumn obj)
         {

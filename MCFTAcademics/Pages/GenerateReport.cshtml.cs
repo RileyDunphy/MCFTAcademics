@@ -22,8 +22,8 @@ namespace MCFTAcademics
         {
             try
             {
-                Report rpt = new Report(program,semester);
-               // List<Grade>grades=rpt.Grades;
+                Report rpt = new Report(program, semester);
+               
                 List<string> courseCodes = new List<string>();
                 List<string> ids = new List<string>();
 

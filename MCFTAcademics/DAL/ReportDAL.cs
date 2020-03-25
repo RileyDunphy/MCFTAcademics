@@ -11,7 +11,7 @@ namespace MCFTAcademics.DAL
 {
     public static class ReportDAL
     {
-        public static List<ReportColumn> SelectReportData(string program, int semester)
+        public static List<ReportColumn> SelectReportData(string program, int semester, bool semesterReport)
         {
             SqlConnection conn = DbConn.GetConnection();
             
@@ -41,7 +41,7 @@ namespace MCFTAcademics.DAL
                     var startDate = (DateTime)reader["startDate"];
                     var endDate = (DateTime)reader["endDate"];
 
-                    ReportColumn reportRecord=new ReportColumn(studentId,firstName,lastName,grade,supplemental,courseId,name,prog,courseCode,startDate,endDate);
+                    ReportColumn reportRecord=new ReportColumn(studentId,firstName,lastName,grade,supplemental,courseId,name,prog,courseCode,startDate,endDate,semester,semesterReport);
 
                     reportData.Add(reportRecord);
 

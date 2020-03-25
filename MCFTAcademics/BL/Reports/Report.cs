@@ -6,15 +6,57 @@ namespace MCFTAcademics.BL.Reports
 {
     public class Report
     {
-        
-        private List<ReportColumn> columns;
+        private bool semesterReport = true;
+        private List<ReportColumn> columns=new List<ReportColumn>();
+
         public List<ReportColumn> Columns { get => columns; set => columns = value; }
+        public bool SemesterReport { get => semesterReport; set => semesterReport = value; }
+
         public Report(List<ReportColumn> columns)
         {
             this.Columns = columns;
         }
+        
         public Report(string program, int semester) {
-            this.columns = ReportDAL.SelectReportData(program, semester);
+            if (semester == 0)
+            {
+                SemesterReport = false;
+
+                List<ReportColumn> semester1 = ReportDAL.SelectReportData(program, 1, SemesterReport);
+                List<ReportColumn> semester2 = ReportDAL.SelectReportData(program, 2, SemesterReport);
+                List<ReportColumn> semester3 = ReportDAL.SelectReportData(program, 3, SemesterReport);
+                List<ReportColumn> semester4 = ReportDAL.SelectReportData(program, 4, SemesterReport);
+                List<ReportColumn> semester5 = ReportDAL.SelectReportData(program, 5, SemesterReport);
+                List<ReportColumn> semester6 = ReportDAL.SelectReportData(program, 6, SemesterReport);
+
+                List<List<ReportColumn>> semesters = new List<List<ReportColumn>>();
+
+                semesters.Add(semester1);
+                semesters.Add(semester2);
+                semesters.Add(semester3);
+                semesters.Add(semester4);
+                semesters.Add(semester5);
+                semesters.Add(semester6);
+
+                try
+                {
+                    foreach(List<ReportColumn> s in semesters) 
+                    { 
+                        foreach (ReportColumn col in s)
+                        {
+                            this.columns.Add(col);
+                        }
+                    }
+                }
+                catch (Exception ex) 
+                {
+                    //ex.StackTrace.ToCharArray();
+                }
+            }
+            else {
+            this.columns = ReportDAL.SelectReportData(program, semester, semesterReport);
+            }
+            
             //sort by student ID (keeping student details together)
                 columns.Sort();
         }
