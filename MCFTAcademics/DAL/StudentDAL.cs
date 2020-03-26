@@ -198,17 +198,15 @@ namespace MCFTAcademics.DAL
                     insertCommand.Parameters.AddWithValue("@program", s.Program);
                     insertCommand.Parameters.AddWithValue("@gradDate", s.GraduationDate);
                     insertCommand.Parameters.AddWithValue("@academicAccommodation", s.AcademicAccommodation);
-                    id = Convert.ToInt32(insertCommand.ExecuteScalar());
-                    if (id != 0)
-                    {
-                        transaction.Commit();
-                    }
-                    else
-                    {
-                        throw new Exception();
-                    }
+                    var reader = insertCommand.ExecuteReader();
+                    if (!reader.Read())
+                        return 0;
+                    id = Convert.ToInt32(reader["id"]);
+                    reader.Close();
+                    transaction.Commit();
+                    return id;
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
                     try
                     {
