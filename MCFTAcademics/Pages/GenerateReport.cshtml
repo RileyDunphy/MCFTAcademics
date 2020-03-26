@@ -26,8 +26,10 @@
                 <td>
                     <select class="form-control" name="year" id="selYear">
                         <option>All</option>
-                        <option>1</option>
-                        <option>2</option>
+                        @foreach (int d in Model.years) {
+                            <option>@d.ToString()</option>
+                        }
+                        
                     </select>
                 </td>
                 <td>

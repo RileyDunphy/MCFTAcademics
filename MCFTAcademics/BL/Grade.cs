@@ -107,5 +107,9 @@ namespace MCFTAcademics.BL
             return GradeDAL.UpdateFormula(formula);
         }
 
+        public static List<int> GetDateRanges() {
+            return GradeDAL.GetGradeRanges();
+        }
+
     }
 }
