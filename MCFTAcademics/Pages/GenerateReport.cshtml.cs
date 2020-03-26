@@ -24,7 +24,7 @@ namespace MCFTAcademics
         {
             try
             {
-                Report rpt = new Report(program, semester);
+                Report rpt = new Report(program, semester, year);
                
                 List<string> courseCodes = new List<string>();
                 List<string> ids = new List<string>();

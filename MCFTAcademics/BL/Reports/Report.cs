@@ -17,8 +17,8 @@ namespace MCFTAcademics.BL.Reports
             this.Columns = columns;
         }
         
-        public Report(string program, int semester) {
-            if (semester == 0)
+        public Report(string program, int semester,int year) {
+            if (semester == 0 && year == 0)
             {
                 SemesterReport = false;
 
@@ -40,21 +40,57 @@ namespace MCFTAcademics.BL.Reports
 
                 try
                 {
-                    foreach(List<ReportColumn> s in semesters) 
-                    { 
+                    foreach (List<ReportColumn> s in semesters)
+                    {
                         foreach (ReportColumn col in s)
                         {
                             this.columns.Add(col);
                         }
                     }
                 }
-                catch (Exception ex) 
+                catch (Exception ex)
                 {
                     //ex.StackTrace.ToCharArray();
                 }
             }
-            else {
-            this.columns = ReportDAL.SelectReportData(program, semester, semesterReport);
+            else if (semester == 0 && year != 0) {
+                SemesterReport = false;
+
+                List<ReportColumn> semester1 = ReportDAL.SelectReportDataYearly(program, 1, year, SemesterReport);
+                List<ReportColumn> semester2 = ReportDAL.SelectReportDataYearly(program, 2, year, SemesterReport);
+                List<ReportColumn> semester3 = ReportDAL.SelectReportDataYearly(program, 3, year, SemesterReport);
+                List<ReportColumn> semester4 = ReportDAL.SelectReportDataYearly(program, 4, year, SemesterReport);
+                List<ReportColumn> semester5 = ReportDAL.SelectReportDataYearly(program, 5, year, SemesterReport);
+                List<ReportColumn> semester6 = ReportDAL.SelectReportDataYearly(program, 6, year, SemesterReport);
+
+                List<List<ReportColumn>> semesters = new List<List<ReportColumn>>();
+
+                semesters.Add(semester1);
+                semesters.Add(semester2);
+                semesters.Add(semester3);
+                semesters.Add(semester4);
+                semesters.Add(semester5);
+                semesters.Add(semester6);
+
+                try
+                {
+                    foreach (List<ReportColumn> s in semesters)
+                    {
+                        foreach (ReportColumn col in s)
+                        {
+                            this.columns.Add(col);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    //ex.StackTrace.ToCharArray();
+                }
+
+            }
+            else
+            {
+                this.columns = ReportDAL.SelectReportData(program, semester, semesterReport);
             }
             
             //sort by student ID (keeping student details together)

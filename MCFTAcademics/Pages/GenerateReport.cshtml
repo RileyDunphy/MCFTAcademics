@@ -37,6 +37,8 @@
                         <option>All</option>
                         <option>1</option>
                         <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
                     </select>
                 </td>
                 <td>
@@ -165,15 +167,10 @@
                         counter = 0;
                         var studentGrades = courses.slice();
 
-                        // console.log("COURSES:" + courses);
-                        // console.log("STUDENTS:" + students);
-
                         var gradeArray = createArray(students.length, courses.length);
 
                         gradeArray.forEach(function (item, index) { item.fill('-'); });
 
-                        // console.log("length: " + gradeArray[0].length);
-                        // console.log("GRADE:" + gradeArray);
                         while (counter < courseLength) {
                             var index = 0;
 
@@ -199,11 +196,6 @@
                             }
                             grade.push(g);
 
-                            if (studentGrades.length == 0) {
-                                console.log("undef");
-                            } else {
-                                console.log("this is the array!" + studentGrades);
-                            }
                             counter++;
                         }
 
@@ -214,6 +206,8 @@
                         while (counter < len) {
                             var colCounter = 0;
                             var failed = false;
+                            var failedCounter = 0;
+
                             studentRecordHtml += "<tr><td>" + studentDetails[counter][0] + "</td>";
                             studentRecordHtml += "<td>" + studentDetails[counter][1] + "</td>";
                             studentRecordHtml += "<td>" + studentDetails[counter][2] + "</td>";
@@ -225,27 +219,36 @@
 
                                 }
                                 var grade = +gradeArray[counter][colCounter];
-                                failed = grade > 60;
+                                failed = grade < 60;
+                                if (!response["semesterReport"] && grade < 60) {
+                                    failedCounter++;
+                                }
+
                                 colCounter++;
                             }
                             console.log(supplementalList);
                             studentRecordHtml += "<td>";
                             var lists = "";
                             if (response["semesterReport"]) {
+                                console.log()
                                 if (averages[counter] >= 80) {
                                     lists += "Directors List";
                                 }
                                 else if (averages[counter] >= 65 && failed) {
                                     lists += "Supplemental List";
                                 }
-                                else {
-                                    console.log("The failed course bool " + failed);
+                                else if (averages[counter] < 65 && failed){
+                                    //console.log("The failed course bool " + failed+ averages[counter]);
                                     lists += "Withdrawl List"
                                 }
                             }
                             else {
+                                //if student achived >80 in all 4 semesters
                                 if (averages[counter] >= 80) {
                                     lists += "Honors List";
+                                    //if student failed >2 in any semester
+                                } else if (failedCounter >= 2) {
+                                    lists += "Withdrawl List";
                                 }
                                 else {
                                     lists += "-";
@@ -290,16 +293,6 @@
                         alert(response);
                     }
                 });
-
-                var returnStudentGradeList = function (courses, columns) {
-                    studentGrades = [];
-                    for (var i; i < columns.length; i++) {
-                        var studentID = response["columns"][counter]["studentId"];
-                        var courseCode = response["columns"][counter]["courseCode"];
-                        var grade = response["columns"][counter]["grade"];
-                    }
-
-                }
             }
         });
     </script>
