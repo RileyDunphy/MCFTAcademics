@@ -190,6 +190,9 @@
                                         supplemental = "*";
                                     }
                                     g = response["columns"][counter]["grade"] + supplemental;
+                                    if (g == '0') {
+                                        g = '-';
+                                    }
                                     gradeArray[students.indexOf(st)][courses.indexOf(cc)] = g;
                                 }
                                 index++;

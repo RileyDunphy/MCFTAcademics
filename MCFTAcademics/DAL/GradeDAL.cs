@@ -358,5 +358,6 @@ namespace MCFTAcademics.DAL
             }
             return Math.Round(average, 2);
         }
+
     }
 }

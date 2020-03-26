@@ -152,5 +152,12 @@ namespace MCFTAcademics.BL
         {//Calls the method that uses the formula
             return GradeDAL.GetAverageForStudent(Student.GetStudent(studentId), semester);
         }
+        //TODO
+        //XXX
+        public static decimal GetAverageByStudentIdYearly(int studentId, int year, int semester = -1)
+        {
+            return GradeDAL.GetAverageForStudent(Student.GetStudent(studentId), semester);
+        }
+
     }
 }
