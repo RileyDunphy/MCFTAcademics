@@ -8,9 +8,13 @@ namespace MCFTAcademics.BL.Reports
     {
         private bool semesterReport = true;
         private List<ReportColumn> columns=new List<ReportColumn>();
+        private int semester;
+        private int year;
 
         public List<ReportColumn> Columns { get => columns; set => columns = value; }
         public bool SemesterReport { get => semesterReport; set => semesterReport = value; }
+        public int Semester { get => semester; set => semester = value; }
+        public int Year { get => year; set => year = value; }
 
         public Report(List<ReportColumn> columns)
         {
@@ -18,6 +22,9 @@ namespace MCFTAcademics.BL.Reports
         }
         
         public Report(string program, int semester,int year) {
+            this.Semester = semester;
+            this.Year = year;
+
             if (semester == 0 && year == 0)
             {
                 SemesterReport = false;
@@ -95,6 +102,47 @@ namespace MCFTAcademics.BL.Reports
             
             //sort by student ID (keeping student details together)
                 columns.Sort();
+                getAverages();
+        }
+
+        private void getAverages() {
+            if (!semesterReport)
+            {
+                decimal average = 0;
+                int studentId = 0;
+                foreach (ReportColumn col in this.columns)
+                {
+                    if (col.StudentId == studentId)
+                    {
+                        col.Average = average;
+                    }
+                    else
+                    {
+                        studentId = col.StudentId;
+                        average = Student.GetAverageByStudentId(studentId);
+                        col.Average = average;
+                    }
+                }
+            }
+            else {
+                decimal average = 0;
+                int studentId = 0;
+                foreach (ReportColumn col in this.columns)
+                {
+                    if (col.StudentId == studentId)
+                    {
+                        col.Average = average;
+                    }
+                    else
+                    {
+                        studentId = col.StudentId;
+                        average = Student.GetAverageForSemesterByStudentId(studentId,semester);
+                        col.Average = average;
+                    }
+                }
+
+            }
+        
         }
 
     }

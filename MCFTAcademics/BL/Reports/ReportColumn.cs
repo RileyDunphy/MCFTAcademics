@@ -34,15 +34,7 @@ namespace MCFTAcademics.BL
             this.courseCode = courseCode;
             this.startDate = startDate;
             this.endDate = endDate;
-            if (semesterReport)
-            {
-                this.average = Student.GetAverageForSemesterByStudentId(studentId, semester);
-            }
-            else 
-            {
-                this.average = Student.GetAverageByStudentId(studentId);
-            }
-            
+            this.Average = -1;
         }
 
         public int StudentId { get => studentId;  }
@@ -56,7 +48,7 @@ namespace MCFTAcademics.BL
         public string CourseCode { get => courseCode;  }
         public DateTime StartDate { get => startDate; }
         public DateTime EndDate { get => endDate; }
-        public decimal Average { get => average; }
+        public decimal Average { get => average; set => average = value; }
 
         public int CompareTo(ReportColumn obj)
         {
