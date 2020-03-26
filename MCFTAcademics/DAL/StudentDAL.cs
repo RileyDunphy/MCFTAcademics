@@ -180,5 +180,48 @@ namespace MCFTAcademics.DAL
             return null;
         }
 
+        public static int AddStudent(Student s)
+        {
+            int id;
+            using (var connection = DbConn.GetConnection())
+            {
+                connection.Open();
+                var transaction = connection.BeginTransaction("AddStudent");
+                try
+                {
+                    SqlCommand insertCommand = new SqlCommand("mcftacademics.dbo.InsertAndEnrollStudent", connection);
+                    insertCommand.Transaction = transaction;
+                    insertCommand.CommandType = System.Data.CommandType.StoredProcedure;
+                    insertCommand.Parameters.AddWithValue("@firstName", s.FirstName);
+                    insertCommand.Parameters.AddWithValue("@lastName", s.LastName);
+                    insertCommand.Parameters.AddWithValue("@studentCode", s.StudentCode);
+                    insertCommand.Parameters.AddWithValue("@program", s.Program);
+                    insertCommand.Parameters.AddWithValue("@gradDate", s.GraduationDate);
+                    insertCommand.Parameters.AddWithValue("@academicAccommodation", s.AcademicAccommodation);
+                    var reader = insertCommand.ExecuteReader();
+                    if (!reader.Read())
+                        return 0;
+                    id = Convert.ToInt32(reader["id"]);
+                    reader.Close();
+                    transaction.Commit();
+                    return id;
+                }
+                catch (Exception ex)
+                {
+                    try
+                    {
+                        transaction.Rollback();
+                    }
+                    catch
+                    {
+                        // if THAT fails
+                        throw;
+                    }
+                    throw;
+                }
+            }
+            return id;
+        }
+
     }
 }
