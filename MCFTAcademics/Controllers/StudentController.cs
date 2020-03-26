@@ -17,8 +17,9 @@ namespace MCFTAcademics.Controllers
         [HttpPost]
         public ActionResult<Student> Post([FromBody] Student student)
         {
-            student.Id = student.AddStudent();
-            return student;
+            int id = student.AddStudent();
+            Student newStudent = new Student(id, student.FirstName, student.LastName, student.StudentCode, student.Program, DateTime.Now, student.GraduationDate, student.AcademicAccommodation);
+            return newStudent; 
         }
 
     }

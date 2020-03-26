@@ -198,12 +198,9 @@ namespace MCFTAcademics.DAL
                     insertCommand.Parameters.AddWithValue("@program", s.Program);
                     insertCommand.Parameters.AddWithValue("@gradDate", s.GraduationDate);
                     insertCommand.Parameters.AddWithValue("@academicAccommodation", s.AcademicAccommodation);
-                    int rows = insertCommand.ExecuteNonQuery();
-                    if (rows > 0)
+                    id = Convert.ToInt32(insertCommand.ExecuteScalar());
+                    if (id != 0)
                     {
-                        SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectLastStudentInsert", connection);
-                        selectCommand.Transaction = transaction;
-                        id = Convert.ToInt32(selectCommand.ExecuteScalar());
                         transaction.Commit();
                     }
                     else

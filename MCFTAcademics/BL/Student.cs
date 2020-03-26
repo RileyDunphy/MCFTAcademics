@@ -36,7 +36,7 @@ namespace MCFTAcademics.BL
         /// <summary>
         /// This is the student ID used as the database primary key.
         /// </summary>
-        public int Id { get; set;  }
+        public int Id { get;  }
         public bool AcademicAccommodation { get; set; }
         // XXX: This can be nullable in the DB, is that right?
         public DateTime? AdmissionDate { get; }
