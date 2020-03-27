@@ -221,55 +221,6 @@ namespace MCFTAcademics.DAL
             return grades;
         }
 
-        internal static decimal GetAverageForStudentSemester(Student student, int semester)
-        {//Old way of doing it, probably use the formula building way instead of this now
-            decimal average=0;
-            using (var connection = DbConn.GetConnection())
-            {
-                connection.Open();
-                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectAverageByIdAndSemester", connection);
-                selectCommand.CommandType = System.Data.CommandType.StoredProcedure;
-                selectCommand.Parameters.AddWithValue("@id", student.Id);
-                selectCommand.Parameters.AddWithValue("@semester", semester);
-                SqlDataReader reader = selectCommand.ExecuteReader();
-                if (reader.Read())
-                {
-                    if (reader["average"]==DBNull.Value)
-                    {
-                        average = 0;
-                    }
-                    else
-                    {
-                        average = (decimal)reader["average"];
-                    }
-                }
-            }
-            return Math.Round(average,2);
-        }
-        internal static decimal GetAverageForStudentOLD(Student student)
-        {//Old way of doing it, probably use the formula building way instead of this now
-            decimal average = 0;
-            using (var connection = DbConn.GetConnection())
-            {
-                connection.Open();
-                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.SelectAverageById", connection);
-                selectCommand.CommandType = System.Data.CommandType.StoredProcedure;
-                selectCommand.Parameters.AddWithValue("@id", student.Id);
-                SqlDataReader reader = selectCommand.ExecuteReader();
-                if (reader.Read())
-                {
-                    if (reader["average"] == DBNull.Value)
-                    {
-                        average = 0;
-                    }
-                    else
-                    {
-                        average = (decimal)reader["average"];
-                    }
-                }
-            }
-            return Math.Round(average, 2);
-        }
         public static Grade GetSummerPracticum(Student s)
         {
             Grade grade = null;

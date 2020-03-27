@@ -132,29 +132,6 @@ namespace MCFTAcademics.DAL
             return null;
         }
 
-        public static string GetClassRankOLD(Student s)//Old way that doesn't use formula building method
-        {
-            SortedList<int, decimal> ranks = new SortedList<int, decimal>();
-            using (var connection = DbConn.GetConnection())
-            {
-                connection.Open();
-                SqlCommand selectCommand = new SqlCommand("mcftacademics.dbo.[GetClassRanks]", connection);
-                selectCommand.CommandType = System.Data.CommandType.StoredProcedure;
-                selectCommand.Parameters.AddWithValue("@program", s.Program);
-                selectCommand.Parameters.AddWithValue("@graduationDate", s.GraduationDate);
-                //execute the sql statement
-                SqlDataReader reader = selectCommand.ExecuteReader();
-                //loop through the resultset
-                while (reader.Read())
-                {
-                    ranks.Add(Convert.ToInt32(reader["id"]), Convert.ToDecimal(reader["average"]));
-                }
-                int rank = ranks.IndexOfKey(s.Id) + 1;
-                int total = ranks.Count;
-                return rank + " of " + total;
-            }
-            return null;
-        }
         public static string GetClassRank(Student s)
         {
             SortedList<int, decimal> students = new SortedList<int, decimal>();
