@@ -46,6 +46,24 @@ namespace MCFTAcademics.DAL
                     yield return GradeFromRow(reader);
             }
         }
+        public static List<int> GetGradeRanges()
+        {
+            using (var connection = DbConn.GetConnection())
+            {
+                List<int> years = new List<int>();
+                connection.Open();
+                var command = connection.CreateCommand();
+                command.CommandText = "mcftacademics.dbo.SelectGradeRanges";
+                command.CommandType = CommandType.StoredProcedure;
+                var reader = command.ExecuteReader();
+                    while (reader.Read()) {
+                        years.Add(reader.GetInt32(0));
+                    }
+                years.Sort();
+                return years;
+            }
+        }
+
 
         // XXX: This is probably very wrong. CourseStaff is halfway a
         // table for m:n relations, but can also represent temps... which
@@ -340,5 +358,6 @@ namespace MCFTAcademics.DAL
             }
             return Math.Round(average, 2);
         }
+
     }
 }

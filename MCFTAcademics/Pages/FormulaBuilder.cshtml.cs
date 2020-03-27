@@ -13,6 +13,7 @@ namespace MCFTAcademics
         public string alertMessage { get; set; }
         public void OnGet()
         {
+
         }
 
         public IActionResult OnPost()

@@ -1,63 +1,61 @@
 ﻿@page
 @model MCFTAcademics.GenerateReportModel
 @{
-    ViewData["Title"] = "GenerateReport";
+    ViewData["Title"] = "Generate Report";
 }
 
 <h2>@ViewData["Title"]</h2>
+<div id="generate_form">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Program</th>
+                <th scope="col">Year</th>
+                <th scope="col">Semester</th>
+                <th scope="col">Generate Report</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th scope="row">
+                    <select class="form-control" name="program" id="selProgram">
+                        <option>Wildlife</option>
+                        <option>Forestry</option>
+                    </select>
+                </th>
+                <td>
+                    <select class="form-control" name="year" id="selYear">
+                        <option>All</option>
+                        @foreach (int d in Model.years) {
+                            <option>@d.ToString()</option>
+                        }
+                        
+                    </select>
+                </td>
+                <td>
+                    <select class="form-control" name="semester" id="selSemester">
+                        <option>All</option>
+                        <option>1</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                    </select>
+                </td>
+                <td>
+                    <button type="button" id="generate" class="generate btn btn-primary">Generate Report</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<div style="display:none;" id="refresh_href">
+    <hr>
+    <h4><a href="GenerateReport">Click Here</a> to generate another Report.</h4>
+    <hr>
+</div>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th scope="col">Program</th>
-            <th scope="col">Year</th>
-            <th scope="col">Semester</th>
-            <th scope="col">Generate Report</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <th scope="row">
-                <select class="form-control" name="program" id="selProgram">
-                    <option>Wildlife</option>
-                    <option>Forestry</option>
-                </select>
-            </th>
-            <td>
-                <select class="form-control" name="year" id="selYear">
-                    <option>All</option>
-                    <option>1</option>
-                    <option>2</option>
-                </select>
-            </td>
-            <td>
-                <select class="form-control" name="semester" id="selSemester">
-                    <option>All</option>
-                    <option>1</option>
-                    <option>2</option>
-                </select>
-            </td>
-            <td>
-                <button type="button" id="generate" class="generate btn btn-primary">Generate Report</button>
-            </td>
-        </tr>
-    </tbody>
-</table>
-
+<div id="loaderObj" style="display:none;" class="loader"></div>
 <table id="table_id" class="display">
-    @*<thead>
-        <tr>
-            <td>testHeader</td>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>test1</td>
-        </tr>
-        <tr>
-            <td>test2</td>
-        </tr>
-    </tbody>*@
 </table>
 
 @section scripts{
@@ -65,7 +63,7 @@
     <script type="text/javascript" charset="utf-8" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.js"></script>
 
     @* CSS and JS for datatables *@
-    
+
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.css">
 
     @* CSS,JS and AJAX for datatable buttons  *@
@@ -79,48 +77,30 @@
 
     <script type="text/javascript">
 
-        $(document).ready(function () {
-                        //            $('#table_id').DataTable({
-                        //    "paging": true,
-                        //    "ordering": true,
-                        //    "bSort": true,
-                        //    "info": true,
-                        //    "destroy": true,
-                        //    dom: 'Bfrtip',
-                        //    buttons: [
-                        //        {
-                        //            extend: 'csvHtml5',
-                        //            title: 'Report'
-                        //        },
-                        //        {
-                        //            extend: 'pdfHtml5',
-                        //            title: 'Report',
-                        //            download: 'open'
-                        //        }
-                        //    ]
-                        //});
-        });
         // https://stackoverflow.com/questions/966225/how-can-i-create-a-two-dimensional-array-in-javascript
-            function createArray(length) {
-                var arr = new Array(length || 0),
-                    i = length;
+        function createArray(length) {
+            var arr = new Array(length || 0),
+                i = length;
 
-                if (arguments.length > 1) {
-                    var args = Array.prototype.slice.call(arguments, 1);
-                    while(i--) arr[length-1 - i] = createArray.apply(this, args);
-                }
-
-                return arr;
+            if (arguments.length > 1) {
+                var args = Array.prototype.slice.call(arguments, 1);
+                while (i--) arr[length - 1 - i] = createArray.apply(this, args);
             }
 
-        $("body").on("click", ".table .generate", function () {
-            if (confirm("Do you want to generate this Report?")) {
+            return arr;
+        }
 
+        $("body").on("click", ".table .generate", function () {
+            
+            if (confirm("Do you want to generate this Report?")) {
+                $('#loaderObj').show();
+                $('#generate_form').hide();
+                console.log("Should Be shown!");
                 //Get all the attributes you will need to customize the transcript
                 var semester = document.getElementById("selSemester").value;
                 var program = document.getElementById("selProgram").value;
                 var year = document.getElementById("selYear").value;
-
+                
                 //Pass them in the handler method via AJAX that will generate and save our transcript on the server
                 $.ajax({
                     type: "GET",
@@ -128,6 +108,9 @@
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",
                     success: function (response) {
+                        
+                        $('#refresh_href').show();
+                        $('#loaderObj').hide();
                         //begin table inner HTML
                         document.getElementById('table_id').innerHTML = "";
                         var tableHtml = "<thead><tr><th>Student Id</th><th>First Name</th><th>Last Name</th>";
@@ -136,11 +119,12 @@
                         var counter = 0;
                         
                         var courseLength = response["columns"].length;
-                        
+
                         var courses = [];
                         var students = [];
                         var studentDetails = [];
                         var grade = [];
+                        var averages = [];
 
                         //this is the dataset portion of the table
                         var studentRecordHtml = "<tbody>";
@@ -157,14 +141,14 @@
                                 courses.push(courseCode);
                                 tableHtml += "<th>" + courseCode + "</th>";
                             }
-                            
-                            
+
                             //if student has not been added to student array
                             if (!students.includes(response["columns"][counter]["studentId"])) {
                                 var id = response["columns"][counter]["studentId"];
                                 var fname = response["columns"][counter]["firstName"];
                                 var lname = response["columns"][counter]["lastName"];
-
+                                var avg = response["columns"][counter]["average"];
+                                averages.push(avg);
                                 students.push(id);
 
                                 var studentDetailRow = [id, fname, lname];
@@ -173,31 +157,32 @@
                             }
                             counter++
                         }
+                        if (response["semesterReport"]) {
+                            tableHtml += "<th>Academic Standing</th><th>Semester Average</th>";
+                        } else {
+                            tableHtml += "<th>Honors</th><th>Average</th>";
+                        }
+
                         tableHtml += "</tr></thead>";
                         counter = 0;
                         var studentGrades = courses.slice();
-
-                       // console.log("COURSES:" + courses);
-                       // console.log("STUDENTS:" + students);
 
                         var gradeArray = createArray(students.length, courses.length);
 
                         gradeArray.forEach(function (item, index) { item.fill('-'); });
 
-                       // console.log("length: " + gradeArray[0].length);
-                       // console.log("GRADE:" + gradeArray);
                         while (counter < courseLength) {
                             var index = 0;
 
                             var g = -1;
 
                             while (index < courses.length) {
-                               
+
                                 console.log()
                                 if (courses[index] === (response["columns"][counter]["courseCode"])) {
-                                var cc = (response["columns"][counter]["courseCode"]);
-                                var st= (response["columns"][counter]["studentId"]);
-                                   
+                                    var cc = (response["columns"][counter]["courseCode"]);
+                                    var st = (response["columns"][counter]["studentId"]);
+
                                     //console.log(response["columns"][counter]["firstName"] + " : " + response["columns"][counter]["courseCode"] + " : " + response["columns"][counter]["grade"]);
                                     studentGrades.splice(studentGrades.indexOf(response["columns"][counter]["courseCode"]), 1);
                                     var supplemental = "";
@@ -205,33 +190,77 @@
                                         supplemental = "*";
                                     }
                                     g = response["columns"][counter]["grade"] + supplemental;
+                                    if (g == '0') {
+                                        g = '-';
+                                    }
                                     gradeArray[students.indexOf(st)][courses.indexOf(cc)] = g;
                                 }
                                 index++;
                             }
                             grade.push(g);
 
-                            if (studentGrades.length == 0) {
-                                console.log("undef");
-                            } else {
-                                console.log("this is the array!" + studentGrades);
-                            }
                             counter++;
                         }
 
                         counter = 0;
                         var len = gradeArray.length;
                         var colsLen = gradeArray[0].length;
-                        
+
                         while (counter < len) {
                             var colCounter = 0;
+                            var failed = false;
+                            var failedCounter = 0;
+
                             studentRecordHtml += "<tr><td>" + studentDetails[counter][0] + "</td>";
                             studentRecordHtml += "<td>" + studentDetails[counter][1] + "</td>";
                             studentRecordHtml += "<td>" + studentDetails[counter][2] + "</td>";
+                            var supplementalList = "";
                             while (colCounter < colsLen) {
                                 studentRecordHtml += "<td>" + gradeArray[counter][colCounter] + "</td>";
+                                if (gradeArray[counter][colCounter].includes("*")) {
+                                    supplementalList = "Supplemental List";
+
+                                }
+                                var grade = +gradeArray[counter][colCounter];
+                                failed = grade < 60;
+                                if (!response["semesterReport"] && grade < 60) {
+                                    failedCounter++;
+                                }
+
                                 colCounter++;
                             }
+                            console.log(supplementalList);
+                            studentRecordHtml += "<td>";
+                            var lists = "";
+                            if (response["semesterReport"]) {
+                                console.log()
+                                if (averages[counter] >= 80) {
+                                    lists += "Directors List";
+                                }
+                                else if (averages[counter] >= 65 && failed) {
+                                    lists += "Supplemental List";
+                                }
+                                else if (averages[counter] < 65 && failed){
+                                    //console.log("The failed course bool " + failed+ averages[counter]);
+                                    lists += "Withdrawl List"
+                                }
+                            }
+                            else {
+                                //if student achived >80 in all 4 semesters
+                                if (averages[counter] >= 80) {
+                                    lists += "Honors List";
+                                    //if student failed >2 in any semester
+                                } else if (failedCounter >= 2) {
+                                    lists += "Withdrawl List";
+                                }
+                                else {
+                                    lists += "-";
+                                }
+                            }
+
+                            studentRecordHtml += lists;
+                            studentRecordHtml += "</td>";
+                            studentRecordHtml += "<td>" + averages[counter] + "</td>";
                             studentRecordHtml += "</tr>";
                             counter++;
                         }
@@ -240,8 +269,8 @@
 
                         console.log(tableHtml);
                         document.getElementById('table_id').innerHTML = "";
-                        
                         $('#table_id').html(tableHtml);
+
                         $('#table_id').DataTable({
                             "paging": true,
                             "ordering": true,
@@ -267,18 +296,6 @@
                         alert(response);
                     }
                 });
-
-                var returnStudentGradeList = function (courses, columns) {
-                    studentGrades = [];
-                    for (var i; i < columns.length; i++) {
-                        var studentID = response["columns"][counter]["studentId"];
-                        var courseCode = response["columns"][counter]["courseCode"];
-                        var grade = response["columns"][counter]["grade"];
-
-                        
-                    }
-                    
-                }
             }
         });
     </script>

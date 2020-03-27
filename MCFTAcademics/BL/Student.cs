@@ -133,7 +133,11 @@ namespace MCFTAcademics.BL
 
         public decimal GetAverageForSemester(int semester)//Probably use the formula building way instead of this now
         {
-            return GradeDAL.GetAverageForStudentSemester(this, semester);
+            return GradeDAL.GetAverageForStudent(this, semester);
+        }
+        public static decimal GetAverageForSemesterByStudentId(int studentId, int semester)
+        {
+            return GradeDAL.GetAverageForStudent(Student.GetStudent(studentId), semester);
         }
         public decimal GetAverage(int semester = -1)
         {//Calls the method that uses the formula
@@ -144,5 +148,16 @@ namespace MCFTAcademics.BL
         {
             return StudentDAL.AddStudent(this);
         }
+        public static decimal GetAverageByStudentId(int studentId, int semester = -1)
+        {//Calls the method that uses the formula
+            return GradeDAL.GetAverageForStudent(Student.GetStudent(studentId), semester);
+        }
+        //TODO
+        //XXX
+        public static decimal GetAverageByStudentIdYearly(int studentId, int year, int semester = -1)
+        {
+            return GradeDAL.GetAverageForStudent(Student.GetStudent(studentId), semester);
+        }
+
     }
 }

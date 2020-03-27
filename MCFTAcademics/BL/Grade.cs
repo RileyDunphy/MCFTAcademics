@@ -107,10 +107,9 @@ namespace MCFTAcademics.BL
             return GradeDAL.UpdateFormula(formula);
         }
 
-        public decimal CalculateAverage(List<Grade> grades) {
-
-
-            return 0;
+        public static List<int> GetDateRanges() {
+            return GradeDAL.GetGradeRanges();
         }
+
     }
 }

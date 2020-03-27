@@ -13,17 +13,19 @@ using MCFTAcademics.BL.Reports;
 namespace MCFTAcademics
 {
     public class GenerateReportModel : PageModel
-    {
+    {   
+        public List<int> years=new List<int>();
         public void OnGet()
         {
-
+            years=Grade.GetDateRanges();
+            
         }
         public IActionResult OnGetAjax(string program, int semester, int year)
         {
             try
             {
-                Report rpt = new Report(program,semester);
-               // List<Grade>grades=rpt.Grades;
+                Report rpt = new Report(program, semester, year);
+               
                 List<string> courseCodes = new List<string>();
                 List<string> ids = new List<string>();
 
