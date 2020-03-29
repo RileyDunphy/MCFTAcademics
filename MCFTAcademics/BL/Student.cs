@@ -154,9 +154,14 @@ namespace MCFTAcademics.BL
         }
         //TODO
         //XXX
-        public static decimal GetAverageByStudentIdYearly(int studentId, int year, int semester = -1)
+        public static decimal GetAverageByStudentIdYearly(int studentId, int year)
         {
-            return GradeDAL.GetAverageForStudent(Student.GetStudent(studentId), semester);
+            return GradeDAL.GetAverageForStudentByYear(Student.GetStudent(studentId), year);
+        }
+
+        public IEnumerable<Grade> GetGradesForYear(int year)
+        {
+            return GradeDAL.GetGradesForStudentYear(this, year);
         }
 
     }
