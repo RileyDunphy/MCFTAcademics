@@ -111,5 +111,10 @@ namespace MCFTAcademics.BL
             return GradeDAL.GetGradeRanges();
         }
 
+        public static string GetFormula()
+        {
+            return GradeDAL.GetFormula();
+        }
+
     }
 }
