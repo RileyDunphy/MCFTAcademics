@@ -36,15 +36,21 @@
         <tbody>
             @foreach (Grade g in Model.Grades)
             {
+                // Some fields might be null because of what the mock data exposed...
+                // Non-essential ones should be handled if null. If student/course/grade is null, we're screwed!
                 Student s = Model.StudentMapping[g.StudentId];
                 CourseCode code = g.Subject.GetCourseCode();
                 <tr>
                     <th scope="row">@code.Semester</th>
                     <th scope="row">@s.StudentCode<br />@s.FirstName @s.LastName</th>
-                    <th scope="row">@code.Code<br />@g.Subject.Name</th>
-                    <td>@g.Subject.GetLeadStaff().Name</td>
-                    @if (g.Subject != null && g.Locked)
+                    <th scope="row">@code?.Code<br />@g.Subject.Name</th>
+                    <td>@g.Subject?.GetLeadStaff()?.Name</td>
+                    @if ((g.Subject != null && g.Locked)||(g.Subject !=null && g.UnlockedUntil < DateTime.Now))
                     {
+                        if (g.UnlockedUntil < DateTime.Now)
+                        {
+                            Grade.ToggleGradeLock(s.Id, g.Subject.Id, null);
+                        }
                         <td>@g.GradeAssigned</td>
                         <td>@g.Supplemental</td>
                         <td>@g.Comment</td>

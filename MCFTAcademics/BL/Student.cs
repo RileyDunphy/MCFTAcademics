@@ -10,7 +10,18 @@ namespace MCFTAcademics.BL
     {
         //default constructor is needed for serialization
         public Student() { }
-        public Student(int id, string firstName, string lastName, string studentCode, string program, DateTime? admissionDate, DateTime? graduationDate)
+        //Needed a constructor without an ID for inserting a student since the ID auto generates from database
+        //And admission date wasn't needed either because just grabbed the current time
+        public Student(string firstName, string lastName, string studentCode, string program, DateTime? graduationDate, bool academicAccommodation)
+        {
+            FirstName = firstName;
+            LastName = lastName;
+            StudentCode = studentCode;
+            Program = program;
+            GraduationDate = graduationDate;
+            AcademicAccommodation = academicAccommodation;
+        }
+        public Student(int id, string firstName, string lastName, string studentCode, string program, DateTime? admissionDate, DateTime? graduationDate, bool academicAccommodation)
         {
             Id = id;
             FirstName = firstName;
@@ -19,25 +30,27 @@ namespace MCFTAcademics.BL
             Program = program;
             AdmissionDate = admissionDate;
             GraduationDate = graduationDate;
+            AcademicAccommodation = academicAccommodation;
         }
 
         /// <summary>
         /// This is the student ID used as the database primary key.
         /// </summary>
-        public int Id { get; }
+        public int Id { get;  }
+        public bool AcademicAccommodation { get; set; }
         // XXX: This can be nullable in the DB, is that right?
         public DateTime? AdmissionDate { get; }
-        public DateTime? GraduationDate { get; }
+        public DateTime? GraduationDate { get; set; }
         /// <summary>
         /// This is the student ID that MCFT uses for display.
         /// (not the database PK)
         /// </summary>
-        public string StudentCode { get; }
-        public string FirstName { get; }
-        public string LastName { get; }
+        public string StudentCode { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
         // XXX: Since this and Course have this, does this need to be its own
         // type or table?
-        public string Program { get; }
+        public string Program { get; set; }
 
         // XXX: Does this make sense to put in here, or does it go in Grade?
         public IEnumerable<Grade> GetGrades()
@@ -120,11 +133,36 @@ namespace MCFTAcademics.BL
 
         public decimal GetAverageForSemester(int semester)//Probably use the formula building way instead of this now
         {
-            return GradeDAL.GetAverageForStudentSemester(this, semester);
+            return GradeDAL.GetAverageForStudent(this, semester);
+        }
+        public static decimal GetAverageForSemesterByStudentId(int studentId, int semester)
+        {
+            return GradeDAL.GetAverageForStudent(Student.GetStudent(studentId), semester);
         }
         public decimal GetAverage(int semester = -1)
         {//Calls the method that uses the formula
             return GradeDAL.GetAverageForStudent(this,semester);
         }
+
+        public int AddStudent()
+        {
+            return StudentDAL.AddStudent(this);
+        }
+        public static decimal GetAverageByStudentId(int studentId, int semester = -1)
+        {//Calls the method that uses the formula
+            return GradeDAL.GetAverageForStudent(Student.GetStudent(studentId), semester);
+        }
+        //TODO
+        //XXX
+        public static decimal GetAverageByStudentIdYearly(int studentId, int year)
+        {
+            return GradeDAL.GetAverageForStudentByYear(Student.GetStudent(studentId), year);
+        }
+
+        public IEnumerable<Grade> GetGradesForYear(int year)
+        {
+            return GradeDAL.GetGradesForStudentYear(this, year);
+        }
+
     }
 }

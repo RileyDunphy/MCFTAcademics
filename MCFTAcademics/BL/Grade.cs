@@ -16,12 +16,13 @@ namespace MCFTAcademics.BL
         private bool supplemental;
         private Course subject;
         private string comment;
+        private DateTime? unlockedUntil;
 
         public Grade()
         {
         }
 
-        public Grade(int studentId, decimal gradeAssigned, DateTime given, bool locked, decimal hoursAttended, bool supplemental, Course subject, string comment)
+        public Grade(int studentId, decimal gradeAssigned, DateTime given, bool locked, decimal hoursAttended, bool supplemental, Course subject, string comment, DateTime? unlockedUntil)
         {
             this.studentId = studentId;
             this.gradeAssigned = gradeAssigned;
@@ -31,6 +32,7 @@ namespace MCFTAcademics.BL
             this.supplemental = supplemental;
             this.subject=subject;
             this.comment = comment;
+            this.unlockedUntil = unlockedUntil;
         }
 
         public int StudentId { get => studentId; }
@@ -41,6 +43,7 @@ namespace MCFTAcademics.BL
         public bool Supplemental { get => supplemental; }
         public Course Subject { get => subject; }
         public string Comment { get => comment; }
+        public DateTime? UnlockedUntil { get => unlockedUntil; }
 
         public static IEnumerable<Grade> GetAllGrades() => GradeDAL.GetAllGrades();
 
@@ -76,9 +79,9 @@ namespace MCFTAcademics.BL
             return GradingAlgorithm.Default;
         }
 
-        public static bool ToggleGradeLock(int studentId, int courseId)
+        public static bool ToggleGradeLock(int studentId, int courseId, DateTime? unlockedUntil)
         {
-            return GradeDAL.ToggleGradeLock(studentId, courseId);
+            return GradeDAL.ToggleGradeLock(studentId, courseId, unlockedUntil);
         }
 
         public static bool UpdateGrade(Grade grade, int studentId)
@@ -103,5 +106,15 @@ namespace MCFTAcademics.BL
         {
             return GradeDAL.UpdateFormula(formula);
         }
+
+        public static List<int> GetDateRanges() {
+            return GradeDAL.GetGradeRanges();
+        }
+
+        public static string GetFormula()
+        {
+            return GradeDAL.GetFormula();
+        }
+
     }
 }

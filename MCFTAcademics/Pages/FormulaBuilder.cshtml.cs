@@ -1,16 +1,19 @@
 ﻿using Flee.PublicTypes;
 using MCFTAcademics.BL;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System;
 
 namespace MCFTAcademics
 {
+    [Authorize(Roles = "Admin")]
     public class FormulaBuilderModel : PageModel
     {
         public string alertMessage { get; set; }
         public void OnGet()
         {
+
         }
 
         public IActionResult OnPost()
