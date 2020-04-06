@@ -34,8 +34,8 @@
                 {
                     <tr id="CourseCode-@i">
                         <td><input class="form-control" type="text" name="txtCode+@count" required value=@(coursecodes[i].Code)></td>
-                        <td><input class="form-control" name="txtStartDate+@count" type="date" min="2000-01-01" max="2090-01-01" required id="txtStartDate" value=@(coursecodes[i].From)></td>
-                        <td><input class="form-control" name="txtEndDate+@count" type="date" min="2000-01-01" max="2090-01-01" required id="txtEndDate" value=@(coursecodes[i].To)></td>
+                        <td><input class="form-control" name="txtStartDate+@count" type="date" min="2000-01-01" max="2090-01-01" required id="txtStartDate" value=@(coursecodes[i].From.ToString("yyyy-MM-dd"))></td>
+                        <td><input class="form-control" name="txtEndDate+@count" type="date" min="2000-01-01" max="2090-01-01" required id="txtEndDate" value=@(coursecodes[i].To.ToString("yyyy-MM-dd"))></td>
                         <td><input class="form-control" type="number" name="semester+@count" required value="@(coursecodes[i].Semester)" id="txtSemester"></td>
                         <td>
                             <button type="button" data-id="CourseCode-@i" class="Delete btn btn-sm btn-danger d-none d-md-inline-block">
