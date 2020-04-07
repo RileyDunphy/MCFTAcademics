@@ -82,7 +82,7 @@
                                     </span>
                                 </div>
                             </form>
-                            <span class="@MakeHtmlId(g, "commentSpan")">@g.Comment</span>
+                            <span id="@MakeHtmlId(g, "commentSpan")">@g.Comment</span>
                         </td>
                     }
                  </tr>
@@ -147,14 +147,14 @@
             // valid number?
             if (!isNaN(parseInt(entryElem.val()))) {
                 $("#" + entryElem.attr("form")).removeClass("hidden");
-                $("#" + entryElem.attr("commentSpan")).addClass("hidden");
+                $("#" + entryElem.attr("form")).next().addClass("hidden");
             }
         }
 
         activateCommentCheck = function (entry) {
             var entryElem = $(entry);
             $("#" + entryElem.attr("form")).removeClass("hidden");
-            $("#" + entryElem.attr("commentSpan")).addClass("hidden");
+            $("#" + entryElem.attr("form")).next().addClass("hidden");
         }
     </script>
 }
